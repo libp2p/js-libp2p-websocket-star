@@ -69,11 +69,13 @@ class WebsocketStar {
 
     io.ss.emit("ss-dial", outstream, {
       dialTo: ma.toString(),
+      dialFrom: this.maSelf.toString(),
       dialId
     })
 
     io.ss.once("dial." + dialId, (instream, data) => {
       if (data.err) return callback(new Error(data.err))
+      io.emit("dial.accept." + dialId)
       const inpull = toPull.source(instream)
       conn.resolve({
         sink: outpull,
@@ -139,7 +141,7 @@ class WebsocketStar {
           source: inpull
         })
 
-        listener.io.ss.emit("ss-dial-accept", stream, { //signaling will now connect the streams
+        listener.io.ss.emit("dial.accept." + dialId, stream, { //signaling will now connect the streams
           dialId
         })
 
