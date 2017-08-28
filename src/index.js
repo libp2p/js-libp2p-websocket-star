@@ -129,7 +129,7 @@ class WebsocketStar {
         const dialId = info.dialId
         log("recieved dial from %s", info.dialFrom, dialId)
         const source = listener.io.createSource(dialId + ".dialer")
-        const sink = listener.io.createSink(dialId + ".sink")
+        const sink = listener.io.createSink(dialId + ".listener")
 
         cb(null)
         const conn = new Connection({
