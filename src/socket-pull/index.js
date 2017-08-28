@@ -6,7 +6,7 @@ const uuid = require("uuid")
 const pull = require("pull-stream")
 const sioname = (type, name) => "socket.io-pull-stream." + type + (name ? "." + name : "")
 const debug = require("debug")
-const log = debug("socket-pull")
+const _log = debug("socket-pull")
 
 function SIOSource(sio, id) {
   const q = Queue()
@@ -55,7 +55,7 @@ function SIOSink(sio, id) {
 }
 
 module.exports = function SIOPullStream(sio) {
-  sio.sioplog = sio.id ? log.bind(log, sio.id) : log
+  let log = sio.sioplog = sio.id ? _log.bind(_log, sio.id) : _log
   sio.createSink = id => {
     if (!id) id = uuid()
     const sink = SIOSink(sio, id)
@@ -68,6 +68,8 @@ module.exports = function SIOPullStream(sio) {
     return source
   }
   sio.createProxy = (id, tsio) => {
+    if (!sio.id) return log("ignore proxy. not a sio server")
+    if (sio.id == tsio.id) return log("ignore proxy. same client id.")
     pull(
       sio.createSource(id),
       tsio.createSink(id)
