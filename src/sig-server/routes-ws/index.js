@@ -4,7 +4,7 @@ const config = require('../config')
 const log = config.log
 const _log = log
 const SocketIO = require('socket.io')
-const ss = require("socket.io-stream")
+const sp = require("../../socket-pull")
 
 module.exports = (http) => {
   const io = new SocketIO(http.listener)
@@ -30,7 +30,8 @@ module.exports = (http) => {
     socket.on('ss-join', ma => join(socket, ma))
     socket.on('ss-leave', ma => leave(socket, ma))
     socket.on('disconnect', () => disconnect(socket)) // socket.io own event
-    ss(socket).on("ss-dial", (stream, data) => dialHandle(socket, stream, data))
+    sp(socket)
+    socket.on("ss-dial", (data, cb) => dialHandle(socket, data, cb))
   }
 
   // join this signaling server network
@@ -74,34 +75,23 @@ module.exports = (http) => {
     })
   }
 
-  function dialHandle(socket, c_out_stream, data) { //c_out = client output
+  function dialHandle(socket, data, cb) {
     const to = data.dialTo
     const dialId = data.dialId
     const peer = peers[to]
     const log = _log.bind(_log, "[" + dialId + "]")
     log(data.dialFrom, "is dialing", to)
-    if (!peer) return ss(socket).emit(ss.createStream(), {
-      err: "Peer not found"
-    })
-    const c_out_bridge = ss.createStream() //i don't know how robust the module is
-    c_out_stream.pipe(c_out_bridge)
-    ss(peer).emit("ss-incomming", c_out_bridge, {
+    if (!peer) return cb("Peer not found")
+    socket.createProxy(dialId + ".dialer", peer)
+    peer.emit("ss-incomming", {
       dialId,
-      dialFrom: data.dialFrom //TODO: make this more secure or remove this
-    })
-    log("sent incomming to", to)
-    ss(peer).once("dial.accept." + dialId, (s_out_stream /*,data*/ ) => {
-      log(to, "accepted")
-      const s_out_bridge = ss.createStream()
-      s_out_stream.pipe(s_out_bridge)
-      ss(socket).emit("dial." + dialId, s_out_bridge, {
-        dialId
-      })
-      log("finishing")
-      socket.once("dial.accept." + dialId, err => {
-        log("accepted - finishing other side")
-        peer.emit("dial." + dialId, err)
-      })
+      dialFrom: data.dialFrom
+    }, err => {
+      if (err) return cb(err)
+      else {
+        peer.createProxy(dialId + ".listener", socket)
+        return cb()
+      }
     })
   }
 

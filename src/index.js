@@ -5,18 +5,16 @@ const log = debug('libp2p:websocket-star')
 const multiaddr = require('multiaddr')
 const mafmt = require('mafmt')
 const io = require('socket.io-client')
-const ss = require('socket.io-stream')
+const sp = require("./socket-pull")
 const uuid = require("uuid")
 const EE = require('events').EventEmitter
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
 const Connection = require('interface-connection').Connection
-const toPull = require('stream-to-pull-stream')
 const once = require('once')
 const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
 const cleanUrlSIO = utils.cleanUrlSIO
-const duplex = require("duplexer")
 
 const noop = once(() => {})
 
@@ -56,7 +54,6 @@ class WebsocketStar {
 
     const conn = new Connection()
 
-    const outstream = ss.createStream() //the stream is converted to a source on the other end by socket.io-stream
     const dialId = uuid()
 
     callback = callback ? once(callback) : noop
@@ -65,22 +62,23 @@ class WebsocketStar {
 
     if (!io) return callback(new Error("No signaling connection available for dialing"))
 
+    const sink = io.createSink(dialId + ".dialer")
+
     log("dialing %s (id %s)", ma, dialId)
 
-    //ss-dial -> server -> dial.ID -> dial.accept.ID
-
-    ss(io).emit("ss-dial", outstream, {
+    io.emit("ss-dial", {
       dialTo: ma.toString(),
       dialFrom: this.maSelf.toString(),
       dialId
-    })
-
-    ss(io).once("dial." + dialId, (instream, data) => {
-      if (data.err) return callback(new Error(data.err))
+    }, err => {
+      if (err) return callback(err)
       log("dialing %s (id %s) successfully completed", ma, dialId)
-      io.emit("dial.accept." + dialId)
-      conn.conn.resolve(toPull.duplex(duplex(outstream, instream)))
-      return callback(null, conn)
+      const source = io.createSource(dialId + ".listener")
+      conn.setInnerConn({
+        sink,
+        source
+      })
+      callback(null, conn)
     })
 
     return conn
@@ -112,7 +110,9 @@ class WebsocketStar {
         listener.emit('close')
       })
 
-      ss(listener.io).on("ss-incomming", incommingDial)
+      sp(listener.io)
+
+      listener.io.on("ss-incomming", incommingDial)
       listener.io.on('ws-peer', this._peerDiscovered)
 
       listener.io.on('connect', () => {
@@ -124,25 +124,19 @@ class WebsocketStar {
         callback()
       })
 
-      function incommingDial(instream, info) {
+      function incommingDial(info, cb) {
 
-        const outstream = ss.createStream()
         const dialId = info.dialId
         log("recieved dial from %s", info.dialFrom, dialId)
+        const source = listener.io.createSource(dialId + ".dialer")
+        const sink = listener.io.createSink(dialId + ".sink")
 
-        //ss-incomming -> dial.accept.ID -> server -> dial.ID
-
-        const conn = new Connection(toPull.duplex(duplex(outstream, instream)))
-
-        ss(listener.io).emit("dial.accept." + dialId, outstream, { //signaling will now connect the streams
-          dialId
+        cb(null)
+        const conn = new Connection({
+          sink,
+          source
         })
-
-        listener.io.once("dial." + dialId, err => {
-          if (err) return
-          log("dial from %s is finished", info.dialFrom, dialId)
-          listener.emit("connection", conn)
-        })
+        listener.emit("connection", conn)
       }
     }
 
