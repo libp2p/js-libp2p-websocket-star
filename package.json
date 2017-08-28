@@ -21,6 +21,7 @@
   "dependencies": {
     "async": "^2.5.0",
     "debug": "^3.0.1",
+    "duplexer": "^0.1.1",
     "hapi": "^16.5.2",
     "interface-connection": "^0.3.2",
     "mafmt": "^2.1.8",

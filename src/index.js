@@ -16,6 +16,7 @@ const once = require('once')
 const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
 const cleanUrlSIO = utils.cleanUrlSIO
+const duplex = require("duplexer")
 
 const noop = once(() => {})
 
@@ -55,8 +56,7 @@ class WebsocketStar {
 
     const conn = new Connection()
 
-    const outstream = ss.createStream()
-    const outpull = toPull.sink(outstream) //the stream is converted to a source on the other end by socket.io-stream
+    const outstream = ss.createStream() //the stream is converted to a source on the other end by socket.io-stream
     const dialId = uuid()
 
     callback = callback ? once(callback) : noop
@@ -67,7 +67,7 @@ class WebsocketStar {
 
     log("dialing %s (id %s)", ma, dialId)
 
-    //ss-dial -> server -> dial.ID
+    //ss-dial -> server -> dial.ID -> dial.accept.ID
 
     io.ss.emit("ss-dial", outstream, {
       dialTo: ma.toString(),
@@ -79,11 +79,7 @@ class WebsocketStar {
       if (data.err) return callback(new Error(data.err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       io.emit("dial.accept." + dialId)
-      const inpull = toPull.source(instream)
-      conn.conn.resolve({
-        sink: outpull,
-        source: inpull
-      })
+      conn.conn.resolve(toPull.duplex(duplex(outstream, instream)))
       return callback(null, conn)
     })
 
@@ -133,18 +129,13 @@ class WebsocketStar {
       function incommingDial(stream, info) {
 
         const outstream = ss.createStream()
-        const outpull = toPull.sink(outstream)
         const instream = stream
-        const inpull = toPull.source(instream)
         const dialId = info.dialId
         log("recieved dial from %s", info.dialFrom, dialId)
 
         //ss-incomming -> dial.accept.ID -> server -> dial.ID
 
-        const conn = new Connection({ //that's it. conn via socket.io mind=blown
-          sink: outpull,
-          source: inpull
-        })
+        const conn = new Connection(toPull.duplex(duplex(outstream, instream)))
 
         listener.io.ss.emit("dial.accept." + dialId, outstream, { //signaling will now connect the streams
           dialId
