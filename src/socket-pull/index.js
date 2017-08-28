@@ -10,7 +10,7 @@ const log = debug("socket-pull")
 
 function SIOSource(sio, id) {
   const q = Queue()
-  log("create source", id)
+  log(id, "create source")
   sio.emit(sioname("accept", id))
   sio.on(sioname("error", id), err => {
     log(id, "queue error")
@@ -29,7 +29,7 @@ function SIOSource(sio, id) {
 
 function SIOSink(sio, id) {
   const q = Queue()
-  log("create sink", id)
+  log(id, "create sink")
   sio.once(sioname("accept", id), () => {
     log(id, "start transmission")
     function loop() {
