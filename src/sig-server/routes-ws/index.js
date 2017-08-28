@@ -3,7 +3,7 @@
 const config = require('../config')
 const log = config.log
 const SocketIO = require('socket.io')
-const ss = require("socket.io-streams")
+const ss = require("socket.io-stream")
 
 module.exports = (http) => {
   const io = new SocketIO(http.listener)
