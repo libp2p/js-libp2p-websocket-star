@@ -69,7 +69,6 @@ module.exports = function SIOPullStream(sio) {
   }
   sio.createProxy = (id, tsio) => {
     if (!sio.id) return log("ignore proxy. not a sio server")
-    if (sio.id == tsio.id) return log("ignore proxy. same client id.")
     pull(
       sio.createSource(id),
       tsio.createSink(id)

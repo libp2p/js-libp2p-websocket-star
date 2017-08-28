@@ -125,7 +125,6 @@ class WebsocketStar {
       })
 
       function incommingDial(info, cb) {
-
         const dialId = info.dialId
         log("recieved dial from %s", info.dialFrom, dialId)
         const source = listener.io.createSource(dialId + ".dialer")
@@ -137,6 +136,7 @@ class WebsocketStar {
           source
         })
         listener.emit("connection", conn)
+        handler(conn)
       }
     }
 
