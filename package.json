@@ -13,5 +13,22 @@
     "no-webrtc"
   ],
   "author": "Maciej Krüger <mkg20001@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.5.0",
+    "debug": "^3.0.1",
+    "hapi": "^16.5.2",
+    "interface-connection": "^0.3.2",
+    "mafmt": "^2.1.8",
+    "minimist": "^1.2.0",
+    "multiaddr": "^2.3.0",
+    "once": "^1.4.0",
+    "peer-id": "^0.9.0",
+    "peer-info": "^0.10.0",
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3",
+    "socket.io-stream": "^0.9.1",
+    "stream-to-pull-stream": "^1.7.2",
+    "uuid": "^3.1.0"
+  }
 }
