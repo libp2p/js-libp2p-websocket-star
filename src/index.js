@@ -69,13 +69,13 @@ class WebsocketStar {
 
     //ss-dial -> server -> dial.ID -> dial.accept.ID
 
-    io.ss.emit("ss-dial", outstream, {
+    ss(io).emit("ss-dial", outstream, {
       dialTo: ma.toString(),
       dialFrom: this.maSelf.toString(),
       dialId
     })
 
-    io.ss.once("dial." + dialId, (instream, data) => {
+    ss(io).once("dial." + dialId, (instream, data) => {
       if (data.err) return callback(new Error(data.err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       io.emit("dial.accept." + dialId)
@@ -106,15 +106,13 @@ class WebsocketStar {
       listener.io = io.connect(sioUrl, sioOptions)
       this.firstListen = listener.io
 
-      listener.io.ss = ss(listener.io)
-
       listener.io.once('connect_error', callback)
       listener.io.once('error', (err) => {
         listener.emit('error', err)
         listener.emit('close')
       })
 
-      listener.io.ss.on("ss-incomming", incommingDial)
+      ss(listener.io).on("ss-incomming", incommingDial)
       listener.io.on('ws-peer', this._peerDiscovered)
 
       listener.io.on('connect', () => {
@@ -126,10 +124,9 @@ class WebsocketStar {
         callback()
       })
 
-      function incommingDial(stream, info) {
+      function incommingDial(instream, info) {
 
         const outstream = ss.createStream()
-        const instream = stream
         const dialId = info.dialId
         log("recieved dial from %s", info.dialFrom, dialId)
 
@@ -137,7 +134,7 @@ class WebsocketStar {
 
         const conn = new Connection(toPull.duplex(duplex(outstream, instream)))
 
-        listener.io.ss.emit("dial.accept." + dialId, outstream, { //signaling will now connect the streams
+        ss(listener.io).emit("dial.accept." + dialId, outstream, { //signaling will now connect the streams
           dialId
         })
 
