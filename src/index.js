@@ -142,6 +142,7 @@ class WebsocketStar {
           if (err) return
           log("dial from %s is finished", info.dialFrom, dialId)
           listener.emit("connection", conn)
+          handler(conn)
         })
       }
     }
