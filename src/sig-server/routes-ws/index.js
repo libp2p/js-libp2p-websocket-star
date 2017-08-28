@@ -2,6 +2,7 @@
 
 const config = require('../config')
 const log = config.log
+const _log = log
 const SocketIO = require('socket.io')
 const ss = require("socket.io-stream")
 
@@ -78,6 +79,8 @@ module.exports = (http) => {
     const to = data.dialTo
     const dialId = data.dialId
     const peer = peers[to]
+    const log = _log.bind(_log, "[" + dialId + "]")
+    log(data.dialFrom, "is dialing", to)
     if (!peer) return socket.ss.emit(ss.createStream(), {
       err: "Peer not found"
     })
@@ -87,13 +90,17 @@ module.exports = (http) => {
       dialId,
       dialFrom: data.dialFrom //TODO: make this more secure or remove this
     })
+    log("sent incomming to", to)
     peer.ss.once("dial.accept." + dialId, (s_out_stream /*,data*/ ) => {
+      log(to, "accepted")
       const s_out_bridge = ss.createStream()
       s_out_stream.pipe(s_out_bridge)
       socket.ss.emit("dial." + dialId, s_out_bridge, {
         dialId
       })
+      log("finishing")
       socket.once("dial.accept." + dialId, err => {
+        log("accepted - finishing other side")
         peer.emit("dial." + dialId, err)
       })
     })

@@ -65,7 +65,9 @@ class WebsocketStar {
 
     if (!io) return callback(new Error("No signaling connection available for dialing"))
 
-    io = io.io //because undefined has no .io property
+    log("dialing %s (id %s)", ma, dialId)
+
+    //ss-dial -> server -> dial.ID
 
     io.ss.emit("ss-dial", outstream, {
       dialTo: ma.toString(),
@@ -75,9 +77,10 @@ class WebsocketStar {
 
     io.ss.once("dial." + dialId, (instream, data) => {
       if (data.err) return callback(new Error(data.err))
+      log("dialing %s (id %s) successfully completed", ma, dialId)
       io.emit("dial.accept." + dialId)
       const inpull = toPull.source(instream)
-      conn.resolve({
+      conn.conn.resolve({
         sink: outpull,
         source: inpull
       })
@@ -134,19 +137,22 @@ class WebsocketStar {
         const instream = stream
         const inpull = toPull.source(instream)
         const dialId = info.dialId
-        log("recieved dial from %s", info.dialFrom)
+        log("recieved dial from %s", info.dialFrom, dialId)
+
+        //ss-incomming -> dial.accept.ID -> server -> dial.ID
 
         const conn = new Connection({ //that's it. conn via socket.io mind=blown
           sink: outpull,
           source: inpull
         })
 
-        listener.io.ss.emit("dial.accept." + dialId, stream, { //signaling will now connect the streams
+        listener.io.ss.emit("dial.accept." + dialId, outstream, { //signaling will now connect the streams
           dialId
         })
 
         listener.io.once("dial." + dialId, err => {
           if (err) return
+          log("dial from %s is finished", info.dialFrom, dialId)
           listener.emit("connection", conn)
         })
       }
