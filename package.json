@@ -1,0 +1,17 @@
+{
+  "name": "libp2p-websocket-star",
+  "version": "0.0.1",
+  "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "libp2p",
+    "transport",
+    "websocket",
+    "no-webrtc"
+  ],
+  "author": "Maciej Krüger <mkg20001@gmail.com>",
+  "license": "MIT"
+}
