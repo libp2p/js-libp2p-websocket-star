@@ -79,7 +79,7 @@ class WebsocketStar {
       if (data.err) return callback(new Error(data.err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       io.emit("dial.accept." + dialId)
-      conn.conn.resolve(toPull.duplex(duplex(outstream, instream)))
+      conn.setInnerConn(toPull.duplex(duplex(outstream, instream)))
       return callback(null, conn)
     })
 
