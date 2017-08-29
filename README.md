@@ -52,7 +52,7 @@ Id.create((err, id) => {
   if (err) throw err
 
   const peerInfo = new Info(id)
-  peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/dns4/localhost/ws/"))
+  peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/ip4/148.251.206.162/tcp/9090/ws/"))
   const swarm = new libp2p(modules, peerInfo)
 
   swarm.handle("/test/1.0.0", (protocol, conn) => {
@@ -103,6 +103,15 @@ Defaults:
 
 - `port` - 13579
 - `host` - '0.0.0.0'
+
+## Hosted Signalling Server
+
+We host a signalling server at `148.251.206.162:9090` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
+A libp2p-webrtc-star address, using the signalling server we provide, looks like:
+
+`/libp2p-webrtc-star/ip4/148.251.206.162/tcp/9090/ws/ipfs/<your-peer-id>`
+
+Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 
 ### This module uses `pull-streams`
 
