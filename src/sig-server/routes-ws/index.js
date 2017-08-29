@@ -6,6 +6,8 @@ const _log = log
 const SocketIO = require('socket.io')
 const sp = require("../../socket-pull")
 
+const noop = () => {}
+
 module.exports = (http) => {
   const io = new SocketIO(http.listener)
   io.on('connection', handle)
@@ -27,7 +29,7 @@ module.exports = (http) => {
   }
 
   function handle(socket) {
-    socket.on('ss-join', ma => join(socket, ma))
+    socket.on('ss-join', (ma, cb) => join(socket, ma, typeof cb == "function" ? cb : noop))
     socket.on('ss-leave', ma => leave(socket, ma))
     socket.on('disconnect', () => disconnect(socket)) // socket.io own event
     sp(socket)
@@ -35,7 +37,8 @@ module.exports = (http) => {
   }
 
   // join this signaling server network
-  function join(socket, multiaddr) {
+  function join(socket, multiaddr, cb) {
+    //if (peers[multiaddr] && peers[multiaddr].id != socket.id) return cb("Already taken")
     peers[multiaddr] = socket // socket
     let refreshInterval = setInterval(sendPeers, config.refreshPeerListIntervalMS)
 
@@ -59,6 +62,8 @@ module.exports = (http) => {
         refreshInterval = null
       }
     }
+
+    cb()
   }
 
   function leave(socket, multiaddr) {

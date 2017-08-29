@@ -52,7 +52,9 @@ class WebsocketStar {
       options = {}
     }
 
-    const conn = new Connection()
+    const _ma = multiaddr(ma)
+
+    const conn = new Connection(null)
 
     const dialId = uuid()
 
@@ -77,6 +79,8 @@ class WebsocketStar {
       conn.setInnerConn({
         sink,
         source
+      }, {
+        getObservedAddrs: cb => cb(null, [_ma])
       })
       callback(null, conn)
     })
@@ -115,18 +119,24 @@ class WebsocketStar {
       listener.io.on("ss-incomming", incommingDial)
       listener.io.on('ws-peer', this._peerDiscovered)
 
-      listener.io.on('connect', () => {
-        listener.io.emit('ss-join', ma.toString())
-      })
-
       listener.io.once('connect', () => {
-        listener.emit('listening')
-        callback()
+        listener.io.on('connect', () =>
+          listener.io.emit('ss-join', ma.toString(), err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
+        listener.io.emit('ss-join', ma.toString(), err => {
+          if (err) {
+            listener.emit("error", new Error(err))
+            callback(new Error(err))
+          } else {
+            listener.emit('listening')
+            callback()
+          }
+        })
       })
 
       function incommingDial(info, cb) {
         const dialId = info.dialId
         log("recieved dial from %s", info.dialFrom, dialId)
+        const ma = multiaddr(info.dialFrom)
         const source = listener.io.createSource(dialId + ".dialer")
         const sink = listener.io.createSink(dialId + ".listener")
 
@@ -134,6 +144,8 @@ class WebsocketStar {
         const conn = new Connection({
           sink,
           source
+        }, {
+          getObservedAddrs: cb => cb(null, [ma])
         })
         listener.emit("connection", conn)
         handler(conn)
