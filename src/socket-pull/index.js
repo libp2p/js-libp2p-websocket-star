@@ -47,9 +47,10 @@ function SIOSink(sio, id) {
     loop()
   })
   return function (read) {
-    read(null, function (end, data) {
+    read(null, function next(end, data) {
       if (end) return q.error(end)
-      else q.append(data)
+      q.append(data)
+      read(null, next)
     })
   }
 }
