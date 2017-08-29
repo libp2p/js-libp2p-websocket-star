@@ -13,16 +13,26 @@ function SIOSource(sio, id) {
   const log = sio.sioplog.bind(sio.sioplog, "source(" + id + ")")
   log("create source")
   sio.emit(sioname("accept", id))
+
+  function unlisten() {
+    sio.removeAllListeners(sioname("error", id))
+    sio.removeAllListeners(sioname("queue", id))
+  }
+
   sio.on(sioname("error", id), err => {
     if (err === true) log("finish")
     else log("error")
+    unlisten()
     q.error(err)
   })
   sio.on(sioname("queue", id), data => {
     log("queue data")
     q.append(data)
   })
-  sio.on("disconnect", () => q.error(true))
+  sio.on("disconnect", () => {
+    unlisten()
+    q.error(true)
+  })
   return function (end, cb) {
     log("reading")
     if (end) return cb(end)

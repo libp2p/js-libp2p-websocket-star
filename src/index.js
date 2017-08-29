@@ -155,12 +155,10 @@ class WebsocketStar {
     listener.close = (callback) => {
       callback = callback ? once(callback) : noop
 
-      listener.io.emit('ss-leave')
+      listener.io.disconnect() //disconnecting unregisters all addresses
+      listener.emit('close')
+      callback()
 
-      setImmediate(() => {
-        listener.emit('close')
-        callback()
-      })
     }
 
     listener.getAddrs = (callback) => {
@@ -189,3 +187,4 @@ class WebsocketStar {
   }
 }
 module.exports = WebsocketStar
+module.exports.Server = require("./sig-server")
