@@ -39,5 +39,8 @@ module.exports = (create) => {
         expect(err).to.not.exist()
       })
     })
+
+    const clean = require("../clean")
+    after(() => clean.cleaner(ws1, ws2))
   })
 }

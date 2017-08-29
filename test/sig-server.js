@@ -89,8 +89,10 @@ describe('signalling', () => {
     c3.on('connect', connected)
     c4.on('connect', connected)
 
-    function connected () {
-      if (++count === 3) { done() }
+    function connected() {
+      if (++count === 3) {
+        done()
+      }
     }
   })
 
@@ -135,38 +137,35 @@ describe('signalling', () => {
     c4.emit('ss-join', c4mh.toString())
   })
 
-  //TODO: rewrite handshake tests
-/*
-  it('c1 handshake c4', (done) => {
-    c4.once('ws-handshake', (offer) => {
-      offer.answer = true
-      c4.emit('ss-handshake', offer)
+  it("c1 dial c4", done => {
+    const dialId = uuid()
+    c4.once("ss-incomming", (data, cb) => {
+      expect(data.dialId).to.eql(dialId)
+      expect(data.dialFrom).to.eql(c1mh.toString())
+      cb()
     })
-
-    c1.once('ws-handshake', (offer) => {
-      expect(offer.err).to.not.exist()
-      expect(offer.answer).to.equal(true)
+    c1.emit("ss-dial", {
+      dialFrom: c1mh.toString(),
+      dialTo: c4mh.toString(),
+      dialId
+    }, err => {
+      expect(err).to.not.exist()
       done()
-    })
-
-    c1.emit('ss-handshake', {
-      srcMultiaddr: c1mh.toString(),
-      dstMultiaddr: c4mh.toString()
     })
   })
 
-  it('c1 handshake c2 fail (does not exist() anymore)', (done) => {
-    c1.once('ws-handshake', (offer) => {
-      expect(offer.err).to.exist()
+  it("c1 dial c2 fail (does not exist() anymore)", done => {
+    const dialId = uuid()
+    c1.emit("ss-dial", {
+      dialFrom: c1mh.toString(),
+      dialTo: c2mh.toString(),
+      dialId
+    }, err => {
+      expect(err).to.exist()
       done()
     })
-
-    c1.emit('ss-handshake', {
-      srcMultiaddr: c1mh.toString(),
-      dstMultiaddr: c2mh.toString()
-    })
   })
-*/
+
   it('disconnects every client', (done) => {
     [c1, c2, c3, c4].forEach((c) => c.disconnect())
     done()
@@ -185,12 +184,12 @@ describe('signalling', () => {
       check()
     })
 
-    function check () {
+    function check() {
       if (++peersEmitted === 2) {
         done()
       }
     }
-  })
+  }).timeout(11000)
 
   it('stop signalling server', (done) => {
     parallel([

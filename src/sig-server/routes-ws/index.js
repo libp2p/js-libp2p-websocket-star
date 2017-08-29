@@ -42,7 +42,10 @@ module.exports = (http) => {
     peers[multiaddr] = socket // socket
     let refreshInterval = setInterval(sendPeers, config.refreshPeerListIntervalMS)
 
-    socket.once('ss-leave', stopSendingPeers)
+    socket.once('ss-leave', ma => {
+      if (ma == multiaddr)
+        stopSendingPeers()
+    })
     socket.once('disconnect', stopSendingPeers)
 
     sendPeers()

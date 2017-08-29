@@ -6,15 +6,15 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const WebRTCStar = require('../../src')
+const WSStar = require('../../src')
 
 describe('instantiate the transport', () => {
   it('create', () => {
-    const wstar = new WebRTCStar()
+    const wstar = new WSStar()
     expect(wstar).to.exist()
   })
 
   it('create without new', () => {
-    expect(() => WebRTCStar()).to.throw()
+    expect(() => WSStar()).to.throw()
   })
 })

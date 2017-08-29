@@ -13,6 +13,7 @@ const Buffer = require('safe-buffer').Buffer
 
 module.exports = (create) => {
   describe('dial', () => {
+    const clean = require("../clean")
     let ws1
     let ws2
     let ma1
@@ -43,13 +44,13 @@ module.exports = (create) => {
     before((done) => {
       series([first, second], done)
 
-      function first (next) {
+      function first(next) {
         ws1 = create()
         const listener = ws1.createListener((conn) => pull(conn, conn))
         listener.listen(ma1, next)
       }
 
-      function second (next) {
+      function second(next) {
         ws2 = create()
         const listener = ws2.createListener((conn) => pull(conn, conn))
         listener.listen(ma2, next)
@@ -85,5 +86,7 @@ module.exports = (create) => {
     it.skip('dial on IPv6', (done) => {
       // TODO IPv6 not supported yet
     })
+
+    after(() => clean.cleaner(ws1, ws2))
   })
 }
