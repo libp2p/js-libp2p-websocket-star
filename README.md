@@ -26,11 +26,19 @@
 
 [![](https://raw.githubusercontent.com/libp2p/interface-transport/master/img/badge.png)](https://github.com/libp2p/interface-transport)
 
-### Using this module in Node.js or the Browser
+Currently websocket-star uses the /libp2p-webrtc-star/ address prefix as we don't have our own just yet.
+
+### Example
 
 ```JavaScript
+const libp2p = require("libp2p")
+const Id = require("peer-id")
+const Info = require("peer-info")
+const multiaddr = require("multiaddr")
+const pull = require('pull-stream')
+
 const WSStar = require('libp2p-websocket-star')
-const ws = new WStar({})
+const ws = new WSStar()
 const modules = {
   transports: [
     ws
@@ -39,6 +47,38 @@ const modules = {
     ws.discovery
   ]
 }
+
+Id.create((err, id) => {
+  if (err) throw err
+
+  const peerInfo = new Info(id)
+  peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/dns4/your-server/ws/"))
+  const swarm = new libp2p(modules, peerInfo)
+
+  swarm.handle("/test/1.0.0", (protocol, conn) => {
+    pull(
+      pull.values(['hello from the other side']),
+      conn
+    )
+  })
+
+  swarm.start(err => {
+    if (err) throw err
+    swarm.dial(peerInfo, "/ipfs/ping/1.0.0", (err, conn) => {
+      if (err) throw err
+      pull(
+        pull.values([]),
+        conn,
+        pull.log()
+      )
+    })
+  })
+})
+```
+
+Outputs:
+```
+hello from the other side
 ```
 
 ### Signalling server
