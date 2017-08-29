@@ -37,7 +37,7 @@ module.exports = (config, http) => {
 
   // join this signaling server network
   function join(socket, multiaddr, cb) {
-    if (peers[multiaddr] && peers[multiaddr].id != socket.id) return cb("Already taken")
+    //if (peers[multiaddr] && peers[multiaddr].id != socket.id) return cb("Already taken")
     peers[multiaddr] = socket // socket
     let refreshInterval = setInterval(sendPeers, config.refreshPeerListIntervalMS)
 

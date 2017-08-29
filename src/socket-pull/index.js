@@ -14,6 +14,8 @@ function SIOSource(sio, id) {
   log("create source")
   sio.emit(sioname("accept", id))
   sio.on(sioname("error", id), err => {
+    if (err === true) log("finish")
+    else log("error")
     q.error(err)
   })
   sio.on(sioname("queue", id), data => {
@@ -37,7 +39,7 @@ function SIOSink(sio, id) {
 
     function loop() {
       q.get((err, data) => {
-        log("send", err ? "error" : "data")
+        log("send", err && err === true ? "finish" : err ? "error" : data ? "data" : "<invalid>")
         if (err) return sio.emit(sioname("error", id), err)
         if (data) sio.emit(sioname("queue", id), data)
         loop()
