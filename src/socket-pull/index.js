@@ -10,7 +10,7 @@ const _log = debug("socket-pull")
 
 function SIOSource(sio, id) {
   const q = Queue()
-  const log = sio.sioplog.bind(sio.sioplog, id)
+  const log = sio.sioplog.bind(sio.sioplog, "source(" + id + ")")
   log("create source")
   sio.emit(sioname("accept", id))
   sio.on(sioname("error", id), err => {
@@ -31,7 +31,7 @@ function SIOSource(sio, id) {
 
 function SIOSink(sio, id) {
   const q = Queue()
-  const log = sio.sioplog.bind(sio.sioplog, id)
+  const log = sio.sioplog.bind(sio.sioplog, "  sink(" + id + ")")
   log("create sink")
   sio.once(sioname("accept", id), () => {
     log("start transmission")
@@ -56,7 +56,7 @@ function SIOSink(sio, id) {
 }
 
 module.exports = function SIOPullStream(sio) {
-  let log = sio.sioplog = sio.id ? _log.bind(_log, sio.id) : _log
+  let log = sio.sioplog = sio.id ? _log.bind(_log, "[" + sio.id + "]") : _log
   sio.createSink = id => {
     if (!id) id = uuid()
     const sink = SIOSink(sio, id)

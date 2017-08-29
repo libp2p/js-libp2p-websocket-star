@@ -62,7 +62,7 @@ module.exports = (create) => {
     })
 
     it('wait a bit for clients to reconnect', (done) => {
-      setTimeout(done, 2000)
+      setTimeout(done, 1990)
     })
 
     it('listen on the third, first discovers it', (done) => {
