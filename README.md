@@ -30,7 +30,7 @@ Currently websocket-star uses the /libp2p-webrtc-star/ address prefix as we don'
 
 ### Example
 
-```JavaScript
+```js
 const libp2p = require("libp2p")
 const Id = require("peer-id")
 const Info = require("peer-info")
@@ -86,13 +86,13 @@ hello from the other side
 `libp2p-webrtc-star` comes with its own signalling server, used for peers to handshake their signalling data and establish a connection. You can install it in your machine by installing the module globally:
 
 ```bash
-> npm install --global libp2p-webrtc-star
+> npm install --global libp2p-websocket-star
 ```
 
-This will expose a `star-sig` cli tool. To spawn a server do:
+This will expose a `ws-star-sig` cli tool. To spawn a server do:
 
 ```bash
-> star-signal --port=9090 --host=127.0.0.1
+> ws-star-signal --port=9090 --host=127.0.0.1
 ```
 
 Defaults:
@@ -115,7 +115,7 @@ You can learn more about pull-streams at:
 
 If you are a Node.js streams user, you can convert a pull-stream to a Node.js stream using the module [`pull-stream-to-stream`](https://github.com/pull-stream/pull-stream-to-stream), giving you an instance of a Node.js stream that is linked to the pull-stream. For example:
 
-```JavaScript
+```js
 const pullToStream = require('pull-stream-to-stream')
 
 const nodeStreamInstance = pullToStream(pullStreamInstance)
