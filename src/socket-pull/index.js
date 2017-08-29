@@ -40,7 +40,7 @@ function SIOSink(sio, id) {
       q.get((err, data) => {
         log("send", err ? "error" : "data")
         if (err) return sio.emit(sioname("error", id))
-        sio.emit(sioname("queue", id), data)
+        if (data) sio.emit(sioname("queue", id), data)
         loop()
       })
     }

@@ -40,7 +40,7 @@ const pull = require('pull-stream')
 const WSStar = require('libp2p-websocket-star')
 const ws = new WSStar()
 const modules = {
-  transports: [
+  transport: [
     ws
   ],
   discovery: [
@@ -52,23 +52,26 @@ Id.create((err, id) => {
   if (err) throw err
 
   const peerInfo = new Info(id)
-  peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/dns4/your-server/ws/"))
+  peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/dns4/localhost/ws/"))
   const swarm = new libp2p(modules, peerInfo)
 
   swarm.handle("/test/1.0.0", (protocol, conn) => {
     pull(
-      pull.values(['hello from the other side']),
-      conn
+      pull.values(['hello']),
+      conn,
+      pull.map(s => s.toString()),
+      pull.log()
     )
   })
 
   swarm.start(err => {
     if (err) throw err
-    swarm.dial(peerInfo, "/ipfs/ping/1.0.0", (err, conn) => {
+    swarm.dial(peerInfo, "/test/1.0.0", (err, conn) => {
       if (err) throw err
       pull(
-        pull.values([]),
+        pull.values(['hello from the other side']),
         conn,
+        pull.map(s => s.toString()),
         pull.log()
       )
     })
@@ -78,6 +81,7 @@ Id.create((err, id) => {
 
 Outputs:
 ```
+hello
 hello from the other side
 ```
 
