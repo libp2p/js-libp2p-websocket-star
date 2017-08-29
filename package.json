@@ -38,6 +38,7 @@
     "hapi": "^16.5.2",
     "interface-connection": "^0.3.2",
     "mafmt": "^2.1.8",
+    "merge-recursive": "0.0.3",
     "minimist": "^1.2.0",
     "multiaddr": "^2.3.0",
     "once": "^1.4.0",

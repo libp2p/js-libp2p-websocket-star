@@ -55,7 +55,8 @@ describe('signalling', () => {
 
   it('start signalling server for client tests', (done) => {
     const options = {
-      port: 12345
+      port: 12345,
+      refreshPeerListIntervalMS: 1000
     }
 
     sigServer.start(options, (err, server) => {
@@ -171,7 +172,7 @@ describe('signalling', () => {
     done()
   })
 
-  it('emits ws-peer every 10 seconds', (done) => {
+  it('emits ws-peer every second', (done) => {
     let peersEmitted = 0
 
     c1 = io.connect(sioUrl, sioOptions)
@@ -189,7 +190,7 @@ describe('signalling', () => {
         done()
       }
     }
-  }).timeout(11000)
+  }).timeout(4000)
 
   it('stop signalling server', (done) => {
     parallel([

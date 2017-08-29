@@ -1,14 +1,13 @@
 'use strict'
 
-const config = require('../config')
-const log = config.log
-const _log = log
 const SocketIO = require('socket.io')
 const sp = require("../../socket-pull")
 
 const noop = () => {}
 
-module.exports = (http) => {
+module.exports = (config, http) => {
+  const log = config.log
+  const _log = log
   const io = new SocketIO(http.listener)
   io.on('connection', handle)
 
@@ -38,7 +37,7 @@ module.exports = (http) => {
 
   // join this signaling server network
   function join(socket, multiaddr, cb) {
-    //if (peers[multiaddr] && peers[multiaddr].id != socket.id) return cb("Already taken")
+    if (peers[multiaddr] && peers[multiaddr].id != socket.id) return cb("Already taken")
     peers[multiaddr] = socket // socket
     let refreshInterval = setInterval(sendPeers, config.refreshPeerListIntervalMS)
 

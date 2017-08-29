@@ -17,5 +17,6 @@ module.exports = {
       }
     }
   },
-  refreshPeerListIntervalMS: 10000
+  refreshPeerListIntervalMS: 10000,
+  cryptoChallenge: true
 }

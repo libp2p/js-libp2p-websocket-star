@@ -1,8 +1,7 @@
 'use strict'
 
 const Hapi = require('hapi')
-const config = require('./config')
-const log = config.log
+const merge = require("merge-recursive").recursive
 
 exports = module.exports
 
@@ -12,14 +11,17 @@ exports.start = (options, callback) => {
     options = {}
   }
 
+  const config = merge(require('./config'), options)
+  const log = config.log
+
   const port = options.port || config.hapi.port
   const host = options.host || config.hapi.host
 
   const http = new Hapi.Server(config.hapi.options)
 
   http.connection({
-    port: port,
-    host: host
+    port,
+    host
   })
 
   http.start((err) => {
@@ -29,7 +31,7 @@ exports.start = (options, callback) => {
 
     log('signaling server has started on: ' + http.info.uri)
 
-    http.peers = require('./routes-ws')(http).peers
+    http.peers = require('./routes-ws')(config, http).peers
 
     callback(null, http)
   })
