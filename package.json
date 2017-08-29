@@ -8,7 +8,20 @@
     "ws-star-signal": "src/sig-server/bin.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "star-signal": "node src/sig-server/bin.js",
+    "start": "node src/sig-server/bin.js",
+    "lint": "gulp lint",
+    "build": "gulp build",
+    "test": "gulp test --dom",
+    "test:node": "gulp test:node",
+    "test:browser": "gulp test:browser --dom",
+    "test:dns": "WEBRTC_STAR_REMOTE_SIGNAL_DNS=1 gulp test --dom",
+    "test:ip": "WEBRTC_STAR_REMOTE_SIGNAL_IP=1 gulp test --dom",
+    "release": "gulp release --dom",
+    "release-minor": "gulp release --type minor --dom",
+    "release-major": "gulp release --type major --dom",
+    "coverage": "gulp coverage",
+    "coverage-publish": "aegir-coverage publish"
   },
   "keywords": [
     "libp2p",
@@ -34,5 +47,23 @@
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
     "uuid": "^3.1.0"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "aegir": "^11.0.2",
+    "chai": "^4.1.1",
+    "dirty-chai": "^2.0.1",
+    "gulp": "^3.9.1",
+    "lodash": "^4.17.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkg20001/js-libp2p-websocket-star.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mkg20001/js-libp2p-websocket-star/issues"
+  },
+  "homepage": "https://github.com/mkg20001/js-libp2p-websocket-star#readme"
 }

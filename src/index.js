@@ -71,7 +71,7 @@ class WebsocketStar {
       dialFrom: this.maSelf.toString(),
       dialId
     }, err => {
-      if (err) return callback(err)
+      if (err) return callback(new Error(err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       const source = io.createSource(dialId + ".listener")
       conn.setInnerConn({
