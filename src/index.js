@@ -134,7 +134,7 @@ class WebsocketStar {
                 io.disconnect()
                 callback(new Error("Can't sign cryptoChallenge: No id provided"))
               } else {
-                this.id.privKey.sign(sig, (err, signature) => {
+                this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
                   if (err) callback(err)
                   listener.signature = signature.toString("hex")
                   listener.io.emit('ss-join', ma.toString(), signature.toString("hex"), err => {
