@@ -15,6 +15,7 @@ const once = require('once')
 const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
 const cleanUrlSIO = utils.cleanUrlSIO
+const crypto = require("libp2p-crypto")
 
 const noop = once(() => {})
 
@@ -26,6 +27,9 @@ const sioOptions = {
 class WebsocketStar {
   constructor(options) {
     options = options || {}
+
+    this.id = options.id
+    this.canCrypto = !!options.id
 
     this.maSelf = undefined
 
@@ -68,11 +72,8 @@ class WebsocketStar {
 
     log("dialing %s (id %s)", ma, dialId)
 
-    io.emit("ss-dial", {
-      dialTo: ma.toString(),
-      dialFrom: this.maSelf.toString(),
-      dialId
-    }, err => {
+    //"multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
+    io.emit("ss-dial", this.maSelf.toString(), ma.toString(), dialId, err => {
       if (err) return callback(new Error(err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       const source = io.createSource(dialId + ".listener")
@@ -108,6 +109,10 @@ class WebsocketStar {
       listener.io = io.connect(sioUrl, sioOptions)
       this.firstListen = listener.io
 
+      const proto = new utils.Protocol(log)
+      proto.addRequest("ws-peer", ["multiaddr"], this._peerDiscovered.bind(this))
+      proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], incommingDial)
+
       listener.io.once('connect_error', callback)
       listener.io.once('error', (err) => {
         listener.emit('error', err)
@@ -116,27 +121,45 @@ class WebsocketStar {
 
       sp(listener.io)
 
-      listener.io.on("ss-incomming", incommingDial)
-      listener.io.on('ws-peer', this._peerDiscovered)
-
       listener.io.once('connect', () => {
         listener.io.on('connect', () =>
-          listener.io.emit('ss-join', ma.toString(), err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
-        listener.io.emit('ss-join', ma.toString(), err => {
+          listener.io.emit('ss-join', ma.toString(), listener.signature, err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
+        listener.io.emit('ss-join', ma.toString(), this.canCrypto ? crypto.keys.marshalPublicKey(this.id.pubKey).toString("hex") : "", (err, sig) => {
           if (err) {
             listener.emit("error", new Error(err))
             callback(new Error(err))
           } else {
-            listener.emit('listening')
-            callback()
+            if (sig) {
+              if (!this.canCrypto) {
+                io.disconnect()
+                callback(new Error("Can't sign cryptoChallenge: No id provided"))
+              } else {
+                this.id.privKey.sign(sig, (err, signature) => {
+                  if (err) callback(err)
+                  listener.signature = signature.toString("hex")
+                  listener.io.emit('ss-join', ma.toString(), signature.toString("hex"), err => {
+                    if (err) {
+                      listener.emit("error", new Error(err))
+                      callback(new Error(err))
+                    } else {
+                      listener.emit('listening')
+                      callback()
+                    }
+                  })
+                })
+              }
+            } else {
+              listener.signature = ""
+              listener.emit('listening')
+              callback()
+            }
           }
         })
       })
 
-      function incommingDial(info, cb) {
-        const dialId = info.dialId
-        log("recieved dial from %s", info.dialFrom, dialId)
-        const ma = multiaddr(info.dialFrom)
+      function incommingDial(dialId, dialFrom, cb) {
+        log("recieved dial from", dialFrom, dialId)
+        const ma = multiaddr(dialFrom)
         const source = listener.io.createSource(dialId + ".dialer")
         const sink = listener.io.createSink(dialId + ".listener")
 
@@ -177,7 +200,6 @@ class WebsocketStar {
   }
 
   _peerDiscovered(maStr) {
-    this.firstListen.emit("ss-join", maStr)
     log('Peer Discovered:', maStr)
     const split = maStr.split('/ipfs/')
     const peerIdStr = split[split.length - 1]

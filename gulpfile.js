@@ -13,7 +13,9 @@ gulp.task('test:browser:after', stop)
 function boot (done) {
   const options = {
     port: 15555,
-    host: '127.0.0.1'
+    host: '127.0.0.1',
+    cryptoChallenge: false,
+    strictMultiaddr: false
   }
 
   sigServer.start(options, (err, server) => {

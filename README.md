@@ -38,21 +38,21 @@ const multiaddr = require("multiaddr")
 const pull = require('pull-stream')
 
 const WSStar = require('libp2p-websocket-star')
-const ws = new WSStar()
-const modules = {
-  transport: [
-    ws
-  ],
-  discovery: [
-    ws.discovery
-  ]
-}
 
 Id.create((err, id) => {
   if (err) throw err
 
   const peerInfo = new Info(id)
   peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/ip4/148.251.206.162/tcp/9090/ws/"))
+  const ws = new WSStar({ id }) //the id is required for the crypto challenge
+  const modules = {
+    transport: [
+      ws
+    ],
+    discovery: [
+      ws.discovery
+    ]
+  }
   const swarm = new libp2p(modules, peerInfo)
 
   swarm.handle("/test/1.0.0", (protocol, conn) => {

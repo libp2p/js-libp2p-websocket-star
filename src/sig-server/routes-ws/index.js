@@ -1,17 +1,24 @@
-'use strict'
+"use strict"
 
 const SocketIO = require('socket.io')
 const sp = require("../../socket-pull")
-
-const noop = () => {}
+const util = require("../../utils")
+const uuid = require("uuid")
 
 module.exports = (config, http) => {
   const log = config.log
-  const _log = log
   const io = new SocketIO(http.listener)
+  const proto = new util.Protocol(config.log)
+  proto.addRequest("ss-join", ["multiaddr", "string", "function"], join)
+  proto.addRequest("ss-leave", ["multiaddr"], leave)
+  proto.addRequest("disconnect", [], disconnect)
+  proto.addRequest("ss-dial", ["multiaddr", "multiaddr", "string", "function"], dial) //dialFrom, dialTo, dialId, cb
   io.on('connection', handle)
 
+  log("create new server", config)
+
   const peers = {}
+  const nonces = {}
 
   this.peers = () => {
     return peers
@@ -28,22 +35,62 @@ module.exports = (config, http) => {
   }
 
   function handle(socket) {
-    socket.on('ss-join', (ma, cb) => join(socket, ma, typeof cb == "function" ? cb : noop))
-    socket.on('ss-leave', ma => leave(socket, ma))
-    socket.on('disconnect', () => disconnect(socket)) // socket.io own event
+    socket.addrs = []
+    socket.cleanaddrs = {}
     sp(socket)
-    socket.on("ss-dial", (data, cb) => dialHandle(socket, data, cb))
+    proto.handleSocket(socket)
   }
 
   // join this signaling server network
-  function join(socket, multiaddr, cb) {
-    //if (peers[multiaddr] && peers[multiaddr].id != socket.id) return cb("Already taken")
-    peers[multiaddr] = socket // socket
+  function join(socket, multiaddr, pub, cb) {
+
+    if (config.cryptoChallenge) {
+      if (!pub.length) return cb("Crypto Challenge required but no Id provided")
+      try {
+        if (!nonces[socket.id]) nonces[socket.id] = {}
+        if (nonces[socket.id][multiaddr]) {
+          log("peer %s responds to cryptoChallenge for %s", socket.id, multiaddr)
+          nonces[socket.id][multiaddr].key.verify(nonces[socket.id][multiaddr].nonce, Buffer.from(pub, "hex"), (err, ok) => {
+            if (err) return cb("Crypto error")
+            if (!ok) return cb("Signature Invalid")
+            return joinFinalize(socket, multiaddr, cb)
+          })
+        } else {
+          log("peer %s does cryptoChallenge for %s", socket.id, multiaddr)
+          const addr = multiaddr.split("ipfs/").pop()
+          util.getIdAndValidate(pub, addr, (err, key) => {
+            if (err) return cb(err)
+            const nonce = uuid() + uuid()
+            socket.once("disconnect", () =>
+              delete nonces[socket.id])
+            nonces[socket.id][multiaddr] = {
+              nonce,
+              key
+            }
+            cb(null, nonce)
+          })
+        }
+      } catch (e) {
+        log(e)
+        return cb("Internal error")
+      }
+    } else joinFinalize(socket, multiaddr, cb)
+  }
+
+  function joinFinalize(socket, multiaddr, cb) {
+    peers[multiaddr] = socket
+    socket.addrs.push(multiaddr)
+    log("registered peer %s as %s", socket.id, multiaddr)
+
+    //discovery
+
     let refreshInterval = setInterval(sendPeers, config.refreshPeerListIntervalMS)
 
-    socket.once('ss-leave', ma => {
+    socket.once('ss-leave', function handleLeave(ma) {
       if (ma == multiaddr)
         stopSendingPeers()
+      else
+        socket.once("ss-leave", handleLeave)
     })
     socket.once('disconnect', stopSendingPeers)
 
@@ -82,18 +129,15 @@ module.exports = (config, http) => {
     })
   }
 
-  function dialHandle(socket, data, cb) {
-    const to = data.dialTo
-    const dialId = data.dialId
+  function dial(socket, from, to, dialId, cb) {
+    const log = config.log.bind(config.log, "[" + dialId + "]")
+    const s = socket.addrs.filter(a => a == from)[0]
+    if (!s) return cb("Not authorized for this address")
+    log(from, "is dialing", to)
     const peer = peers[to]
-    const log = _log.bind(_log, "[" + dialId + "]")
-    log(data.dialFrom, "is dialing", to)
     if (!peer) return cb("Peer not found")
     socket.createProxy(dialId + ".dialer", peer)
-    peer.emit("ss-incomming", {
-      dialId,
-      dialFrom: data.dialFrom
-    }, err => {
+    peer.emit("ss-incomming", dialId, from, err => {
       if (err) return cb(err)
       else {
         peer.createProxy(dialId + ".listener", socket)
