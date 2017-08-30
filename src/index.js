@@ -68,11 +68,8 @@ class WebsocketStar {
 
     log("dialing %s (id %s)", ma, dialId)
 
-    io.emit("ss-dial", {
-      dialTo: ma.toString(),
-      dialFrom: this.maSelf.toString(),
-      dialId
-    }, err => {
+    //"multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
+    io.emit("ss-dial", this.maSelf.toString(), ma.toString(), dialId, err => {
       if (err) return callback(new Error(err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       const source = io.createSource(dialId + ".listener")
@@ -99,7 +96,15 @@ class WebsocketStar {
     listener.listen = (ma, callback) => {
       callback = callback ? once(callback) : noop
 
-      this.maSelf = ma
+      let key = ""
+
+      while (key.length < 4096)
+        key += Math.random().toString().replace(".", "").replace(/0/g, "")
+
+      const hash = utils.b58encode(utils.sha5(utils.sha5(key))) //b58encode: ugly hack because we use the ipfs proto for the challenge
+      const crypto_ma = multiaddr(ma.toString()).encapsulate("ipfs/" + hash)
+      this.maSelf = crypto_ma
+      this.maSelfReal = ma
 
       const sioUrl = cleanUrlSIO(ma)
 
@@ -107,6 +112,10 @@ class WebsocketStar {
 
       listener.io = io.connect(sioUrl, sioOptions)
       this.firstListen = listener.io
+
+      const proto = new utils.Protocol(log)
+      proto.addRequest("ws-peer", ["multiaddr", "multiaddr"], this._peerDiscovered.bind(this))
+      proto.addRequest("ss-incomming", ["string", "multiaddr", "multiaddr", "function"], incommingDial)
 
       listener.io.once('connect_error', callback)
       listener.io.once('error', (err) => {
@@ -116,13 +125,10 @@ class WebsocketStar {
 
       sp(listener.io)
 
-      listener.io.on("ss-incomming", incommingDial)
-      listener.io.on('ws-peer', this._peerDiscovered)
-
       listener.io.once('connect', () => {
         listener.io.on('connect', () =>
           listener.io.emit('ss-join', ma.toString(), err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
-        listener.io.emit('ss-join', ma.toString(), err => {
+        listener.io.emit('ss-join', crypto_ma.toString(), key, err => {
           if (err) {
             listener.emit("error", new Error(err))
             callback(new Error(err))
@@ -133,10 +139,9 @@ class WebsocketStar {
         })
       })
 
-      function incommingDial(info, cb) {
-        const dialId = info.dialId
-        log("recieved dial from %s", info.dialFrom, dialId)
-        const ma = multiaddr(info.dialFrom)
+      function incommingDial(dialId, dialFrom, dialFromClean, cb) {
+        log("recieved dial from", dialFrom, dialFromClean, dialId)
+        const ma = multiaddr(dialFromClean)
         const source = listener.io.createSource(dialId + ".dialer")
         const sink = listener.io.createSink(dialId + ".listener")
 
@@ -176,13 +181,13 @@ class WebsocketStar {
     return multiaddrs.filter((ma) => mafmt.WebRTCStar.matches(ma))
   }
 
-  _peerDiscovered(maStr) {
+  _peerDiscovered(cmaStr, maStr) {
     log('Peer Discovered:', maStr)
     const split = maStr.split('/ipfs/')
     const peerIdStr = split[split.length - 1]
     const peerId = PeerId.createFromB58String(peerIdStr)
     const peerInfo = new PeerInfo(peerId)
-    peerInfo.multiaddrs.add(multiaddr(maStr))
+    peerInfo.multiaddrs.add(multiaddr(cmaStr))
     this.discovery.emit('peer', peerInfo)
   }
 }
