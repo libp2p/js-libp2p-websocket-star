@@ -65,7 +65,7 @@ function Protocol(log) {
         const data = [...arguments]
         try {
           validate(r.def, data)
-          if (socket.id) data.unshift(socket) //only do that on servers
+          data.unshift(socket)
           r.handle.apply(null, data)
         } catch (e) {
           log(e)

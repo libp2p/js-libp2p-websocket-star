@@ -112,6 +112,7 @@ class WebsocketStar {
       const proto = new utils.Protocol(log)
       proto.addRequest("ws-peer", ["multiaddr"], this._peerDiscovered.bind(this))
       proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], incommingDial)
+      proto.handleSocket(listener.io)
 
       listener.io.once('connect_error', callback)
       listener.io.once('error', (err) => {
@@ -157,7 +158,7 @@ class WebsocketStar {
         })
       })
 
-      function incommingDial(dialId, dialFrom, cb) {
+      function incommingDial(socket, dialId, dialFrom, cb) {
         log("recieved dial from", dialFrom, dialId)
         const ma = multiaddr(dialFrom)
         const source = listener.io.createSource(dialId + ".dialer")
@@ -199,7 +200,7 @@ class WebsocketStar {
     return multiaddrs.filter((ma) => mafmt.WebRTCStar.matches(ma))
   }
 
-  _peerDiscovered(maStr) {
+  _peerDiscovered(socket, maStr) {
     log('Peer Discovered:', maStr)
     const split = maStr.split('/ipfs/')
     const peerIdStr = split[split.length - 1]
