@@ -73,7 +73,7 @@ class WebsocketStar {
     log("dialing %s (id %s)", ma, dialId)
 
     //"multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
-    io.emit("ss-dial", this.maSelf.toString(), ma.toString(), dialId, err => {
+    io.emit("ss-dial", io.maSelf.toString(), ma.toString(), dialId, err => {
       if (err) return callback(new Error(err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       const source = io.createSource(dialId + ".listener")
@@ -100,14 +100,13 @@ class WebsocketStar {
     listener.listen = (ma, callback) => {
       callback = callback ? once(callback) : noop
 
-      this.maSelf = ma
-
       const sioUrl = cleanUrlSIO(ma)
 
       log('Dialing to Signalling Server on: ' + sioUrl)
 
       listener.io = io.connect(sioUrl, sioOptions)
       this.ios[sioUrl] = listener.io
+      listener.io.maSelf = ma
 
       const proto = new utils.Protocol(log)
       proto.addRequest("ws-peer", ["multiaddr"], this._peerDiscovered.bind(this))
@@ -186,7 +185,7 @@ class WebsocketStar {
     }
 
     listener.getAddrs = (callback) => {
-      setImmediate(() => callback(null, [this.maSelf]))
+      setImmediate(() => callback(null, [listener.io.maSelf]))
     }
 
     return listener
