@@ -98,7 +98,14 @@ class WebsocketStar {
     const listener = new EE()
 
     listener.listen = (ma, callback) => {
-      callback = callback ? once(callback) : noop
+      let _cb = callback ? once(callback) : noop
+      callback = err => {
+        if (err) {
+          listener.emit('error', err)
+          listener.io.disconnect()
+        }
+        return _cb(err)
+      }
 
       const sioUrl = cleanUrlSIO(ma)
 
@@ -126,7 +133,6 @@ class WebsocketStar {
           listener.io.emit('ss-join', ma.toString(), listener.signature, err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
         listener.io.emit('ss-join', ma.toString(), this.canCrypto ? crypto.keys.marshalPublicKey(this.id.pubKey).toString("hex") : "", (err, sig) => {
           if (err) {
-            listener.emit("error", new Error(err))
             callback(new Error(err))
           } else {
             if (sig) {
@@ -139,7 +145,6 @@ class WebsocketStar {
                   listener.signature = signature.toString("hex")
                   listener.io.emit('ss-join', ma.toString(), signature.toString("hex"), err => {
                     if (err) {
-                      listener.emit("error", new Error(err))
                       callback(new Error(err))
                     } else {
                       listener.emit('listening')
