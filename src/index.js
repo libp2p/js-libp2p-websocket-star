@@ -209,4 +209,3 @@ class WebsocketStar {
   }
 }
 module.exports = WebsocketStar
-module.exports.Server = require("./sig-server")
