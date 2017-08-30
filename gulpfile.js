@@ -9,8 +9,9 @@ gulp.task('test:node:before', boot)
 gulp.task('test:node:after', stop)
 gulp.task('test:browser:before', boot)
 gulp.task('test:browser:after', stop)
+gulp.task("wait", () => {})
 
-function boot (done) {
+function boot(done) {
   const options = {
     port: 15555,
     host: '127.0.0.1',
@@ -28,7 +29,7 @@ function boot (done) {
   })
 }
 
-function stop (done) {
+function stop(done) {
   sigS.stop(done)
 }
 

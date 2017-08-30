@@ -171,12 +171,11 @@ describe('signalling', () => {
 
     c1 = io.connect(sioUrl, sioOptions)
     c2 = io.connect(sioUrl, sioOptions)
-    c1.emit('ss-join', 'c1', "", () => {})
-    c2.emit('ss-join', 'c2', "", () => {})
+    c1.emit('ss-join', '/ip4/0.0.0.0', "", err => expect(err).to.not.exist())
+    c2.emit('ss-join', '/ip4/127.0.0.1', "", err => expect(err).to.not.exist())
 
     c1.on('ws-peer', (p) => {
-      console.log("wsp", p)
-      expect(p).to.be.equal('c2')
+      expect(p).to.be.equal('/ip4/127.0.0.1')
       check()
     })
 
