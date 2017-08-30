@@ -46,7 +46,7 @@ class WebsocketStar {
       setImmediate(callback)
     }
 
-    this.listenersRefs = {}
+    this.ios = {}
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
@@ -64,7 +64,7 @@ class WebsocketStar {
 
     callback = callback ? once(callback) : noop
 
-    let io = this.firstListen
+    let io = this.ios[utils.cleanUrlSIO(ma)]
 
     if (!io) return callback(new Error("No signaling connection available for dialing"))
 
@@ -107,7 +107,7 @@ class WebsocketStar {
       log('Dialing to Signalling Server on: ' + sioUrl)
 
       listener.io = io.connect(sioUrl, sioOptions)
-      this.firstListen = listener.io
+      this.ios[sioUrl] = listener.io
 
       const proto = new utils.Protocol(log)
       proto.addRequest("ws-peer", ["multiaddr"], this._peerDiscovered.bind(this))
@@ -189,7 +189,6 @@ class WebsocketStar {
       setImmediate(() => callback(null, [this.maSelf]))
     }
 
-    this.listenersRefs[multiaddr.toString()] = listener
     return listener
   }
 
