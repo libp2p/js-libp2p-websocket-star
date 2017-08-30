@@ -177,6 +177,7 @@ class WebsocketStar {
   }
 
   _peerDiscovered(maStr) {
+    this.firstListen.emit("ss-join", maStr)
     log('Peer Discovered:', maStr)
     const split = maStr.split('/ipfs/')
     const peerIdStr = split[split.length - 1]
