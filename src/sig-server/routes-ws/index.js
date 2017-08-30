@@ -43,21 +43,24 @@ module.exports = (config, http) => {
 
   // join this signaling server network
   function join(socket, multiaddr, pub, cb) {
+    const log = config.log.bind(config.log, "[" + socket.id + "]")
+
+    if (config.strictMultiaddr && !util.validateMa(multiaddr)) return cb("Invalid multiaddr")
 
     if (config.cryptoChallenge) {
       if (!pub.length) return cb("Crypto Challenge required but no Id provided")
       try {
         if (!nonces[socket.id]) nonces[socket.id] = {}
         if (nonces[socket.id][multiaddr]) {
-          log("peer %s responds to cryptoChallenge for %s", socket.id, multiaddr)
+          log("response cryptoChallenge", multiaddr)
           nonces[socket.id][multiaddr].key.verify(nonces[socket.id][multiaddr].nonce, Buffer.from(pub, "hex"), (err, ok) => {
             if (err) return cb("Crypto error")
             if (!ok) return cb("Signature Invalid")
             return joinFinalize(socket, multiaddr, cb)
           })
         } else {
-          log("peer %s does cryptoChallenge for %s", socket.id, multiaddr)
           const addr = multiaddr.split("ipfs/").pop()
+          log("do cryptoChallenge", multiaddr, addr)
           util.getIdAndValidate(pub, addr, (err, key) => {
             if (err) return cb(err)
             const nonce = uuid() + uuid()
@@ -78,9 +81,10 @@ module.exports = (config, http) => {
   }
 
   function joinFinalize(socket, multiaddr, cb) {
+    const log = config.log.bind(config.log, "[" + socket.id + "]")
     peers[multiaddr] = socket
     socket.addrs.push(multiaddr)
-    log("registered peer %s as %s", socket.id, multiaddr)
+    log("registered as", multiaddr)
 
     //discovery
 

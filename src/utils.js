@@ -3,6 +3,7 @@
 const multiaddr = require('multiaddr')
 const Id = require("peer-id")
 const crypto = require("libp2p-crypto")
+const mafmt = require("mafmt")
 
 function cleanUrlSIO(ma) {
   const maStrSplit = ma.toString().split('/')
@@ -90,3 +91,5 @@ exports.cleanUrlSIO = cleanUrlSIO
 exports.validate = validate
 exports.Protocol = Protocol
 exports.getIdAndValidate = getIdAndValidate
+exports.validateMa = (ma) =>
+  mafmt.WebRTCStar.matches(multiaddr(ma))
