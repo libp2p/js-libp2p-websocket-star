@@ -56,7 +56,9 @@ describe('signalling', () => {
   it('start signalling server for client tests', (done) => {
     const options = {
       port: 12345,
-      refreshPeerListIntervalMS: 1000
+      refreshPeerListIntervalMS: 1000,
+      cryptoChallenge: false,
+      strictMultiaddr: false
     }
 
     sigServer.start(options, (err, server) => {
@@ -98,35 +100,35 @@ describe('signalling', () => {
   })
 
   it('ss-join first client', (done) => {
-    c1.emit('ss-join', c1mh.toString())
-    setTimeout(() => {
+    c1.emit('ss-join', c1mh.toString(), "", err => {
+      expect(err).to.not.exist()
       expect(Object.keys(sigS.peers()).length).to.equal(1)
       done()
-    }, 10)
+    })
   })
 
   it('ss-join and ss-leave second client', (done) => {
-    c2.emit('ss-join', c2mh.toString())
-    setTimeout(() => {
+    c2.emit('ss-join', c2mh.toString(), "", err => {
+      expect(err).to.not.exist()
       expect(Object.keys(sigS.peers()).length).to.equal(2)
       c2.emit('ss-leave', c2mh.toString())
       setTimeout(() => {
         expect(Object.keys(sigS.peers()).length).to.equal(1)
         done()
       }, 10)
-    }, 10)
+    })
   })
 
   it('ss-join and disconnect third client', (done) => {
-    c3.emit('ss-join', c3mh.toString())
-    setTimeout(() => {
+    c3.emit('ss-join', c3mh.toString(), "", err => {
+      expect(err).to.not.exist()
       expect(Object.keys(sigS.peers()).length).to.equal(2)
       c3.disconnect()
       setTimeout(() => {
         expect(Object.keys(sigS.peers()).length).to.equal(1)
         done()
       }, 10)
-    }, 10)
+    })
   })
 
   it('ss-join the fourth', (done) => {
@@ -135,21 +137,17 @@ describe('signalling', () => {
       expect(Object.keys(sigS.peers()).length).to.equal(2)
       done()
     })
-    c4.emit('ss-join', c4mh.toString())
+    c4.emit('ss-join', c4mh.toString(), "", () => {})
   })
 
   it("c1 dial c4", done => {
     const dialId = uuid()
-    c4.once("ss-incomming", (data, cb) => {
-      expect(data.dialId).to.eql(dialId)
-      expect(data.dialFrom).to.eql(c1mh.toString())
+    c4.once("ss-incomming", (dialId, dialFrom, cb) => {
+      expect(dialId).to.eql(dialId)
+      expect(dialFrom).to.eql(c1mh.toString())
       cb()
     })
-    c1.emit("ss-dial", {
-      dialFrom: c1mh.toString(),
-      dialTo: c4mh.toString(),
-      dialId
-    }, err => {
+    c1.emit("ss-dial", c1mh.toString(), c4mh.toString(), dialId, err => {
       expect(err).to.not.exist()
       done()
     })
@@ -157,11 +155,7 @@ describe('signalling', () => {
 
   it("c1 dial c2 fail (does not exist() anymore)", done => {
     const dialId = uuid()
-    c1.emit("ss-dial", {
-      dialFrom: c1mh.toString(),
-      dialTo: c2mh.toString(),
-      dialId
-    }, err => {
+    c1.emit("ss-dial", c1mh.toString(), c2mh.toString(), dialId, err => {
       expect(err).to.exist()
       done()
     })
@@ -177,10 +171,11 @@ describe('signalling', () => {
 
     c1 = io.connect(sioUrl, sioOptions)
     c2 = io.connect(sioUrl, sioOptions)
-    c1.emit('ss-join', 'c1')
-    c2.emit('ss-join', 'c2')
+    c1.emit('ss-join', 'c1', "", () => {})
+    c2.emit('ss-join', 'c2', "", () => {})
 
     c1.on('ws-peer', (p) => {
+      console.log("wsp", p)
       expect(p).to.be.equal('c2')
       check()
     })

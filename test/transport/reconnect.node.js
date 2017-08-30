@@ -24,7 +24,7 @@ module.exports = (create) => {
     const ma3 = multiaddr('/libp2p-webrtc-star/ip4/127.0.0.1/tcp/13580/ws/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo6C')
 
     before((done) => {
-      sigS = sigServer.start({ port: SERVER_PORT }, done)
+      sigS = sigServer.start({ port: SERVER_PORT, cryptoChallenge: false }, done)
     })
 
     after((done) => sigS.stop(done))
