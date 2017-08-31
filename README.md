@@ -87,7 +87,7 @@ hello from the other side
 
 ### Signalling server
 
-`libp2p-webrtc-star` comes with its own signalling server, used for peers to handshake their signalling data and establish a connection. You can install it in your machine by installing the module globally:
+`libp2p-websocket-star` comes with its own signalling server, used for peers to handshake their signalling data and establish a connection. You can install it in your machine by installing the module globally:
 
 ```bash
 > npm install --global libp2p-websocket-star
@@ -106,10 +106,10 @@ Defaults:
 
 ## Hosted Signalling Server
 
-We host a signalling server at `148.251.206.162:9090` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
-A libp2p-webrtc-star address, using the signalling server we provide, looks like:
+We host a signalling server at `ws-star-signal-1.servep2p.com` and `ws-star-signal-2.servep2p.com` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
+A libp2p-websocket-star address, using the signalling server we provide, looks like:
 
-`/libp2p-webrtc-star/ip4/148.251.206.162/tcp/9090/ws/ipfs/<your-peer-id>`
+`/libp2p-webrtc-star/dns4/ws-star-signal-1.servep2p.com/wss/ipfs/<your-peer-id>`
 
 Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 
