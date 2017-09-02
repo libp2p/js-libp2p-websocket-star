@@ -2,7 +2,7 @@
 
 const SocketIO = require('socket.io')
 const sp = require("socket.io-pull-stream")
-const util = require("../utils")
+const util = require("./utils")
 const uuid = require("uuid")
 
 module.exports = (config, http) => {

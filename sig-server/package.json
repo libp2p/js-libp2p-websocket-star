@@ -1,15 +1,15 @@
 {
   "name": "libp2p-websocket-star-signal",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Signaling server for libp2p-webrtc-star",
   "main": "src/index.js",
   "bin": {
-    "ws-star-sig": "src/sig-server/bin.js",
-    "ws-star-signal": "src/sig-server/bin.js"
+    "ws-star-sig": "src/bin.js",
+    "ws-star-signal": "src/bin.js"
   },
   "scripts": {
-    "star-signal": "node src/sig-server/bin.js",
-    "start": "node src/sig-server/bin.js",
+    "star-signal": "node src/bin.js",
+    "start": "node src/bin.js",
     "lint": "gulp lint",
     "build": "gulp build",
     "test": "gulp test --dom",

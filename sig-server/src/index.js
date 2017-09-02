@@ -39,12 +39,14 @@ exports.start = (options, callback) => {
 
       log('signaling server has started on: ' + http.info.uri)
 
-      http.peers = require('./routes-ws')(config, http).peers
+      http.peers = require('./routes')(config, http).peers
 
       http.route({
         method: 'GET',
         path: '/',
-        handler: (request, reply) => reply.file(path.join(__dirname, "..", "index.html"))
+        handler: (request, reply) => reply.file(path.join(__dirname, "index.html"), {
+          confine: false
+        })
       })
 
       callback(null, http)
