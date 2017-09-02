@@ -9,7 +9,7 @@ const io = require('socket.io-client')
 const parallel = require('async/parallel')
 const multiaddr = require('multiaddr')
 
-const sigServer = require('../src/sig-server')
+const sigServer = require('../sig-server/src')
 const uuid = require("uuid")
 
 describe('signalling', () => {

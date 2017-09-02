@@ -1,11 +1,15 @@
 {
-  "name": "libp2p-websocket-star",
-  "version": "0.2.5",
-  "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
+  "name": "libp2p-websocket-star-signal",
+  "version": "0.1.0",
+  "description": "Signaling server for libp2p-webrtc-star",
   "main": "src/index.js",
+  "bin": {
+    "ws-star-sig": "src/sig-server/bin.js",
+    "ws-star-signal": "src/sig-server/bin.js"
+  },
   "scripts": {
-    "star-signal": "node sig-server/src/bin.js",
-    "start": "node sig-server/src/bin.js",
+    "star-signal": "node src/sig-server/bin.js",
+    "start": "node src/sig-server/bin.js",
     "lint": "gulp lint",
     "build": "gulp build",
     "test": "gulp test --dom",
@@ -23,7 +27,8 @@
     "libp2p",
     "transport",
     "websocket",
-    "no-webrtc"
+    "no-webrtc",
+    "signaling"
   ],
   "author": "Maciej Krüger <mkg20001@gmail.com>",
   "license": "MIT",
@@ -31,14 +36,17 @@
     "async": "^2.5.0",
     "data-queue": "0.0.2",
     "debug": "^3.0.1",
-    "interface-connection": "^0.3.2",
+    "hapi": "^16.5.2",
+    "inert": "^4.2.1",
     "libp2p-crypto": "^0.9.4",
     "mafmt": "^2.1.8",
+    "merge-recursive": "0.0.3",
+    "minimist": "^1.2.0",
     "multiaddr": "^2.3.0",
     "once": "^1.4.0",
     "peer-id": "^0.9.0",
     "peer-info": "^0.10.0",
-    "socket.io-client": "^2.0.3",
+    "socket.io": "^2.0.3",
     "socket.io-pull-stream": "^0.1.0",
     "uuid": "^3.1.0"
   },

@@ -90,7 +90,7 @@ hello from the other side
 `libp2p-websocket-star` comes with its own signalling server, used for peers to handshake their signalling data and establish a connection. You can install it in your machine by installing the module globally:
 
 ```bash
-> npm install --global libp2p-websocket-star
+> npm install --global libp2p-websocket-star-signal
 ```
 
 This will expose a `ws-star-sig` cli tool. To spawn a server do:

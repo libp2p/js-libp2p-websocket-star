@@ -7,7 +7,7 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
-const sigServer = require('../../src/sig-server')
+const sigServer = require('../../sig-server/src')
 
 const SERVER_PORT = 13580
 
