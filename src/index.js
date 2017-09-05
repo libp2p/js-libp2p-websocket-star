@@ -24,32 +24,201 @@ const sioOptions = {
   'force new connection': true
 }
 
-class WebsocketStar {
+class Listener extends EE {
   constructor(options) {
-    options = options || {}
-
+    super()
     this.id = options.id
     this.canCrypto = !!options.id
+    this.handler = options.handler || noop
+    this.listeners = options.listeners || {}
+    /*
 
-    this.maSelf = undefined
+    const sioUrl = cleanUrlSIO(ma)
 
-    this.sioOptions = {
-      transports: ['websocket'],
-      'force new connection': true
+    log('Dialing to Signalling Server on: ' + sioUrl)
+
+    listener.io = io.connect(sioUrl, sioOptions)
+    this.ios[sioUrl] = listener.io
+    listener.io.maSelf = ma
+
+    const proto = new utils.Protocol(log)
+    proto.addRequest("ws-peer", ["multiaddr"], this._peerDiscovered.bind(this))
+    proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], incommingDial)
+    proto.handleSocket(listener.io)
+
+    listener.io.once('connect_error', callback)
+    listener.io.once('error', (err) => {
+      listener.emit('error', err)
+      listener.emit('close')
+    })
+
+    sp(listener.io)
+
+    listener.io.once('connect', () => {
+      listener.io.on('connect', () =>
+        listener.io.emit('ss-join', ma.toString(), listener.signature, err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
+      listener.io.emit('ss-join', ma.toString(), this.canCrypto ? crypto.keys.marshalPublicKey(this.id.pubKey).toString("hex") : "", (err, sig) => {
+        if (err) {
+          callback(new Error(err))
+        } else {
+          if (sig) {
+            if (!this.canCrypto) {
+              io.disconnect()
+              callback(new Error("Can't sign cryptoChallenge: No id provided"))
+            } else {
+              this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
+                if (err) callback(err)
+                listener.signature = signature.toString("hex")
+                listener.io.emit('ss-join', ma.toString(), signature.toString("hex"), err => {
+                  if (err) {
+                    callback(new Error(err))
+                  } else {
+                    listener.emit('listening')
+                    callback()
+                  }
+                })
+              })
+            }
+          } else {
+            listener.signature = ""
+            listener.emit('listening')
+            callback()
+          }
+        }
+      })
+    })
+
+    function incommingDial(socket, dialId, dialFrom, cb) {
+      log("recieved dial from", dialFrom, dialId)
+      const ma = multiaddr(dialFrom)
+      const source = listener.io.createSource(dialId + ".dialer")
+      const sink = listener.io.createSink(dialId + ".listener")
+
+      cb(null)
+      const conn = new Connection({
+        sink,
+        source
+      }, {
+        getObservedAddrs: cb => cb(null, [ma])
+      })
+      listener.emit("connection", conn)
+      handler(conn)
     }
 
-    this.discovery = new EE()
-    this.discovery.start = (callback) => {
-      setImmediate(callback)
-    }
-    this.discovery.stop = (callback) => {
-      setImmediate(callback)
-    }
-
-    this.ios = {}
-    this._peerDiscovered = this._peerDiscovered.bind(this)
+    */
   }
+  //"private" functions
+  up(cb) {
+    cb = cb ? once(cb) : noop
+    if (this.io) return cb()
+    log('Dialing to Signalling Server on: ' + this.server)
+    const _io = this.io = io.connect(this.server, sioOptions)
+    sp(_io)
+    _io.once("error", cb)
+    _io.once("connect_error", cb)
+    _io.once("connect", cb)
+    const proto = new utils.Protocol(log)
+    proto.addRequest("ws-peer", ["multiaddr"], (socket, peer) => this.emit("peer", peer))
+    proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], this.incommingDial.bind(this))
+    proto.handleSocket(_io)
+  }
+  down() {
+    if (!this.io) return
+    this.io.disconnect()
+    this.emit("close")
+    delete this.io
+  }
+  cryptoChallenge(cb) {
+    if (!this.io) return cb(new Error("Not connected"))
+    this.io.emit('ss-join', this.ma.toString(), this.canCrypto ? crypto.keys.marshalPublicKey(this.id.pubKey).toString("hex") : "", (err, sig) => {
+      if (err) {
+        cb(new Error(err))
+      } else {
+        if (sig) {
+          if (!this.canCrypto) {
+            this.down()
+            cb(new Error("Can't sign cryptoChallenge: No id provided"))
+          } else {
+            this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
+              if (err) cb(err)
+              this.signature = signature.toString("hex")
+              this.join(cb)
+            })
+          }
+        } else {
+          this.signature = "_"
+          cb()
+        }
+      }
+    })
+  }
+  crypto(cb) {
+    cb = cb ? once(cb) : noop
+    if (!this.io) return cb(new Error("Not connected"))
+    if (this.signature) {
+      this.join((err, need_new_challenge) => {
+        if (need_new_challenge) return this.cryptoChallenge(cb)
+        else return cb(err)
+      })
+    } else {
+      this.cryptoChallenge(cb)
+    }
+  }
+  join(cb) {
+    this.io.emit('ss-join', this.ma.toString(), this.signature, cb)
+  }
+  incommingDial(socket, dialId, dialFrom, cb) {
+    log("recieved dial from", dialFrom, dialId)
+    const ma = multiaddr(dialFrom)
+    const source = this.io.createSource(dialId + ".dialer")
+    const sink = this.io.createSink(dialId + ".listener")
 
+    cb(null)
+    const conn = new Connection({
+      sink,
+      source
+    }, {
+      getObservedAddrs: cb => cb(null, [ma])
+    })
+    this.emit("connection", conn)
+    this.handler(conn)
+  }
+  //public functions
+  listen(ma, cb) {
+    this.ma = ma
+    this.server = cleanUrlSIO(ma)
+    this.listeners[this.server] = this
+    cb = cb ? once(cb) : noop
+    const final = err => {
+      if (err) {
+        log(err)
+        this.down()
+        this.emit("error", err)
+        this.emit("close")
+      }
+      cb(err)
+    }
+
+    this.up(err => {
+      if (err) return final(err)
+      this.crypto(err => {
+        if (err) return final(err)
+        this.emit("listening")
+        final()
+      })
+    })
+  }
+  getAddrs(callback) {
+    setImmediate(() => callback(null, this.ma ? [this.ma] : []))
+  }
+  close(callback) {
+    callback = callback ? once(callback) : noop
+
+    this.down()
+
+    callback()
+  }
+  //called from transport
   dial(ma, options, callback) {
     if (typeof options === 'function') {
       callback = options
@@ -64,7 +233,7 @@ class WebsocketStar {
 
     callback = callback ? once(callback) : noop
 
-    let io = this.ios[utils.cleanUrlSIO(ma)]
+    let io = this.io
 
     if (!io) return callback(new Error("No signaling connection available for dialing"))
 
@@ -73,7 +242,7 @@ class WebsocketStar {
     log("dialing %s (id %s)", ma, dialId)
 
     //"multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
-    io.emit("ss-dial", io.maSelf.toString(), ma.toString(), dialId, err => {
+    io.emit("ss-dial", this.ma.toString(), ma.toString(), dialId, err => {
       if (err) return callback(new Error(err))
       log("dialing %s (id %s) successfully completed", ma, dialId)
       const source = io.createSource(dialId + ".listener")
@@ -88,6 +257,38 @@ class WebsocketStar {
 
     return conn
   }
+}
+
+class WebsocketStar {
+  constructor(options) {
+    options = options || {}
+
+    this.id = options.id
+
+    this.discovery = new EE()
+    this.discovery.start = (callback) => {
+      setImmediate(callback)
+    }
+    this.discovery.stop = (callback) => {
+      setImmediate(callback)
+    }
+
+    this.listeners = {}
+    this._peerDiscovered = this._peerDiscovered.bind(this)
+  }
+
+  dial(ma, options, callback) {
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+    const listener = this.listeners[cleanUrlSIO(ma)]
+    if (!listener) {
+      callback(new Error("No listener for this server"))
+      return new Connection()
+    }
+    return listener.dial(ma, options, callback)
+  }
 
   createListener(options, handler) {
     if (typeof options === 'function') {
@@ -95,103 +296,13 @@ class WebsocketStar {
       options = {}
     }
 
-    const listener = new EE()
+    const listener = new Listener({
+      id: this.id,
+      handler,
+      listeners: this.listeners
+    })
 
-    listener.listen = (ma, callback) => {
-      let _cb = callback ? once(callback) : noop
-      callback = err => {
-        if (err) {
-          listener.emit('error', err)
-          listener.io.disconnect()
-        }
-        return _cb(err)
-      }
-
-      const sioUrl = cleanUrlSIO(ma)
-
-      log('Dialing to Signalling Server on: ' + sioUrl)
-
-      listener.io = io.connect(sioUrl, sioOptions)
-      this.ios[sioUrl] = listener.io
-      listener.io.maSelf = ma
-
-      const proto = new utils.Protocol(log)
-      proto.addRequest("ws-peer", ["multiaddr"], this._peerDiscovered.bind(this))
-      proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], incommingDial)
-      proto.handleSocket(listener.io)
-
-      listener.io.once('connect_error', callback)
-      listener.io.once('error', (err) => {
-        listener.emit('error', err)
-        listener.emit('close')
-      })
-
-      sp(listener.io)
-
-      listener.io.once('connect', () => {
-        listener.io.on('connect', () =>
-          listener.io.emit('ss-join', ma.toString(), listener.signature, err => err ? listener.emit("error", new Error(err)) : listener.emit("reconnected")))
-        listener.io.emit('ss-join', ma.toString(), this.canCrypto ? crypto.keys.marshalPublicKey(this.id.pubKey).toString("hex") : "", (err, sig) => {
-          if (err) {
-            callback(new Error(err))
-          } else {
-            if (sig) {
-              if (!this.canCrypto) {
-                io.disconnect()
-                callback(new Error("Can't sign cryptoChallenge: No id provided"))
-              } else {
-                this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
-                  if (err) callback(err)
-                  listener.signature = signature.toString("hex")
-                  listener.io.emit('ss-join', ma.toString(), signature.toString("hex"), err => {
-                    if (err) {
-                      callback(new Error(err))
-                    } else {
-                      listener.emit('listening')
-                      callback()
-                    }
-                  })
-                })
-              }
-            } else {
-              listener.signature = ""
-              listener.emit('listening')
-              callback()
-            }
-          }
-        })
-      })
-
-      function incommingDial(socket, dialId, dialFrom, cb) {
-        log("recieved dial from", dialFrom, dialId)
-        const ma = multiaddr(dialFrom)
-        const source = listener.io.createSource(dialId + ".dialer")
-        const sink = listener.io.createSink(dialId + ".listener")
-
-        cb(null)
-        const conn = new Connection({
-          sink,
-          source
-        }, {
-          getObservedAddrs: cb => cb(null, [ma])
-        })
-        listener.emit("connection", conn)
-        handler(conn)
-      }
-    }
-
-    listener.close = (callback) => {
-      callback = callback ? once(callback) : noop
-
-      listener.io.disconnect() //disconnecting unregisters all addresses
-      listener.emit('close')
-      callback()
-
-    }
-
-    listener.getAddrs = (callback) => {
-      setImmediate(() => callback(null, [listener.io.maSelf]))
-    }
+    listener.on("peer", this._peerDiscovered)
 
     return listener
   }
@@ -202,10 +313,9 @@ class WebsocketStar {
     return multiaddrs.filter((ma) => mafmt.WebSocketStar.matches(ma))
   }
 
-  _peerDiscovered(socket, maStr) {
+  _peerDiscovered(maStr) {
     log('Peer Discovered:', maStr)
-    const split = maStr.split('/ipfs/')
-    const peerIdStr = split[split.length - 1]
+    const peerIdStr = maStr.split('/ipfs/').pop()
     const peerId = PeerId.createFromB58String(peerIdStr)
     const peerInfo = new PeerInfo(peerId)
     peerInfo.multiaddrs.add(multiaddr(maStr))

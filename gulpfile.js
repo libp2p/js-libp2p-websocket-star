@@ -9,7 +9,7 @@ gulp.task('test:node:before', boot)
 gulp.task('test:node:after', stop)
 gulp.task('test:browser:before', boot)
 gulp.task('test:browser:after', stop)
-gulp.task("wait", () => {})
+gulp.task("wait", (cb) => {})
 
 function boot(done) {
   const options = {

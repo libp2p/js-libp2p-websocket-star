@@ -75,7 +75,7 @@ module.exports = (config, http) => {
         }
       } catch (e) {
         log(e)
-        return cb("Internal error")
+        return cb("Internal error", true)
       }
     } else joinFinalize(socket, multiaddr, cb)
   }
