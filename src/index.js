@@ -197,10 +197,9 @@ class WebsocketStar {
   }
 
   filter(multiaddrs) {
-    if (!Array.isArray(multiaddrs)) {
+    if (!Array.isArray(multiaddrs))
       multiaddrs = [multiaddrs]
-    }
-    return multiaddrs.filter((ma) => mafmt.WebSocketsStar.matches(ma))
+    return multiaddrs.filter((ma) => mafmt.WebSocketStar.matches(ma))
   }
 
   _peerDiscovered(socket, maStr) {
