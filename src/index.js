@@ -129,6 +129,12 @@ class Listener extends EE {
       this.crypto(err => {
         if (err) return final(err)
         this.emit("listening")
+        this.io.on("reconnect", this.crypto.bind(this, err => {
+          if (err) {
+            log("reconnect error", err)
+            this.emit("error", err)
+          }
+        }))
         final()
       })
     })

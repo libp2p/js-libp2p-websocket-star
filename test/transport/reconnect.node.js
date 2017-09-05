@@ -75,6 +75,6 @@ module.exports = (create) => {
         expect(peerInfo.multiaddrs.has(ma3)).to.equal(true)
         done()
       })
-    }).timeout(2000)
+    })
   })
 }
