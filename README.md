@@ -1,7 +1,7 @@
 # libp2p-websocket-star
 
 [![](https://img.shields.io/badge/made%20by-mkg20001-blue.svg?style=flat-square)](http://ipn.io)
-[![Build Status](https://travis-ci.org/mkg20001/js-libp2p-websocket-star.svg?style=flat-square)](https://travis-ci.org/mkg20001/js-libp2p-websocket-star)
+[![Build Status](https://travis-ci.org/libp2p/js-libp2p-websocket-star.svg?style=flat-square)](https://travis-ci.org/libp2p/js-libp2p-websocket-star)
 
 ![](https://raw.githubusercontent.com/libp2p/interface-connection/master/img/badge.png)
 ![](https://raw.githubusercontent.com/libp2p/interface-transport/master/img/badge.png)
@@ -25,8 +25,6 @@
 ### API
 
 [![](https://raw.githubusercontent.com/libp2p/interface-transport/master/img/badge.png)](https://github.com/libp2p/interface-transport)
-
-Currently websocket-star uses the /libp2p-webrtc-star/ address prefix as we don't have our own just yet.
 
 ### Example
 
