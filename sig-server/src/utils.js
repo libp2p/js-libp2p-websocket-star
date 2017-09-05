@@ -92,4 +92,4 @@ exports.validate = validate
 exports.Protocol = Protocol
 exports.getIdAndValidate = getIdAndValidate
 exports.validateMa = (ma) =>
-  mafmt.WebRTCStar.matches(multiaddr(ma))
+  mafmt.WebSocketsStar.matches(multiaddr(ma))

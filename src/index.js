@@ -200,7 +200,7 @@ class WebsocketStar {
     if (!Array.isArray(multiaddrs)) {
       multiaddrs = [multiaddrs]
     }
-    return multiaddrs.filter((ma) => mafmt.WebRTCStar.matches(ma))
+    return multiaddrs.filter((ma) => mafmt.WebSocketsStar.matches(ma))
   }
 
   _peerDiscovered(socket, maStr) {

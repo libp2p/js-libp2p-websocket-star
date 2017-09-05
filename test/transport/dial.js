@@ -23,7 +23,7 @@ module.exports = (create) => {
     const maHSIP = '/ip4/148.251.206.162/tcp/9090'
 
     const maLS = '/ip4/127.0.0.1/tcp/15555'
-    const maGen = (base, id) => multiaddr(`/libp2p-webrtc-star${base}/ws/ipfs/${id}`) // https
+    const maGen = (base, id) => multiaddr(`/${base}/p2p-websockets-star/ws/ipfs/${id}`) // https
     // const maGen = (base, id) => multiaddr(`/libp2p-webrtc-star${base}/ws/ipfs/${id}`)
 
     if (process.env.WEBRTC_STAR_REMOTE_SIGNAL_DNS && false) { //does not exist yet
@@ -77,7 +77,7 @@ module.exports = (create) => {
     })
 
     it('dial offline / non-exist()ent node on IPv4, check callback', (done) => {
-      let maOffline = multiaddr('/libp2p-webrtc-star/ip4/127.0.0.1/tcp/15555/ws/ipfs/ABCD')
+      let maOffline = multiaddr('/ip4/127.0.0.1/tcp/15555/ws/p2p-websockets-star/ipfs/ABCD')
       ws1.dial(maOffline, (err, conn) => {
         expect(err).to.exist()
         done()

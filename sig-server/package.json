@@ -38,14 +38,14 @@
     "debug": "^3.0.1",
     "hapi": "^16.5.2",
     "inert": "^4.2.1",
-    "libp2p-crypto": "^0.9.4",
-    "mafmt": "^2.1.8",
+    "libp2p-crypto": "^0.10.0",
+    "mafmt": "^3.0.0",
     "merge-recursive": "0.0.3",
     "minimist": "^1.2.0",
-    "multiaddr": "^2.3.0",
+    "multiaddr": "^3.0.0",
     "once": "^1.4.0",
-    "peer-id": "^0.9.0",
-    "peer-info": "^0.10.0",
+    "peer-id": "^0.10.0",
+    "peer-info": "^0.11.0",
     "socket.io": "^2.0.3",
     "socket.io-pull-stream": "^0.1.0",
     "uuid": "^3.1.0"
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "aegir": "^11.0.2",
-    "chai": "^4.1.1",
+    "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "gulp": "^3.9.1",
     "lodash": "^4.17.4"

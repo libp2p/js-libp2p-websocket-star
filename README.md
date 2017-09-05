@@ -43,7 +43,7 @@ Id.create((err, id) => {
   if (err) throw err
 
   const peerInfo = new Info(id)
-  peerInfo.multiaddrs.add(multiaddr("/libp2p-webrtc-star/ip4/148.251.206.162/tcp/9090/ws/"))
+  peerInfo.multiaddrs.add(multiaddr("/dns4/ws-star-signal-1.servep2p.com/wss/p2p-websocket-star/"))
   const ws = new WSStar({ id }) //the id is required for the crypto challenge
   const modules = {
     transport: [
@@ -109,7 +109,7 @@ Defaults:
 We host a signalling server at `ws-star-signal-1.servep2p.com` and `ws-star-signal-2.servep2p.com` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
 A libp2p-websocket-star address, using the signalling server we provide, looks like:
 
-`/libp2p-webrtc-star/dns4/ws-star-signal-1.servep2p.com/wss/ipfs/<your-peer-id>`
+`/dns4/ws-star-signal-1.servep2p.com/wss/p2p-websocket-star/ipfs/<your-peer-id>`
 
 Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 
