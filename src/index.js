@@ -30,7 +30,7 @@ class Listener extends EE {
     this.id = options.id
     this.canCrypto = !!options.id
     this.handler = options.handler || noop
-    this.listeners = options.listeners || {}
+    this.listeners_list = options.listeners || {}
   }
   //"private" functions
   up(cb) {
@@ -117,7 +117,7 @@ class Listener extends EE {
   listen(ma, cb) {
     this.ma = ma
     this.server = cleanUrlSIO(ma)
-    this.listeners[this.server] = this
+    this.listeners_list[this.server] = this
     cb = cb ? once(cb) : noop
     const final = err => {
       if (err) {
@@ -209,7 +209,7 @@ class WebsocketStar {
       setImmediate(callback)
     }
 
-    this.listeners = {}
+    this.listeners_list = {}
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
@@ -224,7 +224,7 @@ class WebsocketStar {
       callback = options
       options = {}
     }
-    const listener = this.listeners[cleanUrlSIO(ma)]
+    const listener = this.listeners_list[cleanUrlSIO(ma)]
     if (!listener) {
       callback(new Error("No listener for this server"))
       return new Connection()
@@ -241,7 +241,7 @@ class WebsocketStar {
     const listener = new Listener({
       id: this.id,
       handler,
-      listeners: this.listeners
+      listeners: this.listeners_list
     })
 
     listener.on("peer", this._peerDiscovered)

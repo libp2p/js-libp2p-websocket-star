@@ -39,7 +39,7 @@
     "hapi": "^16.5.2",
     "inert": "^4.2.1",
     "libp2p-crypto": "^0.10.2",
-    "mafmt": "github:mkg20001/js-mafmt#patch-1",
+    "mafmt": "^3.0.1",
     "merge-recursive": "0.0.3",
     "minimist": "^1.2.0",
     "multiaddr": "^3.0.1",
