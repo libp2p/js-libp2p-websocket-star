@@ -213,6 +213,12 @@ class WebsocketStar {
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
+  lazySetId(id) {
+    if (!id) return
+    this.id = id
+    this.canCrypto = true
+  }
+
   dial(ma, options, callback) {
     if (typeof options === 'function') {
       callback = options

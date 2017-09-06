@@ -5,20 +5,41 @@ const Id = require("peer-id")
 const crypto = require("libp2p-crypto")
 const mafmt = require("mafmt")
 
+function isIP(ma) {
+  const protos = ma.protos()
+
+  if (protos[0].code !== 4 && protos[0].code !== 41) {
+    return false
+  }
+  if (protos[1].code !== 6 && protos[1].code !== 17) {
+    return false
+  }
+
+  return true
+}
+
 function cleanUrlSIO(ma) {
   const maStrSplit = ma.toString().split('/')
 
-  if (!multiaddr.isName(ma)) {
-    return 'http://' + maStrSplit[2] + ':' + maStrSplit[4]
-  } else {
+  if (isIP(ma)) {
+    if (maStrSplit[1] == "ip4") {
+      return 'http://' + maStrSplit[2] + ':' + maStrSplit[4]
+    } else if (maStrSplit[1] == "ip6") {
+      return 'http://[' + maStrSplit[2] + ']:' + maStrSplit[4]
+    } else {
+      throw new Error('invalid multiaddr: ' + ma.toString())
+    }
+  } else if (multiaddr.isName(ma)) {
     const wsProto = ma.protos()[1].name
     if (wsProto === 'ws') {
       return 'http://' + maStrSplit[2]
     } else if (wsProto === 'wss') {
       return 'https://' + maStrSplit[2]
     } else {
-      throw new Error('invalid multiaddr' + ma.toString())
+      throw new Error('invalid multiaddr: ' + ma.toString())
     }
+  } else {
+    throw new Error('invalid multiaddr: ' + ma.toString())
   }
 }
 
