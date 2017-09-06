@@ -39,7 +39,7 @@ module.exports = () => {
       })
     })
 
-    it("listen on the server", () => {
+    it("listen on the server", done => {
       w1 = new WStar({
         id: id1
       })
@@ -53,10 +53,11 @@ module.exports = () => {
         [l2, ma2]
       ], (i, n) => i[0].listen(i[1], n), err => {
         expect(err).to.not.exist()
+        done()
       })
     })
 
-    it("dial peer 1 to peer 2", () => {
+    it("dial peer 1 to peer 2", done => {
       w1.dial(ma2, (err, conn) => {
         expect(err).to.not.exist()
         const buf = Buffer.from("hello")
@@ -66,6 +67,7 @@ module.exports = () => {
           pull.collect((err, res) => {
             expect(err).to.not.exist()
             expect(Buffer.from(res[0])).to.eql(buf)
+            done()
           })
         )
       })

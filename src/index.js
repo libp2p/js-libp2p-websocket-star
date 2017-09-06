@@ -43,7 +43,12 @@ class Listener extends EE {
     _io.once("connect_error", cb)
     _io.once("connect", cb)
     const proto = new utils.Protocol(log)
-    proto.addRequest("ws-peer", ["multiaddr"], (socket, peer) => this.emit("peer", peer))
+    proto.addRequest("ws-peer", ["multiaddr"], (socket, peer) => {
+      if (this.id) {
+        if (!this.ma) return
+        this.emit("peer", this.ma.decapsulate("ipfs").encapsulate("ipfs/" + peer.split("ipfs/").pop()).toString())
+      } else return this.emit("peer", peer)
+    })
     proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], this.incommingDial.bind(this))
     proto.handleSocket(_io)
   }
@@ -120,19 +125,19 @@ class Listener extends EE {
         this.down()
         this.emit("error", err)
         this.emit("close")
-      }
+      } else self.emit("listening")
       cb(err)
     }
+    const self = this
 
-    this.up(err => {
+    self.up(err => {
       if (err) return final(err)
-      this.crypto(err => {
+      self.crypto(err => {
         if (err) return final(err)
-        this.emit("listening")
-        this.io.on("reconnect", this.crypto.bind(this, err => {
+        self.io.on("reconnect", self.crypto.bind(this, err => {
           if (err) {
             log("reconnect error", err)
-            this.emit("error", err)
+            self.emit("error", err)
           }
         }))
         final()

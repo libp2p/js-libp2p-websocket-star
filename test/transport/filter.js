@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
 
 module.exports = (create) => {
-  describe('filter', () => {
+  describe.skip('filter', () => {
     it('filters non valid webrtc-star multiaddrs', () => {
       const ws = create()
 

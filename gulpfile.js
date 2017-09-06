@@ -3,7 +3,7 @@
 const gulp = require('gulp')
 const sigServer = require('./sig-server/src')
 
-let sigS
+let sigS, sigS2
 
 gulp.task('test:node:before', boot)
 gulp.task('test:node:after', stop)
@@ -34,7 +34,7 @@ function boot(done) {
       if (err) {
         throw err
       }
-      sigS = server
+      sigS2 = server
       console.log('strict signalling on:', server.info.uri)
       done()
     })
@@ -42,7 +42,10 @@ function boot(done) {
 }
 
 function stop(done) {
-  sigS.stop(done)
+  sigS.stop(err => {
+    if (err) return done(err)
+    sigS2.stop(done)
+  })
 }
 
 require('aegir/gulp')(gulp)
