@@ -32,7 +32,7 @@
     "data-queue": "0.0.2",
     "debug": "^3.0.1",
     "interface-connection": "^0.3.2",
-    "libp2p-crypto": "^0.10.0",
+    "libp2p-crypto": "^0.10.2",
     "mafmt": "github:mkg20001/js-mafmt#patch-1",
     "multiaddr": "^3.0.1",
     "once": "^1.4.0",
