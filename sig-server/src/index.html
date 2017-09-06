@@ -33,19 +33,21 @@
     /^(::)?(((\d{1,3}\.){3}(\d{1,3}){1})?([0-9a-f]){0,4}:{0,2}){1,8}(::)?$/i;
   var addr = "/libp2p-webrtc-star"
   var f = window.location
+  if (f.hostname.startsWith("[") && f.hostname.endsWith("]")) f.h = f.hostname.match(/\[(.+)\]/)[1]
+  else f.h = f.hostname
   f.protoport = f.port ? f.port : f.protocol == "https:" ? 443 : 80
-  if (f.port && ipv4Regex.test(f.hostname)) {
-    addr += "/ip4/" + f.hostname + "/tcp/" + f.port + "/"
-  } else if (f.port && ipv6Regex.test(f.hostname)) {
-    addr += "/ip6/" + f.hostname + "/tcp/" + f.port + "/"
+  if (f.port && ipv4Regex.test()) {
+    addr += "/ip4/" + f.h + "/tcp/" + f.port + "/"
+  } else if (f.port && ipv6Regex.test(f.h)) {
+    addr += "/ip6/" + f.h + "/tcp/" + f.port + "/"
   } else if (f.port) {
-    addr += "/dns/" + f.hostname + "/tcp/" + f.port + "/"
-  } else if (ipv4Regex.test(f.hostname)) {
-    addr += "/ip4/" + f.hostname + "/tcp/" + f.protoport + "/"
-  } else if (ipv6Regex.test(f.hostname)) {
-    addr += "/ip6/" + f.hostname + "/tcp/" + f.protoport + "/"
+    addr += "/dns/" + f.h + "/tcp/" + f.port + "/"
+  } else if (ipv4Regex.test(f.h)) {
+    addr += "/ip4/" + f.h + "/tcp/" + f.protoport + "/"
+  } else if (ipv6Regex.test(f.h)) {
+    addr += "/ip6/" + f.h + "/tcp/" + f.protoport + "/"
   } else {
-    addr += "/dns/" + f.hostname + "/"
+    addr += "/dns/" + f.h + "/"
   }
   if (f.protocol == "https:") addr += "wss/"
   else addr += "ws/"
