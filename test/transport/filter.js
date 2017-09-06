@@ -8,7 +8,7 @@ chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
 
 module.exports = (create) => {
-  describe.skip('filter', () => {
+  describe('filter', () => {
     it('filters non valid webrtc-star multiaddrs', () => {
       const ws = create()
 
@@ -27,7 +27,7 @@ module.exports = (create) => {
       ]
 
       const filtered = ws.filter(maArr)
-      expect(filtered.length).to.equal(7)
+      expect(filtered.length).to.equal(8)
     })
 
     it('filter a single addr for this transport', () => {
