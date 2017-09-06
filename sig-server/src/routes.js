@@ -37,7 +37,9 @@ module.exports = (config, http) => {
   function handle(socket) {
     socket.addrs = []
     socket.cleanaddrs = {}
-    sp(socket)
+    sp(socket, {
+      codec: "buffer"
+    })
     proto.handleSocket(socket)
   }
 

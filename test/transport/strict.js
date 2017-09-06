@@ -66,7 +66,7 @@ module.exports = () => {
           conn,
           pull.collect((err, res) => {
             expect(err).to.not.exist()
-            expect(Buffer.from(res[0])).to.eql(buf)
+            expect(res).to.eql([buf])
             done()
           })
         )

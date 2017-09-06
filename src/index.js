@@ -38,17 +38,14 @@ class Listener extends EE {
     if (this.io) return cb()
     log('Dialing to Signalling Server on: ' + this.server)
     const _io = this.io = io.connect(this.server, sioOptions)
-    sp(_io)
+    sp(_io, {
+      codec: "buffer"
+    })
     _io.once("error", cb)
     _io.once("connect_error", cb)
     _io.once("connect", cb)
     const proto = new utils.Protocol(log)
-    proto.addRequest("ws-peer", ["multiaddr"], (socket, peer) => {
-      if (this.id) {
-        if (!this.ma) return
-        this.emit("peer", this.ma.decapsulate("ipfs").encapsulate("ipfs/" + peer.split("ipfs/").pop()).toString())
-      } else return this.emit("peer", peer)
-    })
+    proto.addRequest("ws-peer", ["multiaddr"], (socket, peer) => this.emit("peer", peer))
     proto.addRequest("ss-incomming", ["string", "multiaddr", "function"], this.incommingDial.bind(this))
     proto.handleSocket(_io)
   }
@@ -252,7 +249,7 @@ class WebsocketStar {
   filter(multiaddrs) {
     if (!Array.isArray(multiaddrs))
       multiaddrs = [multiaddrs]
-    return multiaddrs.filter((ma) => mafmt.WebSocketStar.matches(ma))
+    return multiaddrs.filter((ma) => ~ma.toString().indexOf("p2p-websocket-star")) //mafmt.WebSocketStar.matches(ma))
   }
 
   _peerDiscovered(maStr) {
