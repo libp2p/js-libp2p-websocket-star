@@ -1,6 +1,6 @@
 {
   "name": "libp2p-websocket-star-signal",
-  "version": "0.3.0-rc2",
+  "version": "0.3.0-rc3",
   "description": "Signaling server for libp2p-webrtc-star",
   "main": "src/index.js",
   "bin": {
