@@ -25,7 +25,19 @@ function boot(done) {
     }
     sigS = server
     console.log('signalling on:', server.info.uri)
-    done()
+    const options = {
+      port: 14444,
+      host: '127.0.0.1'
+    }
+
+    sigServer.start(options, (err, server) => {
+      if (err) {
+        throw err
+      }
+      sigS = server
+      console.log('strict signalling on:', server.info.uri)
+      done()
+    })
   })
 }
 
