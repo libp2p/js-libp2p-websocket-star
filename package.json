@@ -56,5 +56,8 @@
   "bugs": {
     "url": "https://github.com/libp2p/js-libp2p-websocket-star/issues"
   },
-  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme"
+  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme",
+  "contributors": [
+    "David Dias <daviddias.p@gmail.com>"
+  ]
 }
