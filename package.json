@@ -4,13 +4,13 @@
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "main": "src/index.js",
   "bin": {
-    "websockets-star": "src/rendezvous/bin.js",
+    "websockets-star": "src/rendezvous/bin.js"
   },
   "scripts": {
     "rendezvous": "node sig-server/src/bin.js",
     "lint": "gulp lint",
     "build": "gulp build",
-    "test": "gulp test --dom",
+    "test": "gulp test",
     "test:node": "gulp test:node",
     "test:browser": "gulp test:browser",
     "test:dns": "REMOTE_DNS=1 gulp test",
