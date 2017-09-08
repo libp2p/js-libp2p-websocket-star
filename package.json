@@ -1,6 +1,6 @@
 {
   "name": "libp2p-websocket-star-rendezvous",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The rendezvous service for libp2p-webrtc-star",
   "bin": {
     "websockets-star": "src/rendezvous/bin.js"
