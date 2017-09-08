@@ -2,7 +2,7 @@
 
 const gulp = require('gulp')
 const parallel = require('async/parallel')
-const rendezvous = require('./src/rendezvous')
+const rendezvous = require('libp2p-websocket-star-rendezvous')
 
 let r1
 let r2
@@ -21,19 +21,19 @@ function boot (done) {
   }
 
   parallel([
-    (cb) => rendezvous.start(Object.assign({port: 15555}, base), (err, r) => {
+    (cb) => rendezvous.start(Object.assign({port: 15001}, base), (err, r) => {
       if (err) { return cb(err) }
       r1 = r
       console.log('r1:', r.info.uri)
       cb()
     }),
-    (cb) => rendezvous.start(Object.assign({port: 15555}, base), (err, r) => {
+    (cb) => rendezvous.start(Object.assign({port: 15002}, base), (err, r) => {
       if (err) { return cb(err) }
       r2 = r
       console.log('r2:', r.info.uri)
       cb()
     }),
-    (cb) => rendezvous.start(Object.assign({port: 15555, host: '::'}, base), (err, r) => {
+    (cb) => rendezvous.start(Object.assign({port: 15003, host: '::'}, base), (err, r) => {
       if (err) { return cb(err) }
       r3 = r
       console.log('r3:', r.info.uri)
