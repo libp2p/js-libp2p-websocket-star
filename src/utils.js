@@ -1,11 +1,11 @@
 'use strict'
 
 const multiaddr = require('multiaddr')
-const Id = require("peer-id")
-const crypto = require("libp2p-crypto")
-const mafmt = require("mafmt")
+const Id = require('peer-id')
+const crypto = require('libp2p-crypto')
+const mafmt = require('mafmt')
 
-function isIP(ma) {
+function isIP (ma) {
   const protos = ma.protos()
 
   if (protos[0].code !== 4 && protos[0].code !== 41) {
@@ -18,13 +18,13 @@ function isIP(ma) {
   return true
 }
 
-function cleanUrlSIO(ma) {
+function cleanUrlSIO (ma) {
   const maStrSplit = ma.toString().split('/')
 
   if (isIP(ma)) {
-    if (maStrSplit[1] == "ip4") {
+    if (maStrSplit[1] === 'ip4') {
       return 'http://' + maStrSplit[2] + ':' + maStrSplit[4]
-    } else if (maStrSplit[1] == "ip6") {
+    } else if (maStrSplit[1] === 'ip6') {
       return 'http://[' + maStrSplit[2] + ']:' + maStrSplit[4]
     } else {
       throw new Error('invalid multiaddr: ' + ma.toString())
@@ -44,8 +44,8 @@ function cleanUrlSIO(ma) {
 }
 
 const types = {
-  string: v => typeof v == "string",
-  object: v => typeof v == "object",
+  string: v => typeof v === 'string',
+  object: v => typeof v === 'object',
   multiaddr: v => {
     if (!types.string(v)) return
     try {
@@ -55,21 +55,21 @@ const types = {
       return false
     }
   },
-  function: v => typeof v == "function"
+  function: v => typeof v === 'function'
 }
 
-function validate(def, data) {
-  if (!Array.isArray(data)) throw new Error("Data is not an array")
+function validate (def, data) {
+  if (!Array.isArray(data)) throw new Error('Data is not an array')
   def.forEach((type, index) => {
     if (!types[type]) {
-      console.error("Type %s does not exist", type)
-      throw new Error("Type " + type + " does not exist")
+      console.error('Type %s does not exist', type)
+      throw new Error('Type ' + type + ' does not exist')
     }
-    if (!types[type](data[index])) throw new Error("Data at index " + index + " is invalid for type " + type)
+    if (!types[type](data[index])) throw new Error('Data at index ' + index + ' is invalid for type ' + type)
   })
 }
 
-function Protocol(log) {
+function Protocol (log) {
   if (!log) log = () => {}
   const self = this
   self.requests = {}
@@ -91,19 +91,23 @@ function Protocol(log) {
           r.handle.apply(null, data)
         } catch (e) {
           log(e)
-          log("peer %s has sent invalid data for request %s", socket.id || "<server>", request, data)
-          return
+          log('peer %s has sent invalid data for request %s', socket.id || '<server>', request, data)
         }
       })
     }
   }
 }
 
-function getIdAndValidate(pub, id, cb) {
-  Id.createFromPubKey(Buffer.from(pub, "hex"), (err, _id) => {
-    if (err) return cb("Crypto error")
-    if (_id.toB58String() != id) return cb("Id is not matching")
-    return cb(null, crypto.keys.unmarshalPublicKey(Buffer.from(pub, "hex")))
+function getIdAndValidate (pub, id, cb) {
+  Id.createFromPubKey(Buffer.from(pub, 'hex'), (err, _id) => {
+    if (err) {
+      return cb(new Error('Crypto error'))
+    }
+    if (_id.toB58String() !== id) {
+      return cb(new Error('Id is not matching'))
+    }
+
+    return cb(null, crypto.keys.unmarshalPublicKey(Buffer.from(pub, 'hex')))
   })
 }
 
@@ -112,5 +116,4 @@ exports.cleanUrlSIO = cleanUrlSIO
 exports.validate = validate
 exports.Protocol = Protocol
 exports.getIdAndValidate = getIdAndValidate
-exports.validateMa = (ma) =>
-  mafmt.WebSocketStar.matches(multiaddr(ma))
+exports.validateMa = (ma) => mafmt.WebSocketStar.matches(multiaddr(ma))

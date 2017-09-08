@@ -15,7 +15,7 @@ const Buffer = require('safe-buffer').Buffer
 
 module.exports = (create) => {
   describe('dial', () => {
-    const clean = require("../clean")
+    const clean = require('../clean')
     let ws1
     let ws2
     let ma1

@@ -40,7 +40,7 @@ module.exports = (create) => {
       })
     })
 
-    const clean = require("../clean")
+    const clean = require('../clean')
     after(() => clean.cleaner(ws1, ws2))
   })
 }

@@ -1,5 +1,5 @@
 let toclean = []
-function cleaner() {
+function cleaner () {
   toclean.forEach(s => {
     if (s.disconnect) s.disconnect()
     else s.close()

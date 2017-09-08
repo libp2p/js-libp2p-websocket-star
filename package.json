@@ -3,11 +3,7 @@
   "version": "0.3.0",
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "main": "src/index.js",
-  "bin": {
-    "websockets-star": "src/rendezvous/bin.js"
-  },
   "scripts": {
-    "rendezvous": "node sig-server/src/bin.js",
     "lint": "gulp lint",
     "build": "gulp build",
     "test": "gulp test",
@@ -32,7 +28,6 @@
     "async": "^2.5.0",
     "data-queue": "0.0.2",
     "debug": "^3.0.1",
-    "hapi": "^16.5.2",
     "inert": "^4.2.1",
     "interface-connection": "^0.3.2",
     "libp2p-crypto": "^0.10.3",
@@ -43,7 +38,6 @@
     "once": "^1.4.0",
     "peer-id": "^0.10.1",
     "peer-info": "^0.11.0",
-    "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
     "socket.io-pull-stream": "^0.1.1",
     "uuid": "^3.1.0"
