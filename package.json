@@ -3,6 +3,9 @@
   "version": "0.3.0",
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "main": "src/index.js",
+  "bin": {
+    "websockets-star": "src/rendezvous/bin.js",
+  },
   "scripts": {
     "rendezvous": "node sig-server/src/bin.js",
     "lint": "gulp lint",
