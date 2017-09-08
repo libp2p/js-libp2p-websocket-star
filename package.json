@@ -1,0 +1,60 @@
+{
+  "name": "libp2p-websocket-star-rendezvous",
+  "version": "0.0.0",
+  "description": "The rendezvous service for libp2p-webrtc-star",
+  "bin": {
+    "websockets-star": "src/rendezvous/bin.js"
+  },
+  "scripts": {
+    "rendezvous": "node sig-server/src/bin.js",
+    "lint": "aegir-lint",
+    "test": "aegir-test --env node",
+    "release": "aegir-release --env no-build",
+    "release-minor": "aegir-release --type minor --env no-build",
+    "release-major": "aegir-release --type major --env no-build",
+    "coverage": "aegir-coverage",
+    "coverage-publish": "aegir-coverage publish"
+  },
+  "keywords": [
+    "libp2p",
+    "websocket"
+  ],
+  "author": "Maciej Krüger <mkg20001@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.5.0",
+    "data-queue": "0.0.2",
+    "debug": "^3.0.1",
+    "hapi": "^16.5.2",
+    "inert": "^4.2.1",
+    "libp2p-crypto": "^0.10.3",
+    "mafmt": "^3.0.1",
+    "merge-recursive": "0.0.3",
+    "minimist": "^1.2.0",
+    "multiaddr": "^3.0.1",
+    "once": "^1.4.0",
+    "peer-id": "^0.10.1",
+    "peer-info": "^0.11.0",
+    "socket.io": "^2.0.3",
+    "socket.io-client": "^2.0.3",
+    "socket.io-pull-stream": "^0.1.1",
+    "uuid": "^3.1.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "aegir": "^11.0.2",
+    "chai": "^4.1.2",
+    "dirty-chai": "^2.0.1",
+    "lodash": "^4.17.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/libp2p/js-libp2p-websocket-star.git"
+  },
+  "bugs": {
+    "url": "https://github.com/libp2p/js-libp2p-websocket-star/issues"
+  },
+  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme"
+}
