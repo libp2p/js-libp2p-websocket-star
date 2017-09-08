@@ -1,29 +1,27 @@
 {
   "name": "libp2p-websocket-star",
-  "version": "0.3.0-rc4",
+  "version": "0.3.0",
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "main": "src/index.js",
   "scripts": {
-    "star-signal": "node sig-server/src/bin.js",
-    "start": "node sig-server/src/bin.js",
+    "rendezvous": "node sig-server/src/bin.js",
     "lint": "gulp lint",
     "build": "gulp build",
     "test": "gulp test --dom",
     "test:node": "gulp test:node",
-    "test:browser": "gulp test:browser --dom",
-    "test:dns": "WEBRTC_STAR_REMOTE_SIGNAL_DNS=1 gulp test --dom",
-    "test:ip": "WEBRTC_STAR_REMOTE_SIGNAL_IP=1 gulp test --dom",
-    "release": "gulp release --dom",
-    "release-minor": "gulp release --type minor --dom",
-    "release-major": "gulp release --type major --dom",
+    "test:browser": "gulp test:browser",
+    "test:dns": "REMOTE_DNS=1 gulp test",
+    "test:ip": "REMOTE_IP=1 gulp test",
+    "release": "gulp release",
+    "release-minor": "gulp release --type minor",
+    "release-major": "gulp release --type major",
     "coverage": "gulp coverage",
     "coverage-publish": "aegir-coverage publish"
   },
   "keywords": [
     "libp2p",
     "transport",
-    "websocket",
-    "no-webrtc"
+    "websocket"
   ],
   "author": "Maciej Krüger <mkg20001@gmail.com>",
   "license": "MIT",
@@ -32,11 +30,11 @@
     "data-queue": "0.0.2",
     "debug": "^3.0.1",
     "interface-connection": "^0.3.2",
-    "libp2p-crypto": "^0.10.2",
+    "libp2p-crypto": "^0.10.3",
     "mafmt": "^3.0.1",
     "multiaddr": "^3.0.1",
     "once": "^1.4.0",
-    "peer-id": "^0.10.0",
+    "peer-id": "^0.10.1",
     "peer-info": "^0.11.0",
     "socket.io-client": "^2.0.3",
     "socket.io-pull-stream": "^0.1.1",
@@ -54,10 +52,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mkg20001/js-libp2p-websocket-star.git"
+    "url": "git+https://github.com/libp2p/js-libp2p-websocket-star.git"
   },
   "bugs": {
-    "url": "https://github.com/mkg20001/js-libp2p-websocket-star/issues"
+    "url": "https://github.com/libp2p/js-libp2p-websocket-star/issues"
   },
-  "homepage": "https://github.com/mkg20001/js-libp2p-websocket-star#readme"
+  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme"
 }
