@@ -1,62 +1,53 @@
 'use strict'
 
 const gulp = require('gulp')
-const sigServer = require('./sig-server/src')
+const parallel = require('async/parallel')
+const rendezvous = require('libp2p-websocket-star-rendezvous')
 
-let sigS, sigS2, sigS3
+let r1
+let r2
+let r3
 
 gulp.task('test:node:before', boot)
 gulp.task('test:node:after', stop)
 gulp.task('test:browser:before', boot)
 gulp.task('test:browser:after', stop)
-gulp.task("wait", (cb) => {})
 
-function boot(done) {
-  const options = {
-    port: 15555,
+function boot (done) {
+  const base = {
     host: '0.0.0.0',
     cryptoChallenge: false,
     strictMultiaddr: false
   }
 
-  sigServer.start(options, (err, server) => {
-    if (err) {
-      throw err
-    }
-    sigS = server
-    console.log('signalling on:', server.info.uri)
-    const options = {
-      port: 14444,
-      host: '0.0.0.0'
-    }
-
-    sigServer.start(options, (err, server) => {
-      if (err) {
-        throw err
-      }
-      sigS2 = server
-      console.log('strict signalling on:', server.info.uri)
-      const options = {
-        port: 13333,
-        host: '::',
-        cryptoChallenge: false,
-        strictMultiaddr: false
-      }
-
-      sigServer.start(options, (err, server) => {
-        if (err) {
-          throw err
-        }
-        sigS3 = server
-        console.log('ipv6 signalling on:', server.info.uri)
-        done()
-      })
+  parallel([
+    (cb) => rendezvous.start(Object.assign({port: 15001}, base), (err, r) => {
+      if (err) { return cb(err) }
+      r1 = r
+      console.log('r1:', r.info.uri)
+      cb()
+    }),
+    (cb) => rendezvous.start(Object.assign({port: 15002}, base), (err, r) => {
+      if (err) { return cb(err) }
+      r2 = r
+      console.log('r2:', r.info.uri)
+      cb()
+    }),
+    (cb) => rendezvous.start(Object.assign({port: 15003, host: '::'}, base), (err, r) => {
+      if (err) { return cb(err) }
+      r3 = r
+      console.log('r3:', r.info.uri)
+      cb()
     })
-  })
+  ], done)
 }
 
-function stop(done) {
-  require("async/each")([sigS, sigS2, sigS3], (s, n) => s.stop(n), done)
+function stop (done) {
+  parallel([
+    (cb) => r1.stop(cb),
+    (cb) => r2.stop(cb),
+    (cb) => r3.stop(cb)
+  ], done)
 }
 
 require('aegir/gulp')(gulp)

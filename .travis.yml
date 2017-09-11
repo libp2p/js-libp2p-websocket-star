@@ -1,22 +1,16 @@
 sudo: false
 language: node_js
-dist: trusty
+
 matrix:
   include:
-  - node_js: 4
   - node_js: 6
-    env:
-#      - SAUCE=true
-  - node_js: stable
-
-# Make sure we have new NPM.
-before_install:
-  - npm install -g npm
+    env: CXX=g++-4.8
+  - node_js: 8
+    env: CXX=g++-4.8
 
 script:
-  - cd sig-server && npm i && cd ..
   - npm run lint
-  - npm test
+  - npm run test
   - npm run coverage
 
 before_script:
@@ -24,7 +18,12 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 after_success:
-#  - npm run coverage-publish
+  - npm run coverage-publish
 
 addons:
   firefox: 'latest'
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-4.8
