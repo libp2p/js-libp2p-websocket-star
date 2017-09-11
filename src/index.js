@@ -28,7 +28,7 @@ class Listener extends EE {
   constructor (options) {
     super()
     this.id = options.id
-    this.canCrypto = !!options.id
+    this.canCrypto = Boolean(options.id)
     this.handler = options.handler || noop
     this.listeners_list = options.listeners || {}
   }
@@ -65,34 +65,38 @@ class Listener extends EE {
     delete this.io
   }
 
-  cryptoChallenge (cb) {
+  cryptoChallenge (callback) {
     if (!this.io) {
-      return cb(new Error('Not connected'))
+      return callback(new Error('Not connected'))
     }
 
-    this.io.emit('ss-join', this.ma.toString(), this.canCrypto
+    const pubKeyStr = this.canCrypto
       ? crypto.keys.marshalPublicKey(this.id.pubKey).toString('hex')
-      : '', (err, sig) => {
-        if (err) {
-          return cb(new Error(err))
+      : ''
+
+    const maStr = this.ma.toString()
+
+    this.io.emit('ss-join', maStr, pubKeyStr, (err, sig) => {
+      if (err) { return callback(err) }
+
+      if (sig) {
+        if (!this.canCrypto) {
+          this.down()
+          return callback(new Error("Can't sign cryptoChallenge: No id provided"))
         }
 
-        if (sig) {
-          if (!this.canCrypto) {
-            this.down()
-            return cb(new Error("Can't sign cryptoChallenge: No id provided"))
+        this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
+          if (err) {
+            return callback(err)
           }
-
-          this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
-            if (err) cb(err)
-            this.signature = signature.toString('hex')
-            this.join(cb)
-          })
-        } else {
-          this.signature = '_'
-          cb()
-        }
-      })
+          this.signature = signature.toString('hex')
+          this.join(callback)
+        })
+      } else {
+        this.signature = '_'
+        callback()
+      }
+    })
   }
   crypto (cb) {
     cb = cb ? once(cb) : noop

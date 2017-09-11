@@ -19,9 +19,10 @@ describe('dial', () => {
   const clean = require('./clean')
 
   let ws1
-  let ws2
   let ma1
-  let ma1v6
+  // let ma1v6
+
+  let ws2
   let ma2
   let ma2v6
 
@@ -34,14 +35,14 @@ describe('dial', () => {
   const maRemoteIP6 = '/ip6/2a01:4f8:212:e0::1/tcp/4287'
 
   const maLocalIP4 = '/ip4/127.0.0.1/tcp/15001'
-  const maLocalIP6 = '/ip6/::1/tcp/15003'
+  // const maLocalIP6 = '/ip6/::1/tcp/15003'
   const maGen = (base, id) => multiaddr(`/${base}/p2p-websocket-star/ws/ipfs/${id}`)
 
   if (process.env.REMOTE_DNS) {
     // test with deployed signalling server using DNS
     console.log('Using DNS:', maDNS, maDNS6)
     ma1 = maGen(maDNS, peerId1)
-    ma1v6 = maGen(maDNS6, peerId1)
+    // ma1v6 = maGen(maDNS6, peerId1)
 
     ma2 = maGen(maDNS, peerId2)
     ma2v6 = maGen(maDNS6, peerId2)
@@ -49,13 +50,13 @@ describe('dial', () => {
     // test with deployed signalling server using IP
     console.log('Using IP:', maRemoteIP4, maRemoteIP6)
     ma1 = maGen(maRemoteIP4, peerId1)
-    ma1v6 = maGen(maRemoteIP6, peerId1)
+    // ma1v6 = maGen(maRemoteIP6, peerId1)
 
     ma2 = maGen(maRemoteIP4, peerId2)
     ma2v6 = maGen(maRemoteIP6, peerId2)
   } else {
     ma1 = maGen(maLocalIP4, peerId1)
-    ma1v6 = maGen(maLocalIP6, peerId1)
+    // ma1v6 = maGen(maLocalIP6, peerId1)
 
     ma2 = maGen(maLocalIP4, peerId2)
     ma2v6 = maGen(maLocalIP4, peerId2)

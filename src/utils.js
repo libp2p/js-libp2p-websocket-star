@@ -81,7 +81,7 @@ function Protocol (log) {
   }
   self.handleSocket = (socket) => {
     socket.r = {}
-    for (var request in self.requests) {
+    Object.keys(self.requests).forEach((request) => {
       const r = self.requests[request]
       socket.on(request, function () {
         const data = [...arguments]
@@ -94,7 +94,7 @@ function Protocol (log) {
           log('peer %s has sent invalid data for request %s', socket.id || '<server>', request, data)
         }
       })
-    }
+    })
   }
 }
 
