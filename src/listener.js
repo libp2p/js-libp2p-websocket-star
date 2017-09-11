@@ -25,12 +25,12 @@ class Listener extends EE {
     super()
     this.id = options.id
     this.canCrypto = Boolean(options.id)
-    this.handler = options.handler || noop
+    this._handler = options.handler || noop
     this.listeners_list = options.listeners || {}
   }
 
   // "private" functions
-  up (cb) {
+  _up (cb) {
     cb = cb ? once(cb) : noop
     if (this.io) {
       return cb()
@@ -47,11 +47,11 @@ class Listener extends EE {
     const proto = new utils.Protocol(log)
 
     proto.addRequest('ws-peer', ['multiaddr'], (socket, peer) => this.emit('peer', peer))
-    proto.addRequest('ss-incomming', ['string', 'multiaddr', 'function'], this.incommingDial.bind(this))
+    proto.addRequest('ss-incomming', ['string', 'multiaddr', 'function'], this._incommingDial.bind(this))
     proto.handleSocket(_io)
   }
 
-  down () {
+  _down () {
     if (!this.io) {
       return
     }
@@ -61,7 +61,7 @@ class Listener extends EE {
     delete this.io
   }
 
-  cryptoChallenge (callback) {
+  _cryptoChallenge (callback) {
     if (!this.io) {
       return callback(new Error('Not connected'))
     }
@@ -75,7 +75,7 @@ class Listener extends EE {
 
       if (sig) {
         if (!this.canCrypto) {
-          this.down()
+          this._down()
           return callback(new Error("Can't sign cryptoChallenge: No id provided"))
         }
 
@@ -84,7 +84,7 @@ class Listener extends EE {
             return callback(err)
           }
           this.signature = signature.toString('hex')
-          this.join(callback)
+          this._join(callback)
         })
       } else {
         this.signature = '_'
@@ -92,7 +92,7 @@ class Listener extends EE {
       }
     })
   }
-  crypto (cb) {
+  _crypto (cb) {
     cb = cb ? once(cb) : noop
 
     if (!this.io) {
@@ -100,22 +100,22 @@ class Listener extends EE {
     }
 
     if (this.signature) {
-      this.join((err, needNewChallenge) => {
+      this._join((err, needNewChallenge) => {
         if (needNewChallenge) {
           return this.cryptoChallenge(cb)
         }
         cb(err)
       })
     } else {
-      this.cryptoChallenge(cb)
+      this._cryptoChallenge(cb)
     }
   }
 
-  join (cb) {
+  _join (cb) {
     this.io.emit('ss-join', this.ma.toString(), this.signature, cb)
   }
 
-  incommingDial (socket, dialId, dialFrom, cb) {
+  _incommingDial (socket, dialId, dialFrom, cb) {
     log('recieved dial from', dialFrom, dialId)
     const ma = multiaddr(dialFrom)
     const source = this.io.createSource(dialId + '.dialer')
@@ -132,7 +132,7 @@ class Listener extends EE {
       }
     )
     this.emit('connection', conn)
-    this.handler(conn)
+    this._handler(conn)
   }
 
   // public functions
@@ -143,8 +143,8 @@ class Listener extends EE {
     callback = callback ? once(callback) : noop
 
     series([
-      (cb) => this.up(cb),
-      (cb) => this.crypto(cb)
+      (cb) => this._up(cb),
+      (cb) => this._crypto(cb)
     ], (err) => {
       if (err) {
         log(err)
@@ -154,7 +154,7 @@ class Listener extends EE {
         return callback(err)
       }
 
-      this.io.on('reconnect', this.crypto.bind(this, (err) => {
+      this.io.on('reconnect', this._crypto.bind(this, (err) => {
         if (err) {
           log('reconnect error', err)
           this.emit('error', err)
@@ -173,7 +173,7 @@ class Listener extends EE {
   close (callback) {
     callback = callback ? once(callback) : noop
 
-    this.down()
+    this._down()
 
     callback()
   }
