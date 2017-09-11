@@ -7,8 +7,12 @@ const mafmt = require('mafmt')
 
 function cleanUrlSIO (ma) {
   const maStrSplit = ma.toString().split('/')
+  let maTCP = ma
+  if (maTCP.toString().indexOf('/ws') !== -1) maTCP = maTCP.decapsulate('ws')
+  if (maTCP.toString().indexOf('/wss') !== -1) maTCP = maTCP.decapsulate('wss')
+  if (maTCP.toString().indexOf('/p2p-websocket-star') !== -1) maTCP = maTCP.decapsulate('p2p-websocket-star')
 
-  if (mafmt.TCP.matches(ma)) {
+  if (mafmt.TCP.matches(maTCP)) {
     if (maStrSplit[1] === 'ip4') {
       return 'http://' + maStrSplit[2] + ':' + maStrSplit[4]
     } else if (maStrSplit[1] === 'ip6') {
