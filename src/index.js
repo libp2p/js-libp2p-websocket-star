@@ -6,6 +6,7 @@ const multiaddr = require('multiaddr')
 const io = require('socket.io-client')
 const sp = require('socket.io-pull-stream')
 const uuid = require('uuid')
+const series = require('async/series')
 const EE = require('events').EventEmitter
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
@@ -137,42 +138,33 @@ class Listener extends EE {
   }
 
   // public functions
-  listen (ma, cb) {
+  listen (ma, callback) {
     this.ma = ma
     this.server = cleanUrlSIO(ma)
     this.listeners_list[this.server] = this
-    cb = cb ? once(cb) : noop
+    callback = callback ? once(callback) : noop
 
-    const final = (err) => {
+    series([
+      (cb) => this.up(cb),
+      (cb) => this.crypto(cb)
+    ], (err) => {
       if (err) {
         log(err)
         this.down()
         this.emit('error', err)
         this.emit('close')
-        return cb(err)
-      }
-      this.emit('listening')
-      cb()
-    }
-
-    this.up((err) => {
-      if (err) {
-        return final(err)
+        return callback(err)
       }
 
-      this.crypto((err) => {
+      this.io.on('reconnect', this.crypto.bind(this, (err) => {
         if (err) {
-          return final(err)
+          log('reconnect error', err)
+          this.emit('error', err)
         }
+      }))
 
-        this.io.on('reconnect', this.crypto.bind(this, (err) => {
-          if (err) {
-            log('reconnect error', err)
-            this.emit('error', err)
-          }
-        }))
-        final()
-      })
+      this.emit('listening')
+      callback()
     })
   }
 

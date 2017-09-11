@@ -28,7 +28,8 @@ describe('filter', () => {
     ]
 
     const filtered = ws.filter(maArr)
-    expect(filtered.length).to.equal(8)
+    expect(filtered.length).to.not.equal(maArr.length)
+    expect(filtered.length).to.equal(10)
   })
 
   it('filter a single addr for this transport', () => {

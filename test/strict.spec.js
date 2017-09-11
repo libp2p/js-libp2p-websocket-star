@@ -27,6 +27,7 @@ describe('strict', () => {
   let w2
 
   before((done) => {
+    // TODO move this huge JSON blobs to separate files and require them
     map([{
       id: 'QmS8BL7M8jrXYhHo2ofEVeiq5aDKTr29ksmpcqWxjZGvpX',
       privKey: 'CAASqAkwggSkAgEAAoIBAQCvOmZWflGVczEuoCLPhMAfiGVNyEiE0QvzHAcKpAgNoZwu5MQ+t8RPKhgWAaWnxuWNEIK2E5doJxeQo2N2HuZpRLgJYQfBa9KZnW50nGXbPcUOomyStGjgc321uAKFsBcPdGwvvRO8up2qISFW6fqkI0hR6uC7kBmLXN0Trq/D2cLVXatupR9OLijwRK1iDlYBcCvJs/zk3sEVg11V5BO5BNLdnsEziU2cTu2jGta4KZPIDxow9z8hhjt0Oc2rP25Orqlz5Olhe7EeQRhtBoid3Xhz5zgTB63sc7jPGEhw/+nFksM70Xv0aplWZPalYA/0Lj+ZeqM5Br2zR56hALQDAgMBAAECggEABVIapWm0hHs49Rd7tx1q0ApOOSxpt065tCoXtKUCcZeErI/ZvaXK2jSHArQOGagadEwaC/lQUaNOPeAYNw/9IxkpFW/S0na5sFxtbDELjrqzbxxTe6jqvlYDbS8nNHQCXz/DwTdWkBaCjxXuczsrlyxTF9mv9UIM5IRvWhel0qaPNFcKILEH0hNcogInBNAty9tmJFQ3PS4zbDWXfuOn2g2lHF+QGkOsOAc66gLFlaDxAbdG5l9FYexgNWf5X1tedCWeY8SBaH3UXZW8bgB0FMWGMBgAo9y/9OG55H9GTSkHR8M+9JEYuhlvClckbCda7x7dervYqEiDUOLKFUWg4QKBgQDj4uQzuygYJJoGZ+/TO8DWWop61Yv2+z5uZ63lgLlLl3Vruklblx7tr0PdmhO/484nGJHuFzPIY5YVE0MdDFiQIvAd9VAXSc+UI97riy9nyi29ke+hmtSJ7P1ibTJnkYwOYZKElWw28BodVKjf9fliyuNyN0NHcbRplA5T0nSbyQKBgQDE2HUIloX3lTrD7qFkMC7NmuiFgeAJ2X1BIXt0rvDMBx/ZHRJw9C3ZqTDDNErOvOBcInWhucYReYfuk15GtGsjL5gj4xCudWwyJp+qNuN3odLa1dml7JJcIjybDJYEUou6Wy9+OUypNGgCFQH47jUjMc74Zu8jrGnLEM1dUtRfawKBgQC6esec4XE82G7GATWKWGJDxlF9lNP1JsF+3Q67OGvoxKcMoaM39OEVRQ+2/kddBlCDQ6Le/1ObjoqY8mtAEQND56MwELcaZ4caxYO8oegH+bUWZJ6AUs/LkggDDDJr9/lxJz0bi57DEhV8nPOYWZNa2YXnx/shMpWcs9BJnXVYqQKBgQCxxRIciWO/LkP+Apo6UtFR2Z44RAxCmOnnUgeeXwcUGzMF7p1i6QInWgaxo54TirvMOUqmnZFk4q6CJRC1JebDxg3OCxhblav6tqrnG97dgYVdIFgI4tdi4YB+PiWVDb8ms4b2pWS4Qp3Tk4lOeEIA4NCbwMojG2gHfcsZht5ItQKBgCTAamelN5EBxCHXCsXZ0Y2id5WBGmtG9TUyB/HdpTaVdgqBe+mSzYfotkXhotFTysdr17mrGo8IgDZx3w4EJBeiIpzQltCGcdiQQOw61NhMNEF8wDj9+icFpaNICar7syG1JJqfLpclldjltlAynfDNLTTYQdMHry0Ra86odruz',
@@ -42,8 +43,8 @@ describe('strict', () => {
 
       id1 = keys.shift()
       id2 = keys.shift()
-      ma1 = multiaddr('/ip4/127.0.0.1/tcp/14444/ws/p2p-websocket-star/ipfs/QmS8BL7M8jrXYhHo2ofEVeiq5aDKTr29ksmpcqWxjZGvpX')
-      ma2 = multiaddr('/ip4/127.0.0.1/tcp/14444/ws/p2p-websocket-star/ipfs/QmeJGHUQ4hsMvPzAoXCdkT1Z9NBgjT7BenVPENUgpufENP')
+      ma1 = multiaddr('/ip4/127.0.0.1/tcp/15002/ws/p2p-websocket-star/ipfs/QmS8BL7M8jrXYhHo2ofEVeiq5aDKTr29ksmpcqWxjZGvpX')
+      ma2 = multiaddr('/ip4/127.0.0.1/tcp/15002/ws/p2p-websocket-star/ipfs/QmeJGHUQ4hsMvPzAoXCdkT1Z9NBgjT7BenVPENUgpufENP')
       done()
     })
   })

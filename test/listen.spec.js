@@ -14,8 +14,8 @@ const WebSocketStar = require('../src')
 describe('listen', () => {
   let ws
 
-  const ma = multiaddr('/ip4/127.0.0.1/tcp/15555/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooooA')
-  const mav6 = multiaddr('/ip6/::1/tcp/13333/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooooA')
+  const ma = multiaddr('/ip4/127.0.0.1/tcp/15001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooooA')
+  const mav6 = multiaddr('/ip6/::1/tcp/15003/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooooB')
 
   before(() => {
     ws = new WebSocketStar()
@@ -51,7 +51,7 @@ describe('listen', () => {
     // TODO ? Should this apply ?
   })
 
-  it('listen on IPv6 addr', (done) => {
+  it.skip('listen on IPv6 addr', (done) => {
     const listener = ws.createListener((conn) => {})
 
     listener.listen(mav6, (err) => {

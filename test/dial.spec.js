@@ -25,35 +25,40 @@ describe('dial', () => {
   let ma2
   let ma2v6
 
-  const maHSDNS = '/dns/ws-star-signal-1.servep2p.com'
-  const maHSDNS6 = '/dns6/ws-star-signal-2.servep2p.com'
-  const maHSIP = '/ip4/148.251.206.162/tcp/9090'
-  const maHSIP6 = '/ip6/2a01:4f8:212:e0::1/tcp/4287'
+  const peerId1 = 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a'
+  const peerId2 = 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b'
 
-  const maLS = '/ip4/127.0.0.1/tcp/15555'
-  const maLS6 = '/ip6/::1/tcp/13333'
-  const maGen = (base, id) => multiaddr(`/${base}/p2p-websocket-star/ws/ipfs/${id}`) // https
-  // const maGen = (base, id) => multiaddr(`/libp2p-webrtc-star${base}/ws/ipfs/${id}`)
+  const maDNS = '/dns/ws-star-signal-1.servep2p.com'
+  const maDNS6 = '/dns6/ws-star-signal-2.servep2p.com'
+  const maRemoteIP4 = '/ip4/148.251.206.162/tcp/9090'
+  const maRemoteIP6 = '/ip6/2a01:4f8:212:e0::1/tcp/4287'
+
+  const maLocalIP4 = '/ip4/127.0.0.1/tcp/15001'
+  const maLocalIP6 = '/ip6/::1/tcp/15003'
+  const maGen = (base, id) => multiaddr(`/${base}/p2p-websocket-star/ws/ipfs/${id}`)
 
   if (process.env.REMOTE_DNS) {
     // test with deployed signalling server using DNS
-    console.log('Using DNS:', maHSDNS)
-    ma1 = maGen(maHSDNS, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
-    ma1v6 = maGen(maHSDNS6, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
-    ma2 = maGen(maHSDNS, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b')
-    ma2v6 = maGen(maHSDNS6, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b')
+    console.log('Using DNS:', maDNS, maDNS6)
+    ma1 = maGen(maDNS, peerId1)
+    ma1v6 = maGen(maDNS6, peerId1)
+
+    ma2 = maGen(maDNS, peerId2)
+    ma2v6 = maGen(maDNS6, peerId2)
   } else if (process.env.REMOTE_IP) {
     // test with deployed signalling server using IP
-    console.log('Using IP:', maHSIP)
-    ma1 = maGen(maHSIP, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
-    ma1v6 = maGen(maHSIP6, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
-    ma2 = maGen(maHSIP, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b')
-    ma2v6 = maGen(maHSIP6, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b')
+    console.log('Using IP:', maRemoteIP4, maRemoteIP6)
+    ma1 = maGen(maRemoteIP4, peerId1)
+    ma1v6 = maGen(maRemoteIP6, peerId1)
+
+    ma2 = maGen(maRemoteIP4, peerId2)
+    ma2v6 = maGen(maRemoteIP6, peerId2)
   } else {
-    ma1 = maGen(maLS, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
-    ma1v6 = maGen(maLS6, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
-    ma2 = maGen(maLS, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b')
-    ma2v6 = maGen(maLS6, 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b')
+    ma1 = maGen(maLocalIP4, peerId1)
+    ma1v6 = maGen(maLocalIP6, peerId1)
+
+    ma2 = maGen(maLocalIP4, peerId2)
+    ma2v6 = maGen(maLocalIP4, peerId2)
   }
 
   before((done) => {
@@ -62,9 +67,9 @@ describe('dial', () => {
 
     each([
       [ws1, ma1],
-      [ws1, ma1v6],
-      [ws2, ma2],
-      [ws2, ma2v6]
+      [ws2, ma2]
+      // [ws1, ma1v6],
+      // [ws2, ma2v6]
     ], (i, n) => i[0].createListener((conn) => pull(conn, conn)).listen(i[1], n), done)
   })
 
@@ -88,7 +93,7 @@ describe('dial', () => {
   })
 
   it('dial offline / non-exist()ent node on IPv4, check callback', (done) => {
-    const maOffline = multiaddr('/ip4/127.0.0.1/tcp/15555/ws/p2p-websocket-star/ipfs/ABCD')
+    const maOffline = multiaddr('/ip4/127.0.0.1/tcp/40404/ws/p2p-websocket-star/ipfs/ABCD')
 
     ws1.dial(maOffline, (err) => {
       expect(err).to.exist()
@@ -96,7 +101,7 @@ describe('dial', () => {
     })
   })
 
-  it('dial on IPv6, check callback', (done) => {
+  it.skip('dial on IPv6, check callback', (done) => {
     ws1.dial(ma2v6, (err, conn) => {
       expect(err).to.not.exist()
 
