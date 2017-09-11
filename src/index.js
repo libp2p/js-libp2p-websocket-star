@@ -13,6 +13,12 @@ const Listener = require('./listener')
 const cleanUrlSIO = utils.cleanUrlSIO
 
 class WebsocketStar {
+  /**
+    * WebsocketStar Transport
+    * @class
+    * @param {Object} options - Options for the listener
+    * @param {PeerId} options.id - Id for the crypto challenge
+    */
   constructor (options) {
     options = options || {}
 
@@ -30,12 +36,23 @@ class WebsocketStar {
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
+  /**
+    * Sets the id after transport creation (aka the lazy way)
+    * @param {PeerId} id
+    */
   lazySetId (id) {
     if (!id) return
     this.id = id
     this.canCrypto = true
   }
 
+  /**
+    * Dials a peer
+    * @param {Multiaddr} ma - Multiaddr to dial to
+    * @param {Object} options
+    * @param {function} callback
+    * @returns {Connection}
+    */
   dial (ma, options, callback) {
     if (typeof options === 'function') {
       callback = options
@@ -50,6 +67,12 @@ class WebsocketStar {
     return listener.dial(ma, options, callback)
   }
 
+  /**
+    * Creates a listener
+    * @param {Object} options
+    * @param {function} callback
+    * @returns {Listener}
+    */
   createListener (options, handler) {
     if (typeof options === 'function') {
       handler = options
@@ -67,6 +90,10 @@ class WebsocketStar {
     return listener
   }
 
+  /**
+    * Filters multiaddrs
+    * @param {Multiaddr[]} multiaddrs
+    */
   filter (multiaddrs) {
     if (!Array.isArray(multiaddrs)) {
       multiaddrs = [multiaddrs]
@@ -78,6 +105,12 @@ class WebsocketStar {
     })
   }
 
+  /**
+    * Used to fire peer events on the discovery part
+    * @param {Multiaddr} maStr
+    * @fires Discovery#peer
+    * @private
+    */
   _peerDiscovered (maStr) {
     log('Peer Discovered:', maStr)
     const peerIdStr = maStr.split('/ipfs/').pop()

@@ -20,6 +20,13 @@ const sioOptions = {
   'force new connection': true
 }
 
+/**
+  * One listener for one signaling server
+  * @class
+  * @param {Object} options - Options for the listener
+  * @param {PeerId} options.id - Id for the crypto challenge
+  * @param {function} options.handler - Incomming connection handler
+  */
 class Listener extends EE {
   constructor (options) {
     super()
@@ -30,6 +37,11 @@ class Listener extends EE {
   }
 
   // "private" functions
+  /**
+    * Connects to the signalling server
+    * @param {function} cb - callback
+    * @private
+    */
   _up (cb) {
     cb = cb ? once(cb) : noop
     if (this.io) {
@@ -51,6 +63,9 @@ class Listener extends EE {
     proto.handleSocket(_io)
   }
 
+  /**
+    * Disconnects from signalling server
+    */
   _down () {
     if (!this.io) {
       return
@@ -61,6 +76,11 @@ class Listener extends EE {
     delete this.io
   }
 
+  /**
+    * Performs a cryptoChallenge
+    * @param {function} callback - callback
+    * @private
+    */
   _cryptoChallenge (callback) {
     if (!this.io) {
       return callback(new Error('Not connected'))
@@ -92,6 +112,12 @@ class Listener extends EE {
       }
     })
   }
+
+  /**
+    * Performs a cryptoChallenge when no signature is found
+    * @param {function} cb - callback
+    * @private
+    */
   _crypto (cb) {
     cb = cb ? once(cb) : noop
 
@@ -111,10 +137,25 @@ class Listener extends EE {
     }
   }
 
+  /**
+    * Emits ss-join with the multiaddr and signature
+    *
+    * @param {function} cb - callback
+    * @private
+    */
   _join (cb) {
     this.io.emit('ss-join', this.ma.toString(), this.signature, cb)
   }
 
+  /**
+    * Handles incomming dials
+    * @listens ss-incomming
+    * @param {socket.io_client} socket
+    * @param {string} dialId - Unique id for this dial
+    * @param {string} dialFrom - Multiaddr as string
+    * @param {function} cb - callback
+    * @private
+    */
   _incommingDial (socket, dialId, dialFrom, cb) {
     log('recieved dial from', dialFrom, dialId)
     const ma = multiaddr(dialFrom)
@@ -136,6 +177,11 @@ class Listener extends EE {
   }
 
   // public functions
+  /**
+    * Listens on a multiaddr
+    * @param {Multiaddr} ma
+    * @param {function} callback
+    */
   listen (ma, callback) {
     this.ma = ma
     this.server = cleanUrlSIO(ma)
@@ -166,6 +212,10 @@ class Listener extends EE {
     })
   }
 
+  /**
+    * Gets the addresses the listener listens on
+    * @param {function} callback
+    */
   getAddrs (callback) {
     setImmediate(() => callback(null, this.ma ? [this.ma] : []))
   }
@@ -179,6 +229,12 @@ class Listener extends EE {
   }
 
   // called from transport
+  /**
+    * Dials a peer
+    * @param {Multiaddr} ma - Multiaddr to dial to
+    * @param {Object} options
+    * @param {function} callback
+    */
   dial (ma, options, callback) {
     if (typeof options === 'function') {
       callback = options
