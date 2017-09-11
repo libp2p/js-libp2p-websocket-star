@@ -37,7 +37,7 @@ exports.start = (options, callback) => {
         return callback(err)
       }
 
-      log('signaling server has started on: ' + http.info.uri)
+      log('rendezvous server has started on: ' + http.info.uri)
 
       http.peers = require('./routes')(config, http).peers
 

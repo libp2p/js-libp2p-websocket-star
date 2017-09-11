@@ -10,7 +10,8 @@ let server
 signalling.start({
   port: argv.port || argv.p || process.env.PORT || 9090,
   host: argv.host || argv.h || process.env.HOST || '0.0.0.0',
-  cryptoChallenge: !(argv.disableCryptoChallenge || process.env.DISABLE_CRYPTO_CHALLENGE)
+  cryptoChallenge: !(argv.disableCryptoChallenge || process.env.DISABLE_CRYPTO_CHALLENGE),
+  strictMultiaddr: !(argv.disableStrictMultiaddr || process.env.DISABLE_STRICT_MULTIADDR)
 }, (err, _server) => {
   if (err) {
     throw err
@@ -22,7 +23,7 @@ signalling.start({
 
 process.on('SIGINT', () => {
   server.stop(() => {
-    console.log('Signalling server stopped')
+    console.log('Rendezvous server stopped')
     process.exit()
   })
 })
