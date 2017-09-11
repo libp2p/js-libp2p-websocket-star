@@ -15,9 +15,7 @@ const Buffer = require('safe-buffer').Buffer
 const WebSocketsStar = require('../src')
 
 describe('dial', () => {
-  // TODO refactor how this clean works
-  const clean = require('./clean')
-
+  let listeners = []
   let ws1
   let ma1
   // let ma1v6
@@ -71,7 +69,7 @@ describe('dial', () => {
       [ws2, ma2]
       // [ws1, ma1v6],
       // [ws2, ma2v6]
-    ], (i, n) => i[0].createListener((conn) => pull(conn, conn)).listen(i[1], n), done)
+    ], (i, n) => listeners[listeners.push(i[0].createListener((conn) => pull(conn, conn))) - 1].listen(i[1], n), done)
   })
 
   it('dial on IPv4, check callback', (done) => {
@@ -121,5 +119,5 @@ describe('dial', () => {
     })
   })
 
-  after(() => clean.cleaner(ws1, ws2))
+  after(done => each(listeners, (l, next) => l.close(next), done))
 })
