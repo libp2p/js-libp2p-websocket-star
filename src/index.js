@@ -39,6 +39,7 @@ class WebsocketStar {
   /**
     * Sets the id after transport creation (aka the lazy way)
     * @param {PeerId} id
+    * @returns {undefined}
     */
   lazySetId (id) {
     if (!id) return
@@ -70,7 +71,7 @@ class WebsocketStar {
   /**
     * Creates a listener
     * @param {Object} options
-    * @param {function} callback
+    * @param {function} handler
     * @returns {Listener}
     */
   createListener (options, handler) {
@@ -93,6 +94,7 @@ class WebsocketStar {
   /**
     * Filters multiaddrs
     * @param {Multiaddr[]} multiaddrs
+    * @returns {boolean}
     */
   filter (multiaddrs) {
     if (!Array.isArray(multiaddrs)) {
@@ -109,6 +111,7 @@ class WebsocketStar {
     * Used to fire peer events on the discovery part
     * @param {Multiaddr} maStr
     * @fires Discovery#peer
+    * @returns {undefined}
     * @private
     */
   _peerDiscovered (maStr) {

@@ -1,3 +1,5 @@
+'use strict'
+
 const debug = require('debug')
 const log = debug('libp2p:websocket-star:listener')
 const multiaddr = require('multiaddr')
@@ -40,6 +42,7 @@ class Listener extends EE {
   /**
     * Connects to the signalling server
     * @param {function} cb - callback
+    * @returns {undefined}
     * @private
     */
   _up (cb) {
@@ -65,6 +68,7 @@ class Listener extends EE {
 
   /**
     * Disconnects from signalling server
+    * @returns {undefined}
     */
   _down () {
     if (!this.io) {
@@ -79,6 +83,7 @@ class Listener extends EE {
   /**
     * Performs a cryptoChallenge
     * @param {function} callback - callback
+    * @returns {undefined}
     * @private
     */
   _cryptoChallenge (callback) {
@@ -116,6 +121,7 @@ class Listener extends EE {
   /**
     * Performs a cryptoChallenge when no signature is found
     * @param {function} cb - callback
+    * @returns {undefined}
     * @private
     */
   _crypto (cb) {
@@ -141,6 +147,7 @@ class Listener extends EE {
     * Emits ss-join with the multiaddr and signature
     *
     * @param {function} cb - callback
+    * @returns {undefined}
     * @private
     */
   _join (cb) {
@@ -154,6 +161,7 @@ class Listener extends EE {
     * @param {string} dialId - Unique id for this dial
     * @param {string} dialFrom - Multiaddr as string
     * @param {function} cb - callback
+    * @returns {undefined}
     * @private
     */
   _incommingDial (socket, dialId, dialFrom, cb) {
@@ -181,33 +189,35 @@ class Listener extends EE {
     * Listens on a multiaddr
     * @param {Multiaddr} ma
     * @param {function} callback
+    * @returns {undefined}
     */
   listen (ma, callback) {
-    this.ma = ma
-    this.server = cleanUrlSIO(ma)
-    this.listeners_list[this.server] = this
+    const self = this // fixes some errors
+    self.ma = ma
+    self.server = cleanUrlSIO(ma)
+    self.listeners_list[self.server] = this
     callback = callback ? once(callback) : noop
 
     series([
-      (cb) => this._up(cb),
-      (cb) => this._crypto(cb)
+      (cb) => self._up(cb),
+      (cb) => self._crypto(cb)
     ], (err) => {
       if (err) {
         log(err)
-        this.down()
-        this.emit('error', err)
-        this.emit('close')
+        self.down()
+        self.emit('error', err)
+        self.emit('close')
         return callback(err)
       }
 
-      this.io.on('reconnect', this._crypto.bind(this, (err) => {
+      self.io.on('reconnect', self._crypto.bind(self, (err) => {
         if (err) {
           log('reconnect error', err)
-          this.emit('error', err)
+          self.emit('error', err)
         }
       }))
 
-      this.emit('listening')
+      self.emit('listening')
       callback()
     })
   }
@@ -215,6 +225,7 @@ class Listener extends EE {
   /**
     * Gets the addresses the listener listens on
     * @param {function} callback
+    * @returns {undefined}
     */
   getAddrs (callback) {
     setImmediate(() => callback(null, this.ma ? [this.ma] : []))
@@ -234,6 +245,7 @@ class Listener extends EE {
     * @param {Multiaddr} ma - Multiaddr to dial to
     * @param {Object} options
     * @param {function} callback
+    * @returns {undefined}
     */
   dial (ma, options, callback) {
     if (typeof options === 'function') {
