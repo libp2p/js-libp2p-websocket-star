@@ -51,7 +51,7 @@ describe('listen', () => {
     // TODO ? Should this apply ?
   })
 
-  it.skip('listen on IPv6 addr', (done) => {
+  it('listen on IPv6 addr', (done) => {
     const listener = ws.createListener((conn) => {})
 
     listener.listen(mav6, (err) => {

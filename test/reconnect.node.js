@@ -63,7 +63,7 @@ describe('reconnect to signaling server', () => {
   })
 
   it('starts the server again', (done) => {
-    r = rendezvous.start({ port: SERVER_PORT }, done)
+    r = rendezvous.start({ port: SERVER_PORT, cryptoChallenge: false }, done)
   })
 
   it('wait a bit for clients to reconnect', (done) => {
