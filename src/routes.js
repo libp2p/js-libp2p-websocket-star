@@ -4,7 +4,7 @@ const SocketIO = require('socket.io')
 const sp = require('socket.io-pull-stream')
 const util = require('./utils')
 const uuid = require('uuid')
-const client = require("prom-client")
+const client = require('prom-client')
 const fake = {
   gauge: {
     set: () => {}
@@ -30,13 +30,13 @@ module.exports = (config, http) => {
   this._peers = {}
   const nonces = {}
 
-  const peers_metric = config.metrics ? new client.Gauge({ name: 'rendezvous_peers', help: 'peers online now' }) : fake.gauge
-  const dials_success_total = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_success', help: 'sucessfully completed dials since server started' }) : fake.counter
-  const dials_failure_total = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_failure', help: 'failed dials since server started' }) : fake.counter
-  const dials_total = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total', help: 'all dials since server started' }) : fake.counter
+  const peersMetric = config.metrics ? new client.Gauge({ name: 'rendezvous_peers', help: 'peers online now' }) : fake.gauge
+  const dialsSucessTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_success', help: 'sucessfully completed dials since server started' }) : fake.counter
+  const dialsFailureTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_failure', help: 'failed dials since server started' }) : fake.counter
+  const dialsTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total', help: 'all dials since server started' }) : fake.counter
 
   const getPeers = () => this._peers
-  const refreshMetrics = () => peers_metric.set(Object.keys(getPeers()).length)
+  const refreshMetrics = () => peersMetric.set(Object.keys(getPeers()).length)
 
   this.peers = () => getPeers()
 
@@ -169,10 +169,10 @@ module.exports = (config, http) => {
     const log = config.log.bind(config.log, '[' + dialId + ']')
     const s = socket.addrs.filter((a) => a === from)[0]
 
-    dials_total.inc()
+    dialsTotal.inc()
 
     if (!s) {
-      dials_failure_total.inc()
+      dialsFailureTotal.inc()
       return cb('Not authorized for this address')
     }
 
@@ -180,7 +180,7 @@ module.exports = (config, http) => {
     const peer = getPeers()[to]
 
     if (!peer) {
-      dials_failure_total.inc()
+      dialsFailureTotal.inc()
       return cb('Peer not found')
     }
 
@@ -188,11 +188,11 @@ module.exports = (config, http) => {
 
     peer.emit('ss-incomming', dialId, from, err => {
       if (err) {
-        dials_failure_total.inc()
+        dialsFailureTotal.inc()
         return cb(err)
       }
 
-      dials_success_total.inc()
+      dialsSucessTotal.inc()
       peer.createProxy(dialId + '.listener', socket)
       cb()
     })
