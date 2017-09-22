@@ -104,7 +104,7 @@ module.exports = (config, http) => {
 
     socket.once('ss-leave', function handleLeave (ma) {
       if (ma === multiaddr) {
-        socket.addrs = socket.addrs.filter(m => m != ma)
+        socket.addrs = socket.addrs.filter(m => m !== ma)
         stopSendingPeers()
       } else {
         socket.once('ss-leave', handleLeave)
