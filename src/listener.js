@@ -61,7 +61,7 @@ class Listener extends EE {
     _io.once('connect_error', cb)
     _io.once('connect', cb)
 
-    const proto = new utils.Protocol(log)
+    const proto = new utils.Protocol(this.log)
 
     proto.addRequest('ws-peer', ['multiaddr'], (socket, peer) => this.emit('peer', peer))
     proto.addRequest('ss-incomming', ['string', 'multiaddr', 'function'], this._incommingDial.bind(this))
@@ -272,7 +272,7 @@ class Listener extends EE {
     let io = this.io
 
     if (!io) {
-      return callback(new Error('No signaling connection available for dialing'))
+      return callback(new Error('Not listening'))
     }
 
     const sink = io.createSink(dialId + '.dialer')
