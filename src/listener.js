@@ -192,32 +192,31 @@ class Listener extends EE {
     * @returns {undefined}
     */
   listen (ma, callback) {
-    const self = this // fixes some errors
-    self.ma = ma
-    self.server = cleanUrlSIO(ma)
-    self.listeners_list[self.server] = this
+    this.ma = ma
+    this.server = cleanUrlSIO(ma)
+    this.listeners_list[this.server] = this
     callback = callback ? once(callback) : noop
 
     series([
-      (cb) => self._up(cb),
-      (cb) => self._crypto(cb)
+      (cb) => this._up(cb),
+      (cb) => this._crypto(cb)
     ], (err) => {
       if (err) {
         log(err)
-        self.down()
-        self.emit('error', err)
-        self.emit('close')
+        this._down()
+        this.emit('error', err)
+        this.emit('close')
         return callback(err)
       }
 
-      self.io.on('reconnect', self._crypto.bind(self, (err) => {
+      this.io.on('reconnect', this._crypto.bind(this, (err) => {
         if (err) {
           log('reconnect error', err)
-          self.emit('error', err)
+          this.emit('error', err)
         }
       }))
 
-      self.emit('listening')
+      this.emit('listening')
       callback()
     })
   }
