@@ -214,7 +214,7 @@ class Listener extends EE {
         if (err) {
           log('reconnect error', err)
           this.emit('error', err)
-        }
+        } else log('reconnected')
       }))
 
       this.emit('listening')
