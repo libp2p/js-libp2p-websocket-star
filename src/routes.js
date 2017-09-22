@@ -18,6 +18,7 @@ module.exports = (config, http) => {
   const log = config.log
   const io = new SocketIO(http.listener)
   const proto = new util.Protocol(log)
+  const getConfig = () => config
 
   proto.addRequest('ss-join', ['multiaddr', 'string', 'function'], join)
   proto.addRequest('ss-leave', ['multiaddr'], leave)
@@ -31,9 +32,12 @@ module.exports = (config, http) => {
   const nonces = {}
 
   const peersMetric = config.metrics ? new client.Gauge({ name: 'rendezvous_peers', help: 'peers online now' }) : fake.gauge
-  const dialsSucessTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_success', help: 'sucessfully completed dials since server started' }) : fake.counter
+  const dialsSuccessTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_success', help: 'sucessfully completed dials since server started' }) : fake.counter
   const dialsFailureTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_failure', help: 'failed dials since server started' }) : fake.counter
   const dialsTotal = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total', help: 'all dials since server started' }) : fake.counter
+  const joinsSuccessTotal = config.metrics ? new client.Counter({ name: 'rendezvous_joins_total_success', help: 'sucessfully completed joins since server started' }) : fake.counter
+  const joinsFailureTotal = config.metrics ? new client.Counter({ name: 'rendezvous_joins_total_failure', help: 'failed joins since server started' }) : fake.counter
+  const joinsTotal = config.metrics ? new client.Counter({ name: 'rendezvous_joins_total', help: 'all joins since server started' }) : fake.counter
 
   const getPeers = () => this._peers
   const refreshMetrics = () => peersMetric.set(Object.keys(getPeers()).length)
@@ -63,12 +67,16 @@ module.exports = (config, http) => {
   function join (socket, multiaddr, pub, cb) {
     const log = config.log.bind(config.log, '[' + socket.id + ']')
 
-    if (config.strictMultiaddr && !util.validateMa(multiaddr)) {
+    if (getConfig().strictMultiaddr && !util.validateMa(multiaddr)) {
+      joinsTotal.inc()
+      joinsFailureTotal.inc()
       return cb('Invalid multiaddr')
     }
 
-    if (config.cryptoChallenge) {
+    if (getConfig().cryptoChallenge) {
       if (!pub.length) {
+        joinsTotal.inc()
+        joinsFailureTotal.inc()
         return cb('Crypto Challenge required but no Id provided')
       }
 
@@ -80,18 +88,23 @@ module.exports = (config, http) => {
         log('response cryptoChallenge', multiaddr)
 
         nonces[socket.id][multiaddr].key.verify(nonces[socket.id][multiaddr].nonce, Buffer.from(pub, 'hex'), (err, ok) => {
-          if (err) { return cb('Crypto error') } // the errors NEED to be strings otherwise JSON.stringify() turns them into {}
+          if (err || !ok) {
+            joinsTotal.inc()
+            joinsFailureTotal.inc()
+          }
+          if (err) { return cb('Crypto error') } // the errors NEED to be a string otherwise JSON.stringify() turns them into {}
           if (!ok) { return cb('Signature Invalid') }
 
           joinFinalize(socket, multiaddr, cb)
         })
       } else {
+        joinsTotal.inc()
         const addr = multiaddr.split('ipfs/').pop()
 
         log('do cryptoChallenge', multiaddr, addr)
 
         util.getIdAndValidate(pub, addr, (err, key) => {
-          if (err) return cb(err)
+          if (err) { joinsFailureTotal.inc(); return cb(err) }
           const nonce = uuid() + uuid()
 
           socket.once('disconnect', () => {
@@ -102,19 +115,23 @@ module.exports = (config, http) => {
           cb(null, nonce)
         })
       }
-    } else joinFinalize(socket, multiaddr, cb)
+    } else {
+      joinsTotal.inc()
+      joinFinalize(socket, multiaddr, cb)
+    }
   }
 
   function joinFinalize (socket, multiaddr, cb) {
-    const log = config.log.bind(config.log, '[' + socket.id + ']')
+    const log = getConfig().log.bind(getConfig().log, '[' + socket.id + ']')
     getPeers()[multiaddr] = socket
+    joinsSuccessTotal.inc()
     refreshMetrics()
     socket.addrs.push(multiaddr)
     log('registered as', multiaddr)
 
     // discovery
 
-    let refreshInterval = setInterval(sendPeers, config.refreshPeerListIntervalMS)
+    let refreshInterval = setInterval(sendPeers, getConfig().refreshPeerListIntervalMS)
 
     socket.once('ss-leave', function handleLeave (ma) {
       if (ma === multiaddr) {
@@ -166,7 +183,7 @@ module.exports = (config, http) => {
   }
 
   function dial (socket, from, to, dialId, cb) {
-    const log = config.log.bind(config.log, '[' + dialId + ']')
+    const log = getConfig().log.bind(getConfig().log, '[' + dialId + ']')
     const s = socket.addrs.filter((a) => a === from)[0]
 
     dialsTotal.inc()
@@ -192,7 +209,7 @@ module.exports = (config, http) => {
         return cb(err)
       }
 
-      dialsSucessTotal.inc()
+      dialsSuccessTotal.inc()
       peer.createProxy(dialId + '.listener', socket)
       cb()
     })

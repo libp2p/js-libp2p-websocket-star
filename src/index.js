@@ -1,9 +1,9 @@
 'use strict'
 
 const Hapi = require('hapi')
-const merge = require('merge-recursive').recursive
 const path = require('path')
 const epimetheus = require('epimetheus')
+const merge = require('merge-recursive').recursive
 
 exports = module.exports
 
@@ -13,7 +13,7 @@ exports.start = (options, callback) => {
     options = {}
   }
 
-  const config = merge(require('./config'), options)
+  const config = merge(Object.assign({}, require('./config')), Object.assign({}, options))
   const log = config.log
 
   const port = options.port || config.hapi.port
