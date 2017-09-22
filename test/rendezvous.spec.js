@@ -11,7 +11,7 @@ const uuid = require('uuid')
 
 const rendezvous = require('../src')
 
-describe('signalling', () => {
+describe('rendezvous', () => {
   const sioOptions = {
     transports: ['websocket'],
     'force new connection': true
