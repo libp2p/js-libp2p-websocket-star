@@ -49,12 +49,12 @@ module.exports = (config, http) => {
     const log = config.log.bind(config.log, '[' + socket.id + ']')
 
     if (config.strictMultiaddr && !util.validateMa(multiaddr)) {
-      return cb(new Error('Invalid multiaddr'))
+      return cb('Invalid multiaddr')
     }
 
     if (config.cryptoChallenge) {
       if (!pub.length) {
-        return cb(new Error('Crypto Challenge required but no Id provided'))
+        return cb('Crypto Challenge required but no Id provided')
       }
 
       if (!nonces[socket.id]) {
@@ -65,8 +65,8 @@ module.exports = (config, http) => {
         log('response cryptoChallenge', multiaddr)
 
         nonces[socket.id][multiaddr].key.verify(nonces[socket.id][multiaddr].nonce, Buffer.from(pub, 'hex'), (err, ok) => {
-          if (err) { return cb(new Error('Crypto error')) }
-          if (!ok) { return cb(new Error('Signature Invalid')) }
+          if (err) { return cb('Crypto error') } // the errors NEED to be strings otherwise JSON.stringify() turns them into {}
+          if (!ok) { return cb('Signature Invalid') }
 
           joinFinalize(socket, multiaddr, cb)
         })

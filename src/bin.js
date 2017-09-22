@@ -22,8 +22,8 @@ signalling.start({
 })
 
 process.on('SIGINT', () => {
-  server.stop(() => {
+  server.stop((e) => {
     console.log('Rendezvous server stopped')
-    process.exit()
+    process.exit(e ? 2 : 0)
   })
 })
