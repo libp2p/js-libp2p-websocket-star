@@ -3,6 +3,7 @@
 const Hapi = require('hapi')
 const merge = require('merge-recursive').recursive
 const path = require('path')
+const epimetheus = require('epimetheus')
 
 exports = module.exports
 
@@ -52,6 +53,8 @@ exports.start = (options, callback) => {
       callback(null, http)
     })
   })
+
+  if (config.metrics) epimetheus.instrument(http)
 
   return http
 }

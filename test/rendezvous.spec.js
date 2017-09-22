@@ -58,7 +58,8 @@ describe('rendezvous', () => {
       port: 12345,
       refreshPeerListIntervalMS: 1000,
       cryptoChallenge: false,
-      strictMultiaddr: false
+      strictMultiaddr: false,
+      metrics: true
     }
 
     rendezvous.start(options, (err, server) => {

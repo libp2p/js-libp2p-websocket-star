@@ -11,7 +11,8 @@ signalling.start({
   port: argv.port || argv.p || process.env.PORT || 9090,
   host: argv.host || argv.h || process.env.HOST || '0.0.0.0',
   cryptoChallenge: !(argv.disableCryptoChallenge || process.env.DISABLE_CRYPTO_CHALLENGE),
-  strictMultiaddr: !(argv.disableStrictMultiaddr || process.env.DISABLE_STRICT_MULTIADDR)
+  strictMultiaddr: !(argv.disableStrictMultiaddr || process.env.DISABLE_STRICT_MULTIADDR),
+  metrics: true
 }, (err, _server) => {
   if (err) {
     throw err

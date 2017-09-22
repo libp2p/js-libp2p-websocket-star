@@ -4,11 +4,20 @@ const SocketIO = require('socket.io')
 const sp = require('socket.io-pull-stream')
 const util = require('./utils')
 const uuid = require('uuid')
+const client = require("prom-client")
+const fake = {
+  gauge: {
+    set: () => {}
+  },
+  counter: {
+    inc: () => {}
+  }
+}
 
 module.exports = (config, http) => {
   const log = config.log
   const io = new SocketIO(http.listener)
-  const proto = new util.Protocol(config.log)
+  const proto = new util.Protocol(log)
 
   proto.addRequest('ss-join', ['multiaddr', 'string', 'function'], join)
   proto.addRequest('ss-leave', ['multiaddr'], leave)
@@ -18,17 +27,21 @@ module.exports = (config, http) => {
 
   log('create new server', config)
 
-  const peers = this._peers = {}
+  this._peers = {}
   const nonces = {}
 
-  const getPeers = () => this._peers
+  const peers_metric = config.metrics ? new client.Gauge({ name: 'rendezvous_peers', help: 'peers online now' }) : fake.gauge
+  const dials_success_total = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_success', help: 'sucessfully completed dials since server started' }) : fake.counter
+  const dials_failure_total = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total_failure', help: 'failed dials since server started' }) : fake.counter
+  const dials_total = config.metrics ? new client.Counter({ name: 'rendezvous_dials_total', help: 'all dials since server started' }) : fake.counter
 
-  this.peers = () => {
-    return peers
-  }
+  const getPeers = () => this._peers
+  const refreshMetrics = () => peers_metric.set(Object.keys(getPeers()).length)
+
+  this.peers = () => getPeers()
 
   function safeEmit (addr, event, arg) {
-    const peer = peers[addr]
+    const peer = getPeers()[addr]
     if (!peer) {
       log('trying to emit %s but peer is gone', event)
       return
@@ -95,6 +108,7 @@ module.exports = (config, http) => {
   function joinFinalize (socket, multiaddr, cb) {
     const log = config.log.bind(config.log, '[' + socket.id + ']')
     getPeers()[multiaddr] = socket
+    refreshMetrics()
     socket.addrs.push(multiaddr)
     log('registered as', multiaddr)
 
@@ -104,6 +118,7 @@ module.exports = (config, http) => {
 
     socket.once('ss-leave', function handleLeave (ma) {
       if (ma === multiaddr) {
+        refreshMetrics()
         socket.addrs = socket.addrs.filter(m => m !== ma)
         stopSendingPeers()
       } else {
@@ -136,41 +151,48 @@ module.exports = (config, http) => {
   }
 
   function leave (socket, multiaddr) {
-    if (peers[multiaddr]) {
-      delete peers[multiaddr]
+    if (getPeers()[multiaddr]) {
+      delete getPeers()[multiaddr]
     }
   }
 
   function disconnect (socket) {
-    Object.keys(peers).forEach((mh) => {
-      if (peers[mh].id === socket.id) {
-        delete peers[mh]
+    Object.keys(getPeers()).forEach((mh) => {
+      if (getPeers()[mh].id === socket.id) {
+        delete getPeers()[mh]
       }
     })
+    refreshMetrics()
   }
 
   function dial (socket, from, to, dialId, cb) {
     const log = config.log.bind(config.log, '[' + dialId + ']')
     const s = socket.addrs.filter((a) => a === from)[0]
 
+    dials_total.inc()
+
     if (!s) {
-      return cb(new Error('Not authorized for this address'))
+      dials_failure_total.inc()
+      return cb('Not authorized for this address')
     }
 
     log(from, 'is dialing', to)
-    const peer = peers[to]
+    const peer = getPeers()[to]
 
     if (!peer) {
-      return cb(new Error('Peer not found'))
+      dials_failure_total.inc()
+      return cb('Peer not found')
     }
 
     socket.createProxy(dialId + '.dialer', peer)
 
     peer.emit('ss-incomming', dialId, from, err => {
       if (err) {
+        dials_failure_total.inc()
         return cb(err)
       }
 
+      dials_success_total.inc()
       peer.createProxy(dialId + '.listener', socket)
       cb()
     })

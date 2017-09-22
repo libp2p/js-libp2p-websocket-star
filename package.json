@@ -7,7 +7,8 @@
     "websockets-star": "src/bin.js"
   },
   "scripts": {
-    "rendezvous": "node sig-server/src/bin.js",
+    "rendezvous": "node src/bin.js",
+    "start": "node src/bin.js",
     "lint": "aegir-lint",
     "test": "aegir-test --env node",
     "release": "aegir-release --env no-build",
@@ -26,6 +27,7 @@
     "async": "^2.5.0",
     "data-queue": "0.0.2",
     "debug": "^3.0.1",
+    "epimetheus": "^1.0.54",
     "hapi": "^16.6.0",
     "inert": "^4.2.1",
     "libp2p-crypto": "^0.10.3",
@@ -36,6 +38,7 @@
     "once": "^1.4.0",
     "peer-id": "^0.10.1",
     "peer-info": "^0.11.0",
+    "prom-client": "^10.1.0",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
     "socket.io-pull-stream": "^0.1.1",
