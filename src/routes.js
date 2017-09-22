@@ -18,8 +18,10 @@ module.exports = (config, http) => {
 
   log('create new server', config)
 
-  const peers = {}
+  const peers = this._peers = {}
   const nonces = {}
+
+  const getPeers = () => this._peers
 
   this.peers = () => {
     return peers
@@ -92,7 +94,7 @@ module.exports = (config, http) => {
 
   function joinFinalize (socket, multiaddr, cb) {
     const log = config.log.bind(config.log, '[' + socket.id + ']')
-    peers[multiaddr] = socket
+    getPeers()[multiaddr] = socket
     socket.addrs.push(multiaddr)
     log('registered as', multiaddr)
 
@@ -102,6 +104,7 @@ module.exports = (config, http) => {
 
     socket.once('ss-leave', function handleLeave (ma) {
       if (ma === multiaddr) {
+        socket.addrs = socket.addrs.filter(m => m != ma)
         stopSendingPeers()
       } else {
         socket.once('ss-leave', handleLeave)
@@ -113,7 +116,7 @@ module.exports = (config, http) => {
     sendPeers()
 
     function sendPeers () {
-      Object.keys(peers).forEach((mh) => {
+      Object.keys(getPeers()).forEach((mh) => {
         if (mh === multiaddr) {
           return
         }

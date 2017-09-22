@@ -1,8 +1,8 @@
 'use strict'
 
 const debug = require('debug')
-const log = debug('signalling-server')
-log.error = debug('signalling-server:error')
+const log = debug('libp2p-websocket-star-rendezvous')
+log.error = debug('libp2p-websocket-star-rendezvous:error')
 
 module.exports = {
   log: log,
