@@ -202,6 +202,7 @@ class Listener extends EE {
       (cb) => this._crypto(cb)
     ], (err) => {
       if (err) {
+        if (!(err instanceof Error)) err = new Error(err)
         log(err)
         this._down()
         this.emit('error', err)
@@ -272,7 +273,7 @@ class Listener extends EE {
 
     // "multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
     io.emit('ss-dial', this.ma.toString(), ma.toString(), dialId, err => {
-      if (err) return callback(new Error(err))
+      if (err) return callback(err instanceof Error ? err : new Error(err))
       log('dialing %s (id %s) successfully completed', ma, dialId)
       const source = io.createSource(dialId + '.listener')
       conn.setInnerConn(
