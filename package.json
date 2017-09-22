@@ -51,7 +51,7 @@
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "gulp": "^3.9.1",
-    "libp2p-websocket-star-rendezvous": "^0.1.2",
+    "libp2p-websocket-star-rendezvous": "github:libp2p/js-libp2p-websocket-star-rendezvous",
     "lodash": "^4.17.4"
   },
   "repository": {
@@ -64,6 +64,6 @@
   "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme",
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
-    "mkg20001 <mkg20001@gmail.com>"
+    "Maciej Krüger <mkg20001@gmail.com>"
   ]
 }
