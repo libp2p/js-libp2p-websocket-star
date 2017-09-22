@@ -33,6 +33,7 @@ class Listener extends EE {
   constructor (options) {
     super()
     this.id = options.id
+    this.log = log.bind(log, 'listener#offline')
     this.canCrypto = Boolean(options.id)
     this._handler = options.handler || noop
     this.listeners_list = options.listeners || {}
@@ -51,7 +52,8 @@ class Listener extends EE {
       return cb()
     }
 
-    log('Dialing to Signalling Server on: ' + this.server)
+    this.log = log.bind(log, 'listener#' + this.server)
+    this.log('dialing to signalling server')
     const _io = this.io = io.connect(this.server, sioOptions)
 
     sp(_io, { codec: 'buffer' })
@@ -104,6 +106,8 @@ class Listener extends EE {
           return callback(new Error("Can't sign cryptoChallenge: No id provided"))
         }
 
+        this.log('performing cryptoChallenge')
+
         this.id.privKey.sign(Buffer.from(sig), (err, signature) => {
           if (err) {
             return callback(err)
@@ -126,6 +130,8 @@ class Listener extends EE {
     */
   _crypto (cb) {
     cb = cb ? once(cb) : noop
+
+    this.log('joining')
 
     if (!this.io) {
       return cb(new Error('Not connected'))
@@ -165,7 +171,7 @@ class Listener extends EE {
     * @private
     */
   _incommingDial (socket, dialId, dialFrom, cb) {
-    log('recieved dial from', dialFrom, dialId)
+    this.log('dial#' + dialId + ' incomming from', dialFrom)
     const ma = multiaddr(dialFrom)
     const source = this.io.createSource(dialId + '.dialer')
     const sink = this.io.createSink(dialId + '.listener')
@@ -202,19 +208,20 @@ class Listener extends EE {
       (cb) => this._crypto(cb)
     ], (err) => {
       if (err) {
+        this.log('success', err)
         if (!(err instanceof Error)) err = new Error(err)
         log(err)
         this._down()
         this.emit('error', err)
         this.emit('close')
         return callback(err)
-      }
+      } else this.log('success')
 
       this.io.on('reconnect', this._crypto.bind(this, (err) => {
         if (err) {
-          log('reconnect error', err)
+          this.log('reconnect error', err)
           this.emit('error', err)
-        } else log('reconnected')
+        } else this.log('reconnected')
       }))
 
       this.emit('listening')
@@ -258,6 +265,7 @@ class Listener extends EE {
     const conn = new Connection(null)
 
     const dialId = uuid()
+    const dlog = this.log.bind(log, 'dial#' + dialId)
 
     callback = callback ? once(callback) : noop
 
@@ -269,12 +277,12 @@ class Listener extends EE {
 
     const sink = io.createSink(dialId + '.dialer')
 
-    log('dialing %s (id %s)', ma, dialId)
+    dlog('dialing', ma.toString())
 
     // "multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
     io.emit('ss-dial', this.ma.toString(), ma.toString(), dialId, err => {
       if (err) return callback(err instanceof Error ? err : new Error(err))
-      log('dialing %s (id %s) successfully completed', ma, dialId)
+      dlog(err ? 'error: ' + err.toString() : 'success')
       const source = io.createSource(dialId + '.listener')
       conn.setInnerConn(
         {

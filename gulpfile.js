@@ -17,7 +17,8 @@ function boot (done) {
   const base = {
     host: '0.0.0.0',
     cryptoChallenge: false,
-    strictMultiaddr: false
+    strictMultiaddr: false,
+    refreshPeerListIntervalMS: 1000
   }
 
   parallel([
