@@ -17,7 +17,7 @@ Nodes using `libp2p-websocket-star` will connect to a known point in the network
 `libp2p-websocket-star` comes with batteries included, that means that you can also spawn your own rendezvous point right from this module. To do that, first insall the module globally in your machine with:
 
 ```bash
-> npm install --global libp2p-websocket-star
+> npm install --global libp2p-websocket-star-rendezvous
 ```
 
 This will install a `websockets-star` CLI tool. Now you can spawn the server with:
@@ -34,6 +34,8 @@ Defaults:
 ## Hosted Rendezvous server
 
 We host a rendezvous server at `ws-star-signal-1.servep2p.com` and `ws-star-signal-2.servep2p.com` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
+
+Additionally there is a rendezvous server at `ws-star-signal-3.servep2p.com` running the latest master version.
 
 A libp2p-websocket-star address, using the signalling server we provide, looks like:
 
