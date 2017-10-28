@@ -56,13 +56,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/libp2p/js-libp2p-websocket-star.git"
+    "url": "git+https://github.com/libp2p/js-libp2p-websocket-star-rendezvous.git"
   },
   "bugs": {
-    "url": "https://github.com/libp2p/js-libp2p-websocket-star/issues"
+    "url": "https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues"
   },
-  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme",
+  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star-rendezvous#readme",
   "contributors": [
-    "David Dias <daviddias.p@gmail.com>"
+    "David Dias <daviddias.p@gmail.com>",
+    "Maciej Krüger <mkg20001@gmail.com>"
   ]
 }
