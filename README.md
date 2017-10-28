@@ -94,7 +94,38 @@ hello
 hello from the other side
 ```
 
-### [Rendezvous server](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous)
+# [Rendezvous server](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous#usage)
+
+## Usage
+
+To reduce dependencies `libp2p-websocket-star` comes without the rendezvous server, that means that you need to install `libp2p-websocket-star-rendezvous` to start a rendezvous server. To do that, first insall the module globally in your machine with:
+
+```bash
+> npm install --global libp2p-websocket-star-rendezvous
+```
+
+This will install a `websockets-star` CLI tool. Now you can spawn the server with:
+
+```bash
+> websockets-star --port=9090 --host=127.0.0.1
+```
+
+Defaults:
+
+- `port` - 13579
+- `host` - '0.0.0.0'
+
+## Hosted Rendezvous server
+
+We host a rendezvous server at `ws-star-signal-1.servep2p.com` and `ws-star-signal-2.servep2p.com` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
+
+Additionally there is a rendezvous server at `ws-star-signal-3.servep2p.com` running the latest master version.
+
+A libp2p-websocket-star address, using the signalling server we provide, looks like:
+
+`/dns4/ws-star-signal-1.servep2p.com/wss/p2p-websocket-star/ipfs/<your-peer-id>`
+
+Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 
 ### This module uses `pull-streams`
 
