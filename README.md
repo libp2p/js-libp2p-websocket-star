@@ -150,3 +150,5 @@ const nodeStreamInstance = pullToStream(pullStreamInstance)
 ```
 
 To learn more about this utility, visit https://pull-stream.github.io/#pull-stream-to-stream.
+
+LICENSE MIT

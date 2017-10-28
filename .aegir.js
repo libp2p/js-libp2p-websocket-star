@@ -1,15 +1,10 @@
 'use strict'
 
-const gulp = require('gulp')
 const parallel = require('async/parallel')
 const rendezvous = require('libp2p-websocket-star-rendezvous')
 
 let _r = []
-
-gulp.task('test:node:before', boot)
-gulp.task('test:node:after', stop)
-gulp.task('test:browser:before', boot)
-gulp.task('test:browser:after', stop)
+let f = true // first run. used so metric gets only enabled once otherwise it crashes
 
 function boot (done) {
   const base = (v) => Object.assign({
@@ -19,7 +14,7 @@ function boot (done) {
     refreshPeerListIntervalMS: 1000
   }, v)
 
-  parallel([['r1', {port: 15001, metrics: true}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}]].map((v) => (cb) => {
+  parallel([['r1', {port: 15001, metrics: f}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}]].map((v) => (cb) => {
     rendezvous.start(base(v.pop()), (err, r) => {
       if (err) { return cb(err) }
       _r.push(r)
@@ -27,6 +22,7 @@ function boot (done) {
       cb()
     })
   }), done)
+  if (f) f = false
 }
 
 function stop (done) {
@@ -34,4 +30,9 @@ function stop (done) {
   _r = []
 }
 
-require('aegir/gulp')(gulp)
+module.exports = {
+  hooks: {
+    pre: boot,
+    post: stop
+  }
+}

@@ -4,18 +4,18 @@
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "main": "src/index.js",
   "scripts": {
-    "lint": "gulp lint",
-    "build": "gulp build",
-    "test": "gulp test",
-    "test:node": "gulp test:node",
-    "test:browser": "gulp test:browser",
-    "test:dns": "REMOTE_DNS=1 gulp test",
-    "test:ip": "REMOTE_IP=1 gulp test",
-    "release": "gulp release",
-    "release-minor": "gulp release --type minor",
-    "release-major": "gulp release --type major",
-    "coverage": "gulp coverage",
-    "coverage-publish": "aegir-coverage publish"
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "test": "aegir test --target node --target browser",
+    "test:node": "aegir test --target node",
+    "test:browser": "aegir test --target browser",
+    "test:dns": "REMOTE_DNS=1 aegir test --target browser",
+    "test:ip": "REMOTE_IP=1 aegir test --target browser",
+    "release": "aegir test release --target node --target browser",
+    "release-minor": "aegir release --type minor --target node --target browser",
+    "release-major": "aegir release --type major --target node --target browser",
+    "coverage": "aegir coverage",
+    "coverage-publish": "aegir coverage --provider coveralls"
   },
   "keywords": [
     "libp2p",
@@ -47,7 +47,7 @@
     "test": "test"
   },
   "devDependencies": {
-    "aegir": "^11.0.2",
+    "aegir": "^12.1.1",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "gulp": "^3.9.1",
