@@ -11,7 +11,6 @@ const each = require('async/each')
 
 const WebSocketStar = require('../src')
 
-// TODO Peer Discovery is broken
 describe('peer discovery', () => {
   let listeners = []
   let ws1

@@ -11,6 +11,7 @@ const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
 const Listener = require('./listener')
 const cleanUrlSIO = utils.cleanUrlSIO
+const mafmt = require('mafmt')
 
 class WebsocketStar {
   /**
@@ -101,10 +102,7 @@ class WebsocketStar {
       multiaddrs = [multiaddrs]
     }
 
-    return multiaddrs.filter((ma) => {
-      // TODO this should be using mafmt
-      return ma.toString().indexOf('p2p-websocket-star') > 0
-    })
+    return multiaddrs.filter((ma) => mafmt.WebSocketStar.matches(ma))
   }
 
   /**

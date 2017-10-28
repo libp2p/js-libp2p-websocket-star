@@ -11,7 +11,7 @@ const multiaddr = require('multiaddr')
 const WebSocketStar = require('../src')
 
 describe('filter', () => {
-  it('filters non valid webrtc-star multiaddrs', () => {
+  it('filters non valid websocket-star multiaddrs', () => {
     const ws = new WebSocketStar()
 
     const maArr = [
@@ -30,7 +30,7 @@ describe('filter', () => {
 
     const filtered = ws.filter(maArr)
     expect(filtered.length).to.not.equal(maArr.length)
-    expect(filtered.length).to.equal(10)
+    expect(filtered.length).to.equal(8)
   })
 
   it('filter a single addr for this transport', () => {
