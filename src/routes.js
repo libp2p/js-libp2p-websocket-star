@@ -1,5 +1,7 @@
 'use strict'
 
+/* eslint-disable standard/no-callback-literal */
+
 const SocketIO = require('socket.io')
 const sp = require('socket.io-pull-stream')
 const util = require('./utils')
@@ -62,6 +64,8 @@ module.exports = (config, http) => {
     })
     proto.handleSocket(socket)
   }
+
+  /* eslint-disable standard/no-callback-literal - Needed because JSON.stringify(Error) returns "{}" */
 
   // join this signaling server network
   function join (socket, multiaddr, pub, cb) {
@@ -214,6 +218,8 @@ module.exports = (config, http) => {
       cb()
     })
   }
+
+  /* eslint-enable standard/no-callback-literal */
 
   return this
 }

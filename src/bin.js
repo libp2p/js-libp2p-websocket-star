@@ -7,6 +7,8 @@ const argv = require('minimist')(process.argv.slice(2))
 
 let server
 
+/* eslint-disable no-console */
+
 signalling.start({
   port: argv.port || argv.p || process.env.PORT || 9090,
   host: argv.host || argv.h || process.env.HOST || '0.0.0.0',
@@ -28,3 +30,5 @@ process.on('SIGINT', () => {
     process.exit(e ? 2 : 0)
   })
 })
+
+/* eslint-enable no-console */
