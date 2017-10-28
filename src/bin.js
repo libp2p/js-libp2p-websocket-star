@@ -30,5 +30,3 @@ process.on('SIGINT', () => {
     process.exit(e ? 2 : 0)
   })
 })
-
-/* eslint-enable no-console */
