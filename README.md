@@ -37,7 +37,13 @@ A docker image is offered for running this service in production
 
 ```
 docker pull libp2p/websocket-star-rendezvous:release
-docker run -d -p 13579:8090 -n rendezvous libp2p/websocket-star-rendezvous:release
+docker run -d -p 9090:9090 --name rendezvous libp2p/websocket-star-rendezvous:release
+```
+
+To disable prometheus metrics run the server with `-e DISABLE_METRICS=1`
+
+```
+docker run -d -p 9090:9090 --name rendezvous -e DISABLE_METRICS=1 libp2p/websocket-star-rendezvous:release
 ```
 
 ## Hosted Rendezvous server

@@ -14,7 +14,7 @@ signalling.start({
   host: argv.host || argv.h || process.env.HOST || '0.0.0.0',
   cryptoChallenge: !(argv.disableCryptoChallenge || process.env.DISABLE_CRYPTO_CHALLENGE),
   strictMultiaddr: !(argv.disableStrictMultiaddr || process.env.DISABLE_STRICT_MULTIADDR),
-  metrics: true
+  metrics: !(argv.disableMetrics || process.env.DISABLE_METRICS)
 }, (err, _server) => {
   if (err) {
     throw err
