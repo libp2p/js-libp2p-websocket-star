@@ -6,7 +6,7 @@
 [![Coverage](https://coveralls.io/repos/github/libp2p/js-libp2p-websocket-star-rendezvous/badge.svg?branch=master)](https://coveralls.io/github/libp2p/js-libp2p-websocket-star-rendezvous?branch=master)
 [![david-dm](https://david-dm.org/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=flat-square)](https://david-dm.org/libp2p/js-libp2p-websocket-star-rendezvous)
 
-> The rendezvous service for [libp2p-webrtc-star](https://github.com/libp2p/js-libp2p-websocket-star).
+> The rendezvous service for [libp2p-websocket-star](https://github.com/libp2p/js-libp2p-websocket-star).
 
 ## Descriptions
 

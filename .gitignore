@@ -6,6 +6,7 @@ yarn.lock
 test/setup/tmp-disposable-nodes-addrs.json
 dist
 coverage
+.nyc_output
 **/*.swp
 **/*.bak
 examples/sub-module/**/bundle.js
