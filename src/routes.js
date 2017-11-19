@@ -68,7 +68,7 @@ module.exports = (config, http) => {
 
   // join this signaling server network
   function join (socket, multiaddr, pub, cb) {
-    const log = config.log.bind(config.log, '[' + socket.id + ']')
+    const log = socket.log = config.log.bind(config.log, '[' + socket.id + ']')
 
     if (getConfig().strictMultiaddr && !util.validateMa(multiaddr)) {
       joinsTotal.inc()
@@ -127,6 +127,7 @@ module.exports = (config, http) => {
   function joinFinalize (socket, multiaddr, cb) {
     const log = getConfig().log.bind(getConfig().log, '[' + socket.id + ']')
     getPeers()[multiaddr] = socket
+    if (!socket.stopSendingPeersIntv) socket.stopSendingPeersIntv = {}
     joinsSuccessTotal.inc()
     refreshMetrics()
     socket.addrs.push(multiaddr)
@@ -136,22 +137,14 @@ module.exports = (config, http) => {
 
     let refreshInterval = setInterval(sendPeers, getConfig().refreshPeerListIntervalMS)
 
-    socket.once('ss-leave', function handleLeave (ma) {
-      if (ma === multiaddr) {
-        refreshMetrics()
-        socket.addrs = socket.addrs.filter(m => m !== ma)
-        stopSendingPeers()
-      } else {
-        socket.once('ss-leave', handleLeave)
-      }
-    })
-
     socket.once('disconnect', stopSendingPeers)
 
     sendPeers()
 
     function sendPeers () {
-      Object.keys(getPeers()).forEach((mh) => {
+      const list = Object.keys(getPeers())
+      log(multiaddr, 'sending', (list.length - 1).toString(), 'peer(s)')
+      list.forEach((mh) => {
         if (mh === multiaddr) {
           return
         }
@@ -162,31 +155,41 @@ module.exports = (config, http) => {
 
     function stopSendingPeers () {
       if (refreshInterval) {
+        log(multiaddr, 'stop sending peers')
         clearInterval(refreshInterval)
         refreshInterval = null
       }
     }
 
+    socket.stopSendingPeersIntv[multiaddr] = stopSendingPeers
+
     cb()
   }
 
   function leave (socket, multiaddr) {
-    if (getPeers()[multiaddr]) {
+    if (getPeers()[multiaddr] && getPeers()[multiaddr].id === socket.id) {
+      socket.log('leaving', multiaddr)
       delete getPeers()[multiaddr]
+      socket.addrs = socket.addrs.filter(m => m !== multiaddr)
+      if (socket.stopSendingPeersIntv[multiaddr]) {
+        socket.stopSendingPeersIntv[multiaddr]()
+        delete socket.stopSendingPeersIntv[multiaddr]
+      }
+      refreshMetrics()
     }
   }
 
   function disconnect (socket) {
+    socket.log('disconnected')
     Object.keys(getPeers()).forEach((mh) => {
       if (getPeers()[mh].id === socket.id) {
-        delete getPeers()[mh]
+        leave(socket, mh)
       }
     })
-    refreshMetrics()
   }
 
   function dial (socket, from, to, dialId, cb) {
-    const log = getConfig().log.bind(getConfig().log, '[' + dialId + ']')
+    const log = socket.log
     const s = socket.addrs.filter((a) => a === from)[0]
 
     dialsTotal.inc()
