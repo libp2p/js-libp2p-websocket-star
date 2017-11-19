@@ -1,3 +1,14 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.2.0...v0.2.1) (2017-11-19)
+
+
+### Bug Fixes
+
+* Docker cmd - feat: Disable metrics option ([21f95d2](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/21f95d2))
+* release command ([37e5b1f](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/37e5b1f))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.1.2...v0.2.0) (2017-10-28)
 
