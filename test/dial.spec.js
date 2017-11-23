@@ -38,7 +38,7 @@ describe('dial', () => {
 
   if (process.env.REMOTE_DNS) {
     // test with deployed signalling server using DNS
-    console.log('Using DNS:', maDNS, maDNS6)
+    console.log('Using DNS:', maDNS, maDNS6) // eslint-disable-line no-console
     ma1 = maGen(maDNS, peerId1)
     // ma1v6 = maGen(maDNS6, peerId1)
 
@@ -46,7 +46,7 @@ describe('dial', () => {
     ma2v6 = maGen(maDNS6, peerId2)
   } else if (process.env.REMOTE_IP) {
     // test with deployed signalling server using IP
-    console.log('Using IP:', maRemoteIP4, maRemoteIP6)
+    console.log('Using IP:', maRemoteIP4, maRemoteIP6) // eslint-disable-line no-console
     ma1 = maGen(maRemoteIP4, peerId1)
     // ma1v6 = maGen(maRemoteIP6, peerId1)
 

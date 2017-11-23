@@ -53,7 +53,7 @@ function validate (def, data) {
   if (!Array.isArray(data)) throw new Error('Data is not an array')
   def.forEach((type, index) => {
     if (!types[type]) {
-      console.error('Type %s does not exist', type)
+      console.error('Type %s does not exist', type) // eslint-disable-line no-console
       throw new Error('Type ' + type + ' does not exist')
     }
     if (!types[type](data[index])) throw new Error('Data at index ' + index + ' is invalid for type ' + type)

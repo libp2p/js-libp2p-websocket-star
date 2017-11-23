@@ -11,6 +11,8 @@ const multiaddr = require('multiaddr')
 
 const WebSocketStar = require('../src')
 
+const skiptravis = process.env.TRAVIS ? it.skip : it
+
 describe('listen', () => {
   let ws
 
@@ -51,7 +53,7 @@ describe('listen', () => {
     // TODO ? Should this apply ?
   })
 
-  it('listen on IPv6 addr', (done) => {
+  skiptravis('listen on IPv6 addr', (done) => {
     const listener = ws.createListener((conn) => {})
 
     listener.listen(mav6, (err) => {
