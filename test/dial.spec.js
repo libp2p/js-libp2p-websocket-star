@@ -9,10 +9,12 @@ chai.use(dirtyChai)
 
 const multiaddr = require('multiaddr')
 const each = require('async/each')
+const map = require('async/map')
 const pull = require('pull-stream')
 const Buffer = require('safe-buffer').Buffer
 
 const WebSocketsStar = require('../src')
+const PeerId = require('peer-id')
 
 describe('dial', () => {
   let listeners = []
@@ -24,26 +26,26 @@ describe('dial', () => {
   let ma2
   let ma2v6
 
-  const peerId1 = 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a'
-  const peerId2 = 'QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2b'
+  const peerId1 = 'QmS8BL7M8jrXYhHo2ofEVeiq5aDKTr29ksmpcqWxjZGvpX'
+  const peerId2 = 'QmeJGHUQ4hsMvPzAoXCdkT1Z9NBgjT7BenVPENUgpufENP'
 
-  const maDNS = '/dns/ws-star-signal-1.servep2p.com'
+  const maDNS = '/dns/ws-star-signal-3.servep2p.com'
   const maDNS6 = '/dns6/ws-star-signal-2.servep2p.com'
   const maRemoteIP4 = '/ip4/148.251.206.162/tcp/9090'
   const maRemoteIP6 = '/ip6/2a01:4f8:212:e0::1/tcp/4287'
 
   const maLocalIP4 = '/ip4/127.0.0.1/tcp/15001'
   // const maLocalIP6 = '/ip6/::1/tcp/15003'
-  const maGen = (base, id) => multiaddr(`/${base}/p2p-websocket-star/ws/ipfs/${id}`)
+  const maGen = (base, id, sec) => multiaddr(`/${base}/${sec ? "wss" : "ws"}/p2p-websocket-star/ipfs/${id}`)
 
   if (process.env.REMOTE_DNS) {
     // test with deployed signalling server using DNS
     console.log('Using DNS:', maDNS, maDNS6) // eslint-disable-line no-console
-    ma1 = maGen(maDNS, peerId1)
+    ma1 = maGen(maDNS, peerId1, true)
     // ma1v6 = maGen(maDNS6, peerId1)
 
-    ma2 = maGen(maDNS, peerId2)
-    ma2v6 = maGen(maDNS6, peerId2)
+    ma2 = maGen(maDNS, peerId2, true)
+    ma2v6 = maGen(maDNS6, peerId2, true)
   } else if (process.env.REMOTE_IP) {
     // test with deployed signalling server using IP
     console.log('Using IP:', maRemoteIP4, maRemoteIP6) // eslint-disable-line no-console
@@ -61,15 +63,18 @@ describe('dial', () => {
   }
 
   before((done) => {
-    ws1 = new WebSocketsStar()
-    ws2 = new WebSocketsStar()
+    map(require('./ids.json'), PeerId.createFromJSON, (err, ids) => {
+      if (err) return done(err)
+      ws1 = new WebSocketsStar({ id: ids[0] })
+      ws2 = new WebSocketsStar({ id: ids[1] })
 
-    each([
-      [ws1, ma1],
-      [ws2, ma2]
-      // [ws1, ma1v6],
-      // [ws2, ma2v6]
-    ], (i, n) => listeners[listeners.push(i[0].createListener((conn) => pull(conn, conn))) - 1].listen(i[1], n), done)
+      each([
+        [ws1, ma1],
+        [ws2, ma2]
+        // [ws1, ma1v6],
+        // [ws2, ma2v6]
+      ], (i, n) => listeners[listeners.push(i[0].createListener((conn) => pull(conn, conn))) - 1].listen(i[1], n), done)
+    })
   })
 
   it('dial on IPv4, check callback', (done) => {
