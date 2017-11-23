@@ -1,3 +1,4 @@
+# Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
 sudo: false
 language: node_js
 
@@ -7,6 +8,8 @@ matrix:
     env: CXX=g++-4.8
   - node_js: 8
     env: CXX=g++-4.8
+    #  - node_js: stable
+    #    env: CXX=g++-4.8
 
 script:
   - npm run lint
