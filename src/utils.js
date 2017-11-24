@@ -101,17 +101,14 @@ function Protocol (log) {
 }
 
 function getIdAndValidate (pub, id, cb) {
-  Id.createFromPubKey(Buffer.from(pub, 'hex'), (err, _id) => {
-    if (err) {
-      return cb(new Error('Crypto error'))
-    }
+  Id.createFromPubKey(Buffer.from(pub, 'hex'))
+    .then(_id => {
+      if (_id.toB58String() !== id) {
+        throw Error('Id is not matching')
+      }
 
-    if (_id.toB58String() !== id) {
-      return cb(new Error('Id is not matching'))
-    }
-
-    return cb(null, crypto.keys.unmarshalPublicKey(Buffer.from(pub, 'hex')))
-  })
+      return crypto.keys.unmarshalPublicKey(Buffer.from(pub, 'hex'))
+    }, cb)
 }
 
 exports = module.exports
