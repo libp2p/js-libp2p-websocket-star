@@ -4,11 +4,10 @@
   "description": "The rendezvous service for libp2p-websocket-star",
   "main": "src/index.js",
   "bin": {
-    "websockets-star": "src/bin.js"
+    "rendezvous": "src/bin.js"
   },
   "scripts": {
-    "rendezvous": "node src/bin.js",
-    "start": "node src/bin.js",
+    "start": "node src/bin.js --disableCryptoChallenge",
     "lint": "aegir lint",
     "build": "aegir build",
     "test": "aegir test --target node",
