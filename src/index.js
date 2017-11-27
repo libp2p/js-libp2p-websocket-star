@@ -4,6 +4,7 @@ const Hapi = require('hapi')
 const path = require('path')
 const epimetheus = require('epimetheus')
 const merge = require('merge-recursive').recursive
+const defaultConfig = require('./config')
 
 exports = module.exports
 
@@ -13,7 +14,7 @@ exports.start = (options, callback) => {
     options = {}
   }
 
-  const config = merge(Object.assign({}, require('./config')), Object.assign({}, options))
+  const config = merge(Object.assign({}, defaultConfig), options)
   const log = config.log
 
   const port = options.port || config.hapi.port
@@ -21,14 +22,9 @@ exports.start = (options, callback) => {
 
   const http = new Hapi.Server(config.hapi.options)
 
-  http.connection({
-    port,
-    host
-  })
+  http.connection({ port, host })
 
-  http.register({
-    register: require('inert')
-  }, err => {
+  http.register({ register: require('inert') }, (err) => {
     if (err) {
       return callback(err)
     }
@@ -54,7 +50,7 @@ exports.start = (options, callback) => {
     })
   })
 
-  if (config.metrics) epimetheus.instrument(http)
+  if (config.metrics) { epimetheus.instrument(http) }
 
   return http
 }

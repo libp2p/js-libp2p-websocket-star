@@ -16,17 +16,15 @@ signalling.start({
   strictMultiaddr: !(argv.disableStrictMultiaddr || process.env.DISABLE_STRICT_MULTIADDR),
   metrics: !(argv.disableMetrics || process.env.DISABLE_METRICS)
 }, (err, _server) => {
-  if (err) {
-    throw err
-  }
+  if (err) { throw err }
   server = _server
 
   console.log('Listening on:', server.info.uri)
 })
 
 process.on('SIGINT', () => {
-  server.stop((e) => {
+  server.stop((err) => {
     console.log('Rendezvous server stopped')
-    process.exit(e ? 2 : 0)
+    process.exit(err ? 2 : 0)
   })
 })
