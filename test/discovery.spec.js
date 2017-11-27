@@ -20,7 +20,7 @@ describe('peer discovery', () => {
   const ma2 = multiaddr('/ip4/127.0.0.1/tcp/15003/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo3B')
 
   it('listen on the first', (done) => {
-    ws1 = new WebSocketStar()
+    ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
     const listener = ws1.createListener((/* conn */) => {})
 
@@ -32,7 +32,7 @@ describe('peer discovery', () => {
   })
 
   it('listen on the second, discover the first', (done) => {
-    ws2 = new WebSocketStar()
+    ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
     ws1.discovery.once('peer', (peerInfo) => {
       expect(peerInfo.multiaddrs.has(ma2)).to.equal(true)

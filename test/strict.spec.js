@@ -15,6 +15,8 @@ const pull = require('pull-stream')
 
 const WebSocketStar = require('../src')
 
+const SERVER_PORT = 15004
+
 describe('strict', () => {
   let id1
   let ma1
@@ -32,8 +34,9 @@ describe('strict', () => {
 
       id1 = keys.shift()
       id2 = keys.shift()
-      ma1 = multiaddr('/ip4/127.0.0.1/tcp/15002/ws/p2p-websocket-star/ipfs/QmS8BL7M8jrXYhHo2ofEVeiq5aDKTr29ksmpcqWxjZGvpX')
-      ma2 = multiaddr('/ip4/127.0.0.1/tcp/15002/ws/p2p-websocket-star/ipfs/QmeJGHUQ4hsMvPzAoXCdkT1Z9NBgjT7BenVPENUgpufENP')
+      ma1 = multiaddr('/ip4/127.0.0.1/tcp/' + SERVER_PORT + '/ws/p2p-websocket-star/ipfs/' + id1.toB58String())
+      ma2 = multiaddr('/ip4/127.0.0.1/tcp/' + SERVER_PORT + '/ws/p2p-websocket-star/ipfs/' + id2.toB58String())
+
       done()
     })
   })

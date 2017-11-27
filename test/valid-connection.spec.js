@@ -26,14 +26,14 @@ describe('valid Connection', () => {
     series([first, second], dial)
 
     function first (next) {
-      ws1 = new WebSocketStar()
+      ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
       const listener = ws1.createListener((conn) => pull(conn, conn))
       listener.listen(ma1, next)
     }
 
     function second (next) {
-      ws2 = new WebSocketStar()
+      ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
       const listener = ws2.createListener((conn) => pull(conn, conn))
       listener.listen(ma2, next)

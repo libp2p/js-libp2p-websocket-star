@@ -36,7 +36,7 @@ describe('dial', () => {
 
   const maLocalIP4 = '/ip4/127.0.0.1/tcp/15001'
   // const maLocalIP6 = '/ip6/::1/tcp/15003'
-  const maGen = (base, id, sec) => multiaddr(`/${base}/${sec ? "wss" : "ws"}/p2p-websocket-star/ipfs/${id}`)
+  const maGen = (base, id, sec) => multiaddr(`/${base}/${sec ? 'wss' : 'ws'}/p2p-websocket-star/ipfs/${id}`)
 
   if (process.env.REMOTE_DNS) {
     // test with deployed signalling server using DNS
@@ -65,8 +65,8 @@ describe('dial', () => {
   before((done) => {
     map(require('./ids.json'), PeerId.createFromJSON, (err, ids) => {
       if (err) return done(err)
-      ws1 = new WebSocketsStar({ id: ids[0] })
-      ws2 = new WebSocketsStar({ id: ids[1] })
+      ws1 = new WebSocketsStar({ id: ids[0], allowJoinWithDisabledChallenge: true })
+      ws2 = new WebSocketsStar({ id: ids[1], allowJoinWithDisabledChallenge: true })
 
       each([
         [ws1, ma1],

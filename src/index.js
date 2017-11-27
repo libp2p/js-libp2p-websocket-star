@@ -24,6 +24,7 @@ class WebsocketStar {
     options = options || {}
 
     this.id = options.id
+    this.flag = options.allowJoinWithDisabledChallenge // let's just refer to it as "flag"
 
     this.discovery = new EE()
     this.discovery.start = (callback) => {
@@ -84,7 +85,8 @@ class WebsocketStar {
     const listener = new Listener({
       id: this.id,
       handler,
-      listeners: this.listeners_list
+      listeners: this.listeners_list,
+      flag: this.flag
     })
 
     listener.on('peer', this._peerDiscovered)

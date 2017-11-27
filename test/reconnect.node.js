@@ -35,7 +35,7 @@ describe('reconnect to signaling server', () => {
   after((done) => r.stop(done))
 
   it('listen on the first', (done) => {
-    ws1 = new WebSocketStar()
+    ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
     const listener = ws1.createListener((conn) => {})
     listener.listen(ma1, (err) => {
@@ -45,7 +45,7 @@ describe('reconnect to signaling server', () => {
   })
 
   it('listen on the second, discover the first', (done) => {
-    ws2 = new WebSocketStar()
+    ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
     ws1.discovery.once('peer', (peerInfo) => {
       expect(peerInfo.multiaddrs.has(ma2)).to.equal(true)
@@ -71,7 +71,7 @@ describe('reconnect to signaling server', () => {
   })
 
   it('listen on the third, first discovers it', (done) => {
-    ws3 = new WebSocketStar()
+    ws3 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
     const listener = ws3.createListener((conn) => {})
     listener.listen(ma3, (err) => expect(err).to.not.exist())

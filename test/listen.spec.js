@@ -20,7 +20,7 @@ describe('listen', () => {
   const mav6 = multiaddr('/ip6/::1/tcp/15003/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooooB')
 
   before(() => {
-    ws = new WebSocketStar()
+    ws = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
   })
 
   it('listen, check for callback', (done) => {

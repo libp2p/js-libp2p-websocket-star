@@ -14,7 +14,7 @@ function boot (done) {
     refreshPeerListIntervalMS: 1000
   }, v)
 
-  parallel([['r1', {port: 15001, metrics: f}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}]].map((v) => (cb) => {
+  parallel([['r1', {port: 15001, metrics: f}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}], ['r4', {port: 15004, cryptoChallenge: true}]].map((v) => (cb) => {
     rendezvous.start(base(v.pop()), (err, r) => {
       if (err) { return cb(err) }
       _r.push(r)
