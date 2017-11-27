@@ -53,6 +53,7 @@ describe('listen', () => {
     // TODO ? Should this apply ?
   })
 
+  // travis ci has some ipv6 issues. circle ci is fine.
   skiptravis('listen on IPv6 addr', (done) => {
     const listener = ws.createListener((conn) => {})
 
