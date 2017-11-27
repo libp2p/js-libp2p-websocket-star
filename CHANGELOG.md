@@ -1,3 +1,19 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.5.1...v0.6.0) (2017-11-27)
+
+
+### Bug Fixes
+
+* Ci ([2402df2](https://github.com/libp2p/js-libp2p-websocket-star/commit/2402df2))
+* Disconnect after challenge error ([f7247d5](https://github.com/libp2p/js-libp2p-websocket-star/commit/f7247d5))
+
+
+### Features
+
+* allowJoinWithDisabledChallenge ([257f92f](https://github.com/libp2p/js-libp2p-websocket-star/commit/257f92f))
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.5.0...v0.5.1) (2017-11-19)
 
