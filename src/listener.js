@@ -117,7 +117,10 @@ class Listener extends EE {
           this._join(callback)
         })
       } else {
-        if (!this.flag) { return callback(new Error('Tried to listen on a server with crypto challenge disabled!\n    This is prohibited by default and can lead to security issues!\n    Please set "allowJoinWithDisabledChallenge" to true in the constructor options (but only if you know what you are doing)!')) }
+        if (!this.flag) {
+          this._down()
+          return callback(new Error('Tried to listen on a server with crypto challenge disabled!\n    This is prohibited by default and can lead to security issues!\n    Please set "allowJoinWithDisabledChallenge" to true in the constructor options (but only if you know what you are doing)!'))
+        }
         this.signature = '_'
         callback()
       }
