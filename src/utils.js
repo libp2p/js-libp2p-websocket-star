@@ -6,7 +6,6 @@ const crypto = require('libp2p-crypto')
 const mafmt = require('mafmt')
 
 function cleanUrlSIO (ma) {
-  const maStrSplit = ma.toString().split('/')
   const protos = ma.protos()
   const ipProto = protos[0].name
   const tcpProto = protos[1].name
@@ -24,10 +23,9 @@ function cleanUrlSIO (ma) {
   }
 
   let proto = wsProto === 'wss' ? 'https' : 'http'
-  let port = tcpPort
-  if (wsProto === 'ws' && tcpPort === 80 || wsProto === 'wss' && tcpPort === 443) {
-    port = ''
-  }
+  let port =
+    (wsProto === 'ws' && tcpPort === 80) || (wsProto === 'wss' && tcpPort === 443)
+      ? '' : tcpPort
 
   return proto + '://' + host + (port ? ':' + port : '')
 }

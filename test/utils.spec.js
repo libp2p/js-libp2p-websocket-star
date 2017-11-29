@@ -7,15 +7,10 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
-const cleanMultiaddr = require('../src/utils').cleanMultiaddr
 const cleanUrlSIO = require('../src/utils').cleanUrlSIO
 
 describe('utils', () => {
-  const legacyMultiaddrStringDNS = '/libp2p-websocket-star/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/ipfs/QmWxLfixekyv6GAzvDEtXfXjj7gb1z3G8i5aQNHLhw1zA1'
-  const legacyMultiaddrStringIP = '/libp2p-websocket-star/ip4/127.0.0.1/tcp/1212/wss/ipfs/QmWxLfixekyv6GAzvDEtXfXjj7gb1z3G8i5aQNHLhw1zA1'
-
   const modernMultiaddrStringDNS = '/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-websocket-star/ipfs/QmWxLfixekyv6GAzvDEtXfXjj7gb1z3G8i5aQNHLhw1zA1'
-  const modernMultiaddrStringIP = '/ip4/127.0.0.1/tcp/1212/wss/p2p-websocket-star/ipfs/QmWxLfixekyv6GAzvDEtXfXjj7gb1z3G8i5aQNHLhw1zA1'
 
   const modernMultiaddrStringDNS2 = '/dns4/star-signal.cloud.ipfs.team/tcp/9999/wss/p2p-websocket-star/ipfs/QmWxLfixekyv6GAzvDEtXfXjj7gb1z3G8i5aQNHLhw1zA1'
   const modernMultiaddrStringDNS3 = '/dns4/star-signal.cloud.ipfs.team/tcp/80/ws/p2p-websocket-star/ipfs/QmWxLfixekyv6GAzvDEtXfXjj7gb1z3G8i5aQNHLhw1zA1'
