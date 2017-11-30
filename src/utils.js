@@ -6,32 +6,28 @@ const crypto = require('libp2p-crypto')
 const mafmt = require('mafmt')
 
 function cleanUrlSIO (ma) {
-  const maStrSplit = ma.toString().split('/')
-  let maTCP = ma
-  if (maTCP.toString().indexOf('/ws') !== -1) maTCP = maTCP.decapsulate('ws')
-  if (maTCP.toString().indexOf('/wss') !== -1) maTCP = maTCP.decapsulate('wss')
-  if (maTCP.toString().indexOf('/p2p-websocket-star') !== -1) maTCP = maTCP.decapsulate('p2p-websocket-star')
+  const protos = ma.protos()
+  const ipProto = protos[0].name
+  const tcpProto = protos[1].name
+  const wsProto = protos[2].name
+  const stringTuples = ma.stringTuples()
+  const tcpPort = stringTuples[1][1]
 
-  if (mafmt.TCP.matches(maTCP)) {
-    if (maStrSplit[1] === 'ip4') {
-      return 'http://' + maStrSplit[2] + ':' + maStrSplit[4]
-    } else if (maStrSplit[1] === 'ip6') {
-      return 'http://[' + maStrSplit[2] + ']:' + maStrSplit[4]
-    } else {
-      throw new Error('invalid multiaddr: ' + ma.toString())
-    }
-  } else if (multiaddr.isName(ma)) {
-    const wsProto = ma.protos()[1].name
-    if (wsProto === 'ws') {
-      return 'http://' + maStrSplit[2]
-    } else if (wsProto === 'wss') {
-      return 'https://' + maStrSplit[2]
-    } else {
-      throw new Error('invalid multiaddr: ' + ma.toString())
-    }
-  } else {
+  if (tcpProto !== 'tcp' || (wsProto !== 'ws' && wsProto !== 'wss')) {
     throw new Error('invalid multiaddr: ' + ma.toString())
   }
+
+  let host = stringTuples[0][1]
+  if (ipProto === 'ip6') {
+    host = '[' + host + ']'
+  }
+
+  let proto = wsProto === 'wss' ? 'https' : 'http'
+  let port =
+    (wsProto === 'ws' && tcpPort === 80) || (wsProto === 'wss' && tcpPort === 443)
+      ? '' : tcpPort
+
+  return proto + '://' + host + (port ? ':' + port : '')
 }
 
 const types = {

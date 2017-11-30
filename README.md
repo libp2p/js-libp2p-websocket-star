@@ -42,7 +42,7 @@ Id.create((err, id) => {
   if (err) throw err
 
   const peerInfo = new Info(id)
-  peerInfo.multiaddrs.add(multiaddr("/dns4/ws-star-signal-1.servep2p.com/wss/p2p-websocket-star/"))
+  peerInfo.multiaddrs.add(multiaddr("/dns4/ws-star-signal-1.servep2p.com/tcp/443/wss/p2p-websocket-star/"))
 
   // TODO -> review why the ID can not be passed by the .listen call
   const ws = new WSStar({ id: id }) // the id is required for the crypto challenge
@@ -123,7 +123,7 @@ Additionally there is a rendezvous server at `ws-star-signal-3.servep2p.com` run
 
 A libp2p-websocket-star address, using the signalling server we provide, looks like:
 
-`/dns4/ws-star-signal-1.servep2p.com/wss/p2p-websocket-star/ipfs/<your-peer-id>`
+`/dns4/ws-star-signal-1.servep2p.com/tcp/443/wss/p2p-websocket-star/ipfs/<your-peer-id>`
 
 Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 
