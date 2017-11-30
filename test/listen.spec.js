@@ -11,7 +11,7 @@ const multiaddr = require('multiaddr')
 
 const WebSocketStar = require('../src')
 
-const skiptravis = process.env.TRAVIS ? it.skip : it
+// const skiptravis = process.env.TRAVIS ? it.skip : it
 
 describe('listen', () => {
   let ws
