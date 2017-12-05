@@ -222,12 +222,16 @@ class Listener extends EE {
         return callback(err)
       } else this.log('success')
 
-      this.io.on('reconnect', this._crypto.bind(this, (err) => {
-        if (err) {
-          this.log('reconnect error', err)
-          this.emit('error', err)
-        } else this.log('reconnected')
-      }))
+      this.io.on('reconnect', () => {
+        // force to get a new signature
+        this.signature = null
+        this._crypto((err) => {
+          if (err) {
+            this.log('reconnect error', err)
+            this.emit('error', err)
+          } else this.log('reconnected')
+        })
+      })
 
       this.emit('listening')
       callback()
