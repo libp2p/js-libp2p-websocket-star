@@ -62,7 +62,13 @@ class WebsocketStar {
       options = {}
     }
 
-    const listener = this.listeners_list[cleanUrlSIO(ma)]
+    let url
+    try {
+      url = cleanUrlSIO(ma)
+    } catch (err) {
+      return callback(err) // early
+    }
+    const listener = this.listeners_list[url]
     if (!listener) {
       callback(new Error('No listener for this server'))
       return new Connection()
