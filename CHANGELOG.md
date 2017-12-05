@@ -1,3 +1,13 @@
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.1...v0.7.2) (2017-12-05)
+
+
+### Bug Fixes
+
+* reconnect signature and multi address validation ([#39](https://github.com/libp2p/js-libp2p-websocket-star/issues/39)) ([51ac5d5](https://github.com/libp2p/js-libp2p-websocket-star/commit/51ac5d5))
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.0...v0.7.1) (2017-11-30)
 
