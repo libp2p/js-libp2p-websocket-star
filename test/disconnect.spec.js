@@ -2,11 +2,6 @@
 
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const multiaddr = require('multiaddr')
 const series = require('async/series')
 const pull = require('pull-stream')
@@ -21,7 +16,7 @@ describe('disconnect', () => {
   const ma2 = multiaddr('/ip4/127.0.0.1/tcp/15001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo5b')
 
   let conn
-  let other_conn
+  let otherConn
 
   before((done) => {
     series([first, second], dial)
@@ -36,7 +31,7 @@ describe('disconnect', () => {
     function second (next) {
       ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
 
-      const listener = ws2.createListener((conn) => other_conn = conn)
+      const listener = ws2.createListener((conn) => (otherConn = conn))
       listener.listen(ma2, next)
     }
 
@@ -51,7 +46,7 @@ describe('disconnect', () => {
       pull.collect(err => {
         if (err) return done(err)
         pull(
-          other_conn,
+          otherConn,
           pull.collect(err => {
             if (err) return done(err)
             done()
