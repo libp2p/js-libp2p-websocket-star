@@ -42,7 +42,7 @@ module.exports = (config, http) => {
   const joinsFailureTotal = config.metrics ? new client.Counter({ name: 'rendezvous_joins_total_failure', help: 'failed joins since server started' }) : fake.counter
   const joinsTotal = config.metrics ? new client.Counter({ name: 'rendezvous_joins_total', help: 'all joins since server started' }) : fake.counter
 
-  const getPeers = () => this._peers
+  const getPeers = () => this._peers  // it's a function because, and I'm not kidding, the value of that var is different for every peer that has joined
   const refreshMetrics = () => peersMetric.set(Object.keys(getPeers()).length)
 
   this.peers = () => getPeers()
