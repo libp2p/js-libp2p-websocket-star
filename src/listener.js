@@ -72,6 +72,7 @@ class Listener extends EE {
   /**
     * Disconnects from signalling server
     * @returns {undefined}
+    * @private
     */
   _down () {
     if (!this.io) {
