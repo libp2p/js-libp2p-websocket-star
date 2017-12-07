@@ -23,7 +23,7 @@ const sioOptions = {
 }
 
 /**
-  * One listener for one signaling server
+  * Listener for signalling server
   * @class
   * @param {Object} options - Options for the listener
   * @param {PeerId} options.id - Id for the crypto challenge
