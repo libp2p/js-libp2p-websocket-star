@@ -55,8 +55,6 @@ Dials work using p2p-circuit (currently with a fixed relay server)
 
 ### Example Connection
 
-`assumes a and b are already connected & identified`
-
 Ca: Connects via `<server-address>/p2p-circuit/ipfs/<dst-id>`
 
 Ca -> S -> Cb: Uses p2p-circuit to establish a connection with `<dst-id>`
