@@ -14,4 +14,7 @@ More info: https://github.com/libp2p/js-libp2p-webrtc-star/pull/48
 
 ## Other
 
-// TODO document mkg20001 endpoints
+# mkg20001
+The nodes `ws-star-signal-{2,4,h}.servep2p.com` run on `host0.zion.host`
+
+Upgrades are done by running `bash /home/maciej/upgrade-rendezvous.sh` which runs docker pull and re-creates the containers
