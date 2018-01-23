@@ -40,6 +40,10 @@ module.exports = class WebsocketStar {
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
+  setSwarm(swarm) {
+    this.swarm = swarm
+  }
+
   /**
     * Dials a peer - should actually never get called because p2p-circuit handles dials
     * @param {Multiaddr} ma - Multiaddr to dial to

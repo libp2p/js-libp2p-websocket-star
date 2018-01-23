@@ -23,6 +23,7 @@ const noop = once(() => {})
   */
 module.exports = class Listener extends EE {
   constructor (main, handler) {
+    super()
     this.handler = handler
     this.id = main.id
     this.listeners = main.listeners_list
