@@ -81,6 +81,7 @@ module.exports = class Listener extends EE {
   listen (ma, callback) {
     callback = callback ? once(callback) : noop
     const {id} = this
+    ma = multiaddr(ma)
     this.swarm.dial(ma, '/ws-star/2.0.0', (err, conn) => {
       if (err) return callback(err)
       pull(
@@ -92,6 +93,7 @@ module.exports = class Listener extends EE {
       )
 
       this.ma = ma
+      this.relayAddr = ma.decapsulate('p2p-ws-star').encapsulate('p2p-circuit')
 
       this.once('identify', request => {
         id.privKey.sign(request.nonce, (err, signature) => {

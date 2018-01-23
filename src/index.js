@@ -41,25 +41,16 @@ module.exports = class WebsocketStar {
   }
 
   /**
-    * Dials a peer
+    * Dials a peer - should actually never get called because p2p-circuit handles dials
     * @param {Multiaddr} ma - Multiaddr to dial to
     * @param {Object} options
     * @param {function} callback
+    * @private
     * @returns {Connection}
     */
-  dial (ma, options, callback) { // TODO: fallback to /p2p-circuit/DST if no relay for addr?
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
-    const listener = this.listeners_list[someUniqueId] // TODO: what could be used as uniqueId ?
-    if (!listener) {
-      callback(new Error('No listener for this server'))
-      return new Connection()
-    }
-
-    // TODO: use direct dialing (`this.swarm.dial(peer)`)
+  dial (ma, options, callback) {
+    callback(new Error('This should never have been called!'))
+    return new Connection()
   }
 
   /**
