@@ -40,7 +40,7 @@ module.exports = class WebsocketStar {
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
-  setSwarm(swarm) {
+  setSwarm (swarm) {
     this.swarm = swarm
   }
 
@@ -91,7 +91,8 @@ module.exports = class WebsocketStar {
 
   /**
     * Used to fire peer events on the discovery part
-    * @param {Multiaddr} maStr
+    * @param {id} id - Buffer containing id
+    * @param {Listener} listener - Listener which discovered this peer
     * @fires Discovery#peer
     * @returns {undefined}
     * @private

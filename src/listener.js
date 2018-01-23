@@ -1,7 +1,7 @@
 'use strict'
 
-const debug = require('debug')
-const log = debug('libp2p:websocket-star:listener')
+/* const debug = require('debug')
+const log = debug('libp2p:websocket-star:listener') */
 const multiaddr = require('multiaddr')
 const EE = require('events').EventEmitter
 const once = require('once')
@@ -15,13 +15,13 @@ const {IdentifyRequest, IdentifyResponse, DiscoveryEvent, DiscoveryACK} = requir
 
 const noop = once(() => {})
 
-/**
-  * Listener for signalling server
-  * @class
-  * @param {WebsocketStar} main - Instance of main class
-  * @param {function} handler - Handler function
-  */
 module.exports = class Listener extends EE {
+  /**
+    * Listener for signalling server
+    * @class
+    * @param {WebsocketStar} main - Instance of main class
+    * @param {function} handler - Handler function
+    */
   constructor (main, handler) {
     super()
     this.handler = handler
@@ -63,6 +63,7 @@ module.exports = class Listener extends EE {
             this.emit('identifySuccess', event)
           }
           this.emit('peers', event.id)
+          this._push(DiscoveryACK.encode({ok: true}))
         }
       } catch (e) {
         this._disconnect(e)
