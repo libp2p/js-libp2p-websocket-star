@@ -11,7 +11,9 @@ const pull = require('pull-stream')
 const lp = require('pull-length-prefixed')
 const Pushable = require('pull-pushable')
 
-const {IdentifyRequest, IdentifyResponse, DiscoveryEvent, DiscoveryACK} = require('./proto') // TODO: move to client
+const debug = require('debug')
+
+const {IdentifyRequest, IdentifyResponse, DiscoveryEvent, DiscoveryACK} = require('./proto')
 
 const noop = once(() => {})
 
@@ -29,6 +31,7 @@ module.exports = class Listener extends EE {
     this.listeners = main.listeners_list
     this.swarm = main.swarm
     this.source = Pushable()
+    this.log = debug('libp2p:websocket-star:listener#offline')
     this._push = this.source.push.bind(this.source)
   }
 
@@ -60,7 +63,7 @@ module.exports = class Listener extends EE {
           const event = DiscoveryEvent.decode(data)
           if (second) {
             second = false
-            this.emit('identifySuccess', event)
+            this.emit('identifySuccess')
           }
           this.emit('peers', event.id)
           this._push(DiscoveryACK.encode({ok: true}))
@@ -72,6 +75,8 @@ module.exports = class Listener extends EE {
 
       read(null, next)
     }
+
+    read(null, next)
   }
 
   /**
@@ -81,6 +86,8 @@ module.exports = class Listener extends EE {
     * @returns {undefined}
     */
   listen (ma, callback) {
+    const log = this.log = debug('libp2p:websocket-star:listener@' + ma.toString())
+    log('connecting')
     callback = callback ? once(callback) : noop
     const {id} = this
     ma = multiaddr(ma)
@@ -95,10 +102,13 @@ module.exports = class Listener extends EE {
       )
 
       this.ma = ma
-      this.relayAddr = ma.decapsulate('p2p-ws-star').encapsulate('p2p-circuit')
+      this.relayAddr = ma.decapsulate('p2p-websocket-star').encapsulate('p2p-circuit')
+
+      log('waiting for identify')
 
       this.once('identify', request => {
-        id.privKey.sign(request.nonce, (err, signature) => {
+        log('executing identify')
+        id.privKey.sign(Buffer.from(request.nonce), (err, signature) => {
           if (err) return callback(err)
           const json = id.toJSON()
           const response = {
