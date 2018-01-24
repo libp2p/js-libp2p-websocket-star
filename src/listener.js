@@ -36,7 +36,7 @@ module.exports = class Listener extends EE {
   }
 
   _disconnect (err) {
-    this.source.abort(err)
+    // this.source.abort(err) // TODO: fix 'TypeError: this.source.abort is not a function'
     this.disconnected = err
     this.emit('disconnect', err)
     this.emit('close')
@@ -46,11 +46,18 @@ module.exports = class Listener extends EE {
   sink (read) {
     let first = true
     let second = false
+    this.once('close', err => {
+      if (second) {
+        second = false
+        this.emit('identifyError', err)
+      }
+    })
+    const {log} = this
     const next = (err, data) => {
       if (this.disconnected) return read(this.disconnected)
       if (err) {
         this._disconnect(err)
-        return read(err)
+        return read(true)
       }
       // data is binary protobuf. first packet is IdentifyRequest, after that DiscoveryEvent
       try {
@@ -61,6 +68,7 @@ module.exports = class Listener extends EE {
           this.emit('identify', request)
         } else {
           const event = DiscoveryEvent.decode(data)
+          log('got peers: %s', event.id.length)
           if (second) {
             second = false
             this.emit('identifySuccess')
@@ -118,8 +126,16 @@ module.exports = class Listener extends EE {
           }
           this.response = response
           this._push(IdentifyResponse.encode(response))
-          this.once('identifySuccess', callback)
-          this.once('disconnect', callback)
+          this.once('identifySuccess', () => {
+            this.removeAllListeners('identifyError')
+            log('identify was successfull')
+            callback()
+          })
+          this.once('identifyError', err => {
+            this.removeAllListeners('identifySuccess')
+            log('indentify was unsuccessfull: %s', err)
+            callback(err)
+          })
         })
       })
     })
@@ -153,6 +169,6 @@ module.exports = class Listener extends EE {
     * @returns {multiaddr} full address
     */
   getFullAddr (id) {
-    return this.relayAddr.encapsulate('ipfs', id)
+    return this.relayAddr.encapsulate('ipfs/' + id)
   }
 }

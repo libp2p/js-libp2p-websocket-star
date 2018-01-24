@@ -98,11 +98,12 @@ module.exports = class WebsocketStar {
     * @private
     */
   _peerDiscovered (id, listener) {
-    // TODO: exclude self
-    log('Peer Discovered:', id)
     const peer = new Peer(new Id(id))
+    if (peer.id.toB58String() === this.id.toB58String()) return
+    const addr = listener.getFullAddr(peer.id.toB58String())
+    log('Peer Discovered: %s', addr)
 
-    peer.multiaddrs.add(listener.getFullAddr(peer.id.toB58String()))
+    peer.multiaddrs.add(addr)
     this.discovery.emit('peer', peer)
   }
 }
