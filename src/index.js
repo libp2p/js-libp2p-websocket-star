@@ -2,18 +2,16 @@
 
 const debug = require('debug')
 const log = debug('libp2p:websocket-star')
-const multiaddr = require('multiaddr')
 const EE = require('events').EventEmitter
-const PeerId = require('peer-id')
-const PeerInfo = require('peer-info')
+const Id = require('peer-id')
+const Peer = require('peer-info')
 const Connection = require('interface-connection').Connection
 const setImmediate = require('async/setImmediate')
-const utils = require('./utils')
 const Listener = require('./listener')
-const cleanUrlSIO = utils.cleanUrlSIO
 const mafmt = require('mafmt')
+const assert = require('assert')
 
-class WebsocketStar {
+module.exports = class WebsocketStar {
   /**
     * WebsocketStar Transport
     * @class
@@ -23,7 +21,11 @@ class WebsocketStar {
   constructor (options) {
     options = options || {}
 
+    log('creating new WebsocketStar transport')
+
     this.id = options.id
+    assert(this.id, 'Id MUST be set since v2')
+    this.b58 = this.id.toB58String()
     this.flag = options.allowJoinWithDisabledChallenge // let's just refer to it as "flag"
 
     this.discovery = new EE()
@@ -38,42 +40,21 @@ class WebsocketStar {
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
-  /**
-    * Sets the id after transport creation (aka the lazy way)
-    * @param {PeerId} id
-    * @returns {undefined}
-    */
-  lazySetId (id) {
-    if (!id) return
-    this.id = id
-    this.canCrypto = true
+  setSwarm (swarm) {
+    this.swarm = swarm
   }
 
   /**
-    * Dials a peer
+    * Dials a peer - should actually never get called because p2p-circuit handles dials
     * @param {Multiaddr} ma - Multiaddr to dial to
     * @param {Object} options
     * @param {function} callback
+    * @private
     * @returns {Connection}
     */
   dial (ma, options, callback) {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
-    }
-
-    let url
-    try {
-      url = cleanUrlSIO(ma)
-    } catch (err) {
-      return callback(err) // early
-    }
-    const listener = this.listeners_list[url]
-    if (!listener) {
-      callback(new Error('No listener for this server'))
-      return new Connection()
-    }
-    return listener.dial(ma, options, callback)
+    callback(new Error('This should never have been called!'))
+    return new Connection()
   }
 
   /**
@@ -88,14 +69,9 @@ class WebsocketStar {
       options = {}
     }
 
-    const listener = new Listener({
-      id: this.id,
-      handler,
-      listeners: this.listeners_list,
-      flag: this.flag
-    })
+    const listener = new Listener(this, handler)
 
-    listener.on('peer', this._peerDiscovered)
+    listener.on('peers', peers => peers.forEach(peer => this._peerDiscovered(peer, listener)))
 
     return listener
   }
@@ -115,20 +91,19 @@ class WebsocketStar {
 
   /**
     * Used to fire peer events on the discovery part
-    * @param {Multiaddr} maStr
+    * @param {id} id - Buffer containing id
+    * @param {Listener} listener - Listener which discovered this peer
     * @fires Discovery#peer
     * @returns {undefined}
     * @private
     */
-  _peerDiscovered (maStr) {
-    log('Peer Discovered:', maStr)
-    const peerIdStr = maStr.split('/ipfs/').pop()
-    const peerId = PeerId.createFromB58String(peerIdStr)
-    const peerInfo = new PeerInfo(peerId)
+  _peerDiscovered (id, listener) {
+    const peer = new Peer(new Id(id))
+    if (peer.id.toB58String() === this.id.toB58String()) return
+    const addr = listener.getFullAddr(peer.id.toB58String())
+    log('Peer Discovered: %s', addr)
 
-    peerInfo.multiaddrs.add(multiaddr(maStr))
-    this.discovery.emit('peer', peerInfo)
+    peer.multiaddrs.add(addr)
+    this.discovery.emit('peer', peer)
   }
 }
-
-module.exports = WebsocketStar
