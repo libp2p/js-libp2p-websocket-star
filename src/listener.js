@@ -30,7 +30,7 @@ module.exports = class Listener extends EE {
     this.id = main.id
     this.listeners = main.listeners_list
     this.swarm = main.swarm
-    this.source = Pushable()
+    this.source = Pushable(err => this._disconnect(err))
     this.log = debug('libp2p:websocket-star:listener#offline')
     this._push = this.source.push.bind(this.source)
   }
@@ -40,7 +40,7 @@ module.exports = class Listener extends EE {
     this.disconnected = err
     this.emit('disconnect', err)
     this.emit('close')
-    if (typeof err !== 'boolean') return this.emit('error', err)
+    // if (typeof err !== 'boolean') return this.emit('error', err)
   }
 
   sink (read) {
@@ -158,9 +158,11 @@ module.exports = class Listener extends EE {
   close (callback) {
     callback = callback ? once(callback) : noop
 
-    this._down()
+    if (this.disconnected) return callback()
 
-    callback()
+    this.once('close', () => callback())
+
+    this._disconnect(true)
   }
 
   /**
