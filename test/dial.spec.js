@@ -29,7 +29,7 @@ describe('dial', () => {
   const peerId1 = 'QmS8BL7M8jrXYhHo2ofEVeiq5aDKTr29ksmpcqWxjZGvpX'
   const peerId2 = 'QmeJGHUQ4hsMvPzAoXCdkT1Z9NBgjT7BenVPENUgpufENP'
 
-  const maDNS = '/dns/ws-star-signal-3.servep2p.com'
+  const maDNS = '/dnsaddr/ws-star-signal-3.servep2p.com'
   const maDNS6 = '/dns6/ws-star-signal-2.servep2p.com'
   const maRemoteIP4 = '/ip4/148.251.206.162/tcp/9090'
   const maRemoteIP6 = '/ip6/2a01:4f8:212:e0::1/tcp/4287'
