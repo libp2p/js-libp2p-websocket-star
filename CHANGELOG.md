@@ -1,3 +1,13 @@
+<a name="0.7.3"></a>
+## [0.7.3](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.2...v0.7.3) (2018-02-12)
+
+
+### Bug Fixes
+
+* peer not leaving bug ([9bfc903](https://github.com/libp2p/js-libp2p-websocket-star/commit/9bfc903))
+
+
+
 <a name="0.7.2"></a>
 ## [0.7.2](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.1...v0.7.2) (2017-12-05)
 
