@@ -72,7 +72,7 @@ Id.create((err, id) => {
       throw err
     }
 
-    node.dial(peerInfo, "/test/1.0.0", (err, conn) => {
+    node.dialProtocol(peerInfo, "/test/1.0.0", (err, conn) => {
       if (err) {
         throw err
       }

@@ -99,7 +99,7 @@ module.exports = class Listener extends EE {
     callback = callback ? once(callback) : noop
     const {id} = this
     ma = multiaddr(ma)
-    this.swarm.dial(ma, '/ws-star/2.0.0', (err, conn) => {
+    this.swarm.dialProtocol(ma, '/ws-star/2.0.0', (err, conn) => {
       if (err) return callback(err)
       pull(
         conn,
