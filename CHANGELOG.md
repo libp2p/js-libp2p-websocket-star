@@ -1,3 +1,8 @@
+<a name="0.7.7"></a>
+## [0.7.7](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.6...v0.7.7) (2018-02-20)
+
+
+
 <a name="0.7.6"></a>
 ## [0.7.6](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.5...v0.7.6) (2018-02-12)
 
