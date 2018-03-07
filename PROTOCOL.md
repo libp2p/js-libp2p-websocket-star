@@ -1,6 +1,6 @@
 # WebSocketStar Protocol
 
-Note: The socket.io events and the socket.io-pull-stream module used in this protocol have their own spec.
+Note: The socket.io events and the [socket.io-pull-stream module](https://github.com/mkg20001/socket.io-pull-stream/blob/master/PROTOCOL.md) used in this protocol have their own spec.
 
 ## Types
 
