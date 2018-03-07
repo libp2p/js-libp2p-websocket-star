@@ -4,4 +4,3 @@ COPY . /app
 WORKDIR /app
 RUN npm i --production
 ENTRYPOINT ["/usr/local/bin/dumb-init", "node", "src/bin.js"]
-EXPOSE 9090
