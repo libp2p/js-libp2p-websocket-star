@@ -43,14 +43,12 @@
     addr += '/ip4/' + f.h + '/tcp/' + f.port + '/'
   } else if (f.port && ipv6Regex.test(f.h)) {
     addr += '/ip6/' + f.h + '/tcp/' + f.port + '/'
-  } else if (f.port) {
-    addr += '/dns/' + f.h + '/tcp/' + f.port + '/'
   } else if (ipv4Regex.test(f.h)) {
     addr += '/ip4/' + f.h + '/tcp/' + f.protoport + '/'
   } else if (ipv6Regex.test(f.h)) {
     addr += '/ip6/' + f.h + '/tcp/' + f.protoport + '/'
   } else {
-    addr += '/dns/' + f.h + '/'
+    addr += '/dns4/' + f.h + '/tcp/' + f.protoport + '/'
   }
   if (f.protocol == 'https:') addr += 'wss/'
   else addr += 'ws/'
