@@ -31,7 +31,7 @@ Server:
    - else if the client _has_ been assigned a challenge nonce
      - validate the hex encoded signature of `nonce` using the stored public key
      - clear the nonce
-     - if no error occured _goto "finalize"
+     - if no error occured _goto "finalize"_
 
  - finalize:
    - start sending peers using `ws-peer` every 10s
