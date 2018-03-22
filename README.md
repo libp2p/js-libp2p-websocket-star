@@ -14,21 +14,21 @@ Nodes using `libp2p-websocket-star` will connect to a known point in the network
 
 ## Usage
 
-`libp2p-websocket-star-rendezvous` is the rendezvous server required for `libp2p-websocket-star` and can be used to start a rendezvous server for development. To do that, first insall the module globally in your machine with:
+`libp2p-websocket-star-rendezvous` is the rendezvous server required for `libp2p-websocket-star` and can be used to start a rendezvous server for development. To do that, first install the module globally in your machine with:
 
 ```bash
 > npm install --global libp2p-websocket-star-rendezvous
 ```
 
-This will install a `websockets-star` CLI tool. Now you can spawn the server with:
+This will install a `rendezvous` CLI tool. Now you can spawn the server with:
 
 ```bash
-> websockets-star --port=9090 --host=127.0.0.1
+> rendezvous --port=9090 --host=127.0.0.1
 ```
 
 Defaults:
 
-- `port` - 13579
+- `port` - 9090
 - `host` - '0.0.0.0'
 
 ## Docker
