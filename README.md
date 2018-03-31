@@ -116,16 +116,16 @@ hello from the other side
 
 ## Usage
 
-To reduce dependencies `libp2p-websocket-star` comes without the rendezvous server, that means that you need to install `libp2p-websocket-star-rendezvous` to start a rendezvous server. To do that, first insall the module globally in your machine with:
+To reduce dependencies `libp2p-websocket-star` comes without the rendezvous server, that means that you need to install `libp2p-websocket-star-rendezvous` to start a rendezvous server. To do that, first install the module globally in your machine with:
 
 ```bash
 > npm install --global libp2p-websocket-star-rendezvous
 ```
 
-This will install a `websockets-star` CLI tool. Now you can spawn the server with:
+This will install a `rendezvous` CLI tool. Now you can spawn the server with:
 
 ```bash
-> websockets-star --port=9090 --host=127.0.0.1
+> rendezvous --port=9090 --host=127.0.0.1
 ```
 
 Defaults:
