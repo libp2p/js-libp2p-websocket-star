@@ -12,6 +12,7 @@ const utils = require('./utils')
 const Listener = require('./listener')
 const cleanUrlSIO = utils.cleanUrlSIO
 const mafmt = require('mafmt')
+const withIs = require('class-is')
 
 class WebsocketStar {
   /**
@@ -131,4 +132,4 @@ class WebsocketStar {
   }
 }
 
-module.exports = WebsocketStar
+module.exports = withIs(WebsocketStar, { className: 'WebsocketStar', symbolName: '@libp2p/js-libp2p-websocket-star/websocketstar' })
