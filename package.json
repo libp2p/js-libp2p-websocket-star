@@ -63,8 +63,10 @@
   "homepage": "https://github.com/libp2p/js-libp2p-websocket-star#readme",
   "contributors": [
     "David Dias <daviddias.p@gmail.com>",
+    "Diogo Silva <fsdiogo@gmail.com>",
+    "Gorka <gorka@aquigorka.com>",
+    "Maciej Krüger <mkg20001@gmail.com>",
     "Pedro Teixeira <i@pgte.me>",
-    "Victor Bjelkholm <victorbjelkholm@gmail.com>",
-    "mkg20001 <mkg20001@gmail.com>"
+    "Victor Bjelkholm <victorbjelkholm@gmail.com>"
   ]
 }
