@@ -1,3 +1,13 @@
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.7...v0.8.0) (2018-04-05)
+
+
+### Features
+
+* add class-is module ([d27b9d7](https://github.com/libp2p/js-libp2p-websocket-star/commit/d27b9d7))
+
+
+
 <a name="0.7.7"></a>
 ## [0.7.7](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.6...v0.7.7) (2018-02-20)
 
