@@ -4,4 +4,4 @@ WORKDIR /usr/src/app
 COPY package.json .
 RUN npm i --production
 COPY . .
-ENTRYPOINT ["/usr/local/bin/dumb-init", "node", "src/bin.js"]
+ENTRYPOINT ["/usr/local/bin/dumb-init", "node", "--max-old-space-size=8192", "src/bin.js"]
