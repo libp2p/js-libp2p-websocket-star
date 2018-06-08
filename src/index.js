@@ -28,6 +28,7 @@ class WebsocketStar {
     this.flag = options.allowJoinWithDisabledChallenge // let's just refer to it as "flag"
 
     this.discovery = new EE()
+    this.discovery.tag = 'websocketStar'
     this.discovery.start = (callback) => {
       setImmediate(callback)
     }
