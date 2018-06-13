@@ -214,9 +214,8 @@ class Listener extends EE {
       (cb) => this._crypto(cb)
     ], (err) => {
       if (err) {
-        this.log('success', err)
+        this.log('error', err)
         if (!(err instanceof Error)) err = new Error(err)
-        log(err)
         this._down()
         this.emit('error', err)
         this.emit('close')
