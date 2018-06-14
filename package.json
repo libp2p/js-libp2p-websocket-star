@@ -26,32 +26,32 @@
   "author": "Maciej Krüger <mkg20001@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "async": "^2.6.0",
+    "async": "^2.6.1",
     "class-is": "^1.1.0",
     "data-queue": "0.0.3",
     "debug": "^3.1.0",
-    "interface-connection": "^0.3.2",
-    "libp2p-crypto": "^0.12.1",
+    "interface-connection": "~0.3.2",
+    "libp2p-crypto": "~0.13.0",
     "mafmt": "^6.0.0",
     "merge-recursive": "0.0.3",
-    "multiaddr": "^4.0.0",
+    "multiaddr": "^5.0.0",
     "once": "^1.4.0",
-    "peer-id": "^0.10.7",
-    "peer-info": "^0.14.0",
-    "pull-stream": "^3.6.7",
-    "socket.io-client": "^2.1.0",
-    "socket.io-pull-stream": "^0.1.5",
+    "peer-id": "~0.10.7",
+    "peer-info": "~0.14.1",
+    "pull-stream": "^3.6.8",
+    "socket.io-client": "^2.1.1",
+    "socket.io-pull-stream": "~0.1.5",
     "uuid": "^3.2.1"
   },
   "directories": {
     "test": "test"
   },
   "devDependencies": {
-    "aegir": "^13.0.6",
+    "aegir": "^14.0.0",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
     "libp2p-websocket-star-rendezvous": "github:libp2p/js-libp2p-websocket-star-rendezvous",
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.10"
   },
   "repository": {
     "type": "git",
