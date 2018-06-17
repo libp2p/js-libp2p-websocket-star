@@ -14,6 +14,7 @@ const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
 const cleanUrlSIO = utils.cleanUrlSIO
 const crypto = require('libp2p-crypto')
+const pull = require('pull-stream')
 
 const noop = once(() => {})
 
@@ -38,6 +39,8 @@ class Listener extends EE {
     this._handler = options.handler || noop
     this.listeners_list = options.listeners || {}
     this.flag = options.flag
+    this.conns = []
+    this.connected = false
   }
 
   // "private" functions
@@ -209,6 +212,11 @@ class Listener extends EE {
     this.listeners_list[this.server] = this
     callback = callback ? once(callback) : noop
 
+    if (this.connected) { // listener was .close()'d yet not all conns disconnected. we're still connected, so don't do anything
+      this.closing = false
+      return setImmediate(() => callback())
+    }
+
     series([
       (cb) => this._up(cb),
       (cb) => this._crypto(cb)
@@ -220,7 +228,10 @@ class Listener extends EE {
         this.emit('error', err)
         this.emit('close')
         return callback(err)
-      } else this.log('success')
+      }
+
+      this.log('success')
+      this.connected = true
 
       this.io.on('reconnect', () => {
         // force to get a new signature
@@ -247,12 +258,50 @@ class Listener extends EE {
     setImmediate(() => callback(null, this.ma ? [this.ma] : []))
   }
 
+  get activeConnections () {
+    this.conns = this.conns.filter(c => c.sink || c.source)
+    return Boolean(this.conns.length)
+  }
+
+  maybeClose () {
+    if (!this.activeConnections && this.closing) {
+      this.connected = false
+      this.closing = false
+      this.log('no more connections and listener is offline - closing')
+      this._down()
+    }
+  }
+
   close (callback) {
     callback = callback ? once(callback) : noop
 
-    this._down()
+    this.closing = true // will close once the last connection quits
+    this.maybeClose()
 
     callback()
+  }
+
+  stateWatch (sink, source) {
+    let cstate = {sink: true, source: true}
+    const watch = (name) => pull.through(v => v, e => {
+      cstate[name] = false
+      if (!cstate.sink && !cstate.source) {
+        this.maybeClose()
+      }
+    })
+
+    this.conns.push(cstate)
+
+    return {
+      sink: pull(
+        watch('sink'),
+        sink
+      ),
+      source: pull(
+        source,
+        watch('source')
+      )
+    }
   }
 
   // called from transport
@@ -293,14 +342,8 @@ class Listener extends EE {
       if (err) return callback(err instanceof Error ? err : new Error(err))
       dlog(err ? 'error: ' + err.toString() : 'success')
       const source = io.createSource(dialId + '.listener')
-      conn.setInnerConn(
-        {
-          sink: sink,
-          source: source
-        }, {
-          getObservedAddrs: (cb) => cb(null, [_ma])
-        }
-      )
+
+      conn.setInnerConn(this.stateWatch(sink, source), { getObservedAddrs: (cb) => cb(null, [_ma]) })
       callback(null, conn)
     })
 
