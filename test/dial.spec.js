@@ -96,6 +96,23 @@ describe('dial', () => {
     })
   })
 
+  it('dial on IPv4, close listener, prevent end, re-start listener', (done) => {
+    ws1.dial(ma2, (err, conn) => {
+      expect(err).to.not.exist()
+
+      pull(
+        (end, cb) => {},
+        conn,
+        pull.drain(() => {
+          expect('Stream should never end').to.not.exist()
+        })
+      )
+
+      listeners[0].close(() => {})
+      listeners[0].listen(ma1, done)
+    })
+  })
+
   it('dial offline / non-exist()ent node on IPv4, check callback', (done) => {
     const maOffline = multiaddr('/ip4/127.0.0.1/tcp/40404/ws/p2p-websocket-star/ipfs/ABCD')
 
