@@ -15,6 +15,7 @@ const utils = require('./utils')
 const cleanUrlSIO = utils.cleanUrlSIO
 const crypto = require('libp2p-crypto')
 const pull = require('pull-stream')
+const ERRORS = require('./errors')
 
 const noop = once(() => {})
 
@@ -222,6 +223,15 @@ class Listener extends EE {
       (cb) => this._crypto(cb)
     ], (err) => {
       if (err) {
+        // Error connecting to WebSocket
+        if (err.description && err.description.code === 'ENOTFOUND') {
+          const hostname = err.description.hostname
+
+          err = Object.assign(new Error(`WebSocket connection failed on ${hostname}`), {
+            code: ERRORS.ERR_WS_STAR_WEBSOCKET_CONNECTION
+          })
+        }
+
         this.log('error', err)
         if (!(err instanceof Error)) err = new Error(err)
         this._down()
