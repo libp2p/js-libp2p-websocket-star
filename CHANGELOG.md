@@ -1,3 +1,18 @@
+<a name="0.8.1"></a>
+## [0.8.1](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.8.0...v0.8.1) (2018-06-19)
+
+
+### Bug Fixes
+
+* debug log error ([caa451e](https://github.com/libp2p/js-libp2p-websocket-star/commit/caa451e))
+
+
+### Features
+
+* add tag ([ee69c45](https://github.com/libp2p/js-libp2p-websocket-star/commit/ee69c45))
+
+
+
 <a name="0.8.0"></a>
 # [0.8.0](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.7.7...v0.8.0) (2018-04-05)
 
