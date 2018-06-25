@@ -13,6 +13,10 @@
 
 > libp2p-webrtc-star without webrtc. Just  WebSockets with a relay point in the middle.
 
+## Lead Maintainer
+
+[Jacob Heun](https://github.com/jacobheun)
+
 ## Description
 
 `libp2p-websocket-star` is one of the multiple transports available for libp2p. `libp2p-websocket-star` incorporates both a transport and a discovery service that is facilitated by the rendezvous server, also available in this repo and module.
