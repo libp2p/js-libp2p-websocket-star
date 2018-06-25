@@ -8,6 +8,10 @@
 
 > The rendezvous service for [libp2p-websocket-star](https://github.com/libp2p/js-libp2p-websocket-star).
 
+## Lead Maintainer
+
+[Jacob Heun](https://github.com/jacobheun)
+
 ## Descriptions
 
 Nodes using `libp2p-websocket-star` will connect to a known point in the network, a rendezvous point where they can learn about other nodes (Discovery) and route their messages to other nodes (2 hop message routing, also known as relay).
