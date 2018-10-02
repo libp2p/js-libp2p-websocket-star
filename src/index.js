@@ -29,10 +29,13 @@ class WebsocketStar {
 
     this.discovery = new EE()
     this.discovery.tag = 'websocketStar'
+    this.discovery.enabled = true
     this.discovery.start = (callback) => {
+      this.discovery.enabled = true
       setImmediate(callback)
     }
     this.discovery.stop = (callback) => {
+      this.discovery.enabled = false
       setImmediate(callback)
     }
 
@@ -123,6 +126,11 @@ class WebsocketStar {
     * @private
     */
   _peerDiscovered (maStr) {
+    // Poor man's way to 'disable' discovery
+    if (!this.discovery.enabled) {
+      return
+    }
+
     log('Peer Discovered:', maStr)
     const peerIdStr = maStr.split('/ipfs/').pop()
     const peerId = PeerId.createFromB58String(peerIdStr)
