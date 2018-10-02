@@ -1,3 +1,18 @@
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.8.1...v0.9.0) (2018-10-02)
+
+
+### Bug Fixes
+
+* better ws errors ([faa7c57](https://github.com/libp2p/js-libp2p-websocket-star/commit/faa7c57))
+
+
+### Features
+
+* fix stream closing behaviour ([9953f95](https://github.com/libp2p/js-libp2p-websocket-star/commit/9953f95))
+
+
+
 <a name="0.8.1"></a>
 ## [0.8.1](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.8.0...v0.8.1) (2018-06-19)
 
