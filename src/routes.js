@@ -90,16 +90,19 @@ module.exports = (config, http) => {
       if (nonces[socket.id][multiaddr]) {
         log('response cryptoChallenge', multiaddr)
 
-        nonces[socket.id][multiaddr].key.verify(nonces[socket.id][multiaddr].nonce, Buffer.from(pub, 'hex'), (err, ok) => {
-          if (err || !ok) {
-            joinsTotal.inc()
-            joinsFailureTotal.inc()
-          }
-          if (err) { return cb('Crypto error') } // the errors NEED to be a string otherwise JSON.stringify() turns them into {}
-          if (!ok) { return cb('Signature Invalid') }
+        nonces[socket.id][multiaddr].key.verify(
+          Buffer.from(nonces[socket.id][multiaddr].nonce),
+          Buffer.from(pub, 'hex'),
+          (err, ok) => {
+            if (err || !ok) {
+              joinsTotal.inc()
+              joinsFailureTotal.inc()
+            }
+            if (err) { return cb('Crypto error') } // the errors NEED to be a string otherwise JSON.stringify() turns them into {}
+            if (!ok) { return cb('Signature Invalid') }
 
-          joinFinalize(socket, multiaddr, cb)
-        })
+            joinFinalize(socket, multiaddr, cb)
+          })
       } else {
         joinsTotal.inc()
         const addr = multiaddr.split('ipfs/').pop()

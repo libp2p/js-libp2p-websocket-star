@@ -52,13 +52,11 @@ docker run -d -p 9090:9090 --name rendezvous -e DISABLE_METRICS=1 libp2p/websock
 
 ## Hosted Rendezvous server
 
-We host a rendezvous server at `ws-star-signal-1.servep2p.com` and `ws-star-signal-2.servep2p.com` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
-
-Additionally there is a rendezvous server at `ws-star-signal-3.servep2p.com` running the latest master version.
+We host a rendezvous server at `ws-star.discovery.libp2p.io` that can be used for practical demos and experimentation, it **should not be used for apps in production**.
 
 A libp2p-websocket-star address, using the signalling server we provide, looks like:
 
-`/dns4/ws-star-signal-1.servep2p.com/wss/p2p-websocket-star/ipfs/<your-peer-id>`
+`/dns4/ws-star.discovery.libp2p.io/wss/p2p-websocket-star/ipfs/<your-peer-id>`
 
 Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 

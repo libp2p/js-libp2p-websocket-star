@@ -82,18 +82,20 @@ function Protocol (log) {
   this.handleSocket = (socket) => {
     socket.r = {}
     for (let request in this.requests) {
-      const r = this.requests[request]
-      socket.on(request, function () {
-        const data = [...arguments]
-        try {
-          validate(r.def, data)
-          data.unshift(socket)
-          r.handle.apply(null, data)
-        } catch (err) {
-          log(err)
-          log('peer %s has sent invalid data for request %s', socket.id || '<server>', request, data)
-        }
-      })
+      if (Object.prototype.hasOwnProperty.call(this.requests, request)) {
+        const r = this.requests[request]
+        socket.on(request, function () {
+          const data = [...arguments]
+          try {
+            validate(r.def, data)
+            data.unshift(socket)
+            r.handle.apply(null, data)
+          } catch (err) {
+            log(err)
+            log('peer %s has sent invalid data for request %s', socket.id || '<server>', request, data)
+          }
+        })
+      }
     }
   }
 }
