@@ -1,3 +1,14 @@
+<a name="0.2.4"></a>
+## [0.2.4](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.2.3...v0.2.4) (2018-10-16)
+
+
+### Bug Fixes
+
+* give crypto.verify a buffer ([#23](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues/23)) ([0c8c290](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/0c8c290))
+* make it executable available through websocket-star ([d18087c](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/d18087c))
+
+
+
 <a name="0.2.3"></a>
 ## [0.2.3](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.2.2...v0.2.3) (2018-02-12)
 
