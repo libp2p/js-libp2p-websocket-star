@@ -39,7 +39,7 @@
   if (f.hostname.startsWith('[') && f.hostname.endsWith(']')) f.h = f.hostname.match(/\[(.+)\]/)[1]
   else f.h = f.hostname
   f.protoport = f.port ? f.port : f.protocol == 'https:' ? 443 : 80
-  if (f.port && ipv4Regex.test()) {
+  if (f.port && ipv4Regex.test(f.h)) {
     addr += '/ip4/' + f.h + '/tcp/' + f.port + '/'
   } else if (f.port && ipv6Regex.test(f.h)) {
     addr += '/ip6/' + f.h + '/tcp/' + f.port + '/'
