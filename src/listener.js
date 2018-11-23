@@ -292,7 +292,7 @@ class Listener extends EE {
   }
 
   stateWatch (sink, source) {
-    let cstate = {sink: true, source: true}
+    let cstate = { sink: true, source: true }
     const watch = (name) => pull.through(v => v, e => {
       cstate[name] = false
       if (!cstate.sink && !cstate.source) {
