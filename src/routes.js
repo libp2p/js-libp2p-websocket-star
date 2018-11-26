@@ -166,7 +166,8 @@ module.exports = (config, http) => {
 
     socket.stopSendingPeersIntv[multiaddr] = stopSendingPeers
 
-    cb()
+    const otherPeers = Object.keys(getPeers()).filter(mh => mh !== multiaddr)
+    cb(null, null, otherPeers)
   }
 
   function leave (socket, multiaddr) {

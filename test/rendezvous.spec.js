@@ -101,16 +101,24 @@ describe('rendezvous', () => {
   })
 
   it('ss-join first client', (done) => {
-    c1.emit('ss-join', c1mh.toString(), '', err => {
+    c1.emit('ss-join', c1mh.toString(), '', (err, sig, peers) => {
       expect(err).to.not.exist()
+      expect(peers).to.eql([])
       expect(Object.keys(r.peers()).length).to.equal(1)
       done()
     })
   })
 
   it('ss-join and ss-leave second client', (done) => {
-    c2.emit('ss-join', c2mh.toString(), '', err => {
+    let c1WsPeerEvent
+    c1.once('ws-peer', (p) => {
+      c1WsPeerEvent = p
+    })
+
+    c2.emit('ss-join', c2mh.toString(), '', (err, sig, peers) => {
       expect(err).to.not.exist()
+      expect(peers).to.eql([c1mh.toString()])
+      expect(c1WsPeerEvent).to.equal(c2mh.toString())
       expect(Object.keys(r.peers()).length).to.equal(2)
       c2.emit('ss-leave', c2mh.toString())
 
@@ -122,8 +130,9 @@ describe('rendezvous', () => {
   })
 
   it('ss-join and disconnect third client', (done) => {
-    c3.emit('ss-join', c3mh.toString(), '', err => {
+    c3.emit('ss-join', c3mh.toString(), '', (err, sig, peers) => {
       expect(err).to.not.exist()
+      expect(peers).to.eql([c1mh.toString()])
       expect(Object.keys(r.peers()).length).to.equal(2)
       c3.disconnect()
       setTimeout(() => {
