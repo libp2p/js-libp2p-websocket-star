@@ -4,6 +4,10 @@
   "description": "The rendezvous service for libp2p-websocket-star",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
   "bin": {
     "rendezvous": "src/bin.js",
     "websocket-star": "src/bin.js"
