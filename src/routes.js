@@ -60,6 +60,7 @@ module.exports = (config, http) => {
   function handle (socket) {
     socket.addrs = []
     socket.cleanaddrs = {}
+    socket.setMaxListeners(0)
     sp(socket, {
       codec: 'buffer'
     })
