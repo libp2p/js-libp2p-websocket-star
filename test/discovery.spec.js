@@ -8,46 +8,19 @@ const expect = chai.expect
 chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
 const each = require('async/each')
-const series = require('async/series')
-const parallel = require('async/parallel')
-const rendezvous = require('libp2p-websocket-star-rendezvous')
 
 const WebSocketStar = require('../src')
 
 describe('peer discovery', () => {
   let listeners = []
   let ws1
-  const ma1 = multiaddr('/ip4/127.0.0.1/tcp/16001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4A')
+  const ma1 = multiaddr('/ip4/127.0.0.1/tcp/15001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4A')
   let ws2
-  const ma2 = multiaddr('/ip4/127.0.0.1/tcp/16002/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4B')
+  const ma2 = multiaddr('/ip4/127.0.0.1/tcp/15002/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4B')
   let ws3
-  const ma3 = multiaddr('/ip4/127.0.0.1/tcp/16002/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4C')
+  const ma3 = multiaddr('/ip4/127.0.0.1/tcp/15002/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4C')
 
-  const _r = []
-  before((done) => {
-    const base = (v) => Object.assign({
-      host: '0.0.0.0',
-      cryptoChallenge: false,
-      strictMultiaddr: false,
-      refreshPeerListIntervalMS: 1000
-    }, v)
-
-    parallel([['discovery r1', {port: 16001}], ['discovery r2', {port: 16002}]].map((v) => (cb) => {
-      rendezvous.start(base(v.pop()), (err, r) => {
-        if (err) { return cb(err) }
-        _r.push(r)
-        console.log('%s: %s', v.pop(), r.info.uri)
-        cb()
-      })
-    }), done)
-  })
-
-  after((done) => {
-    series([
-      cb => each(listeners, (l, next) => l.close(next), cb),
-      cb => each(_r, (r, next) => r.stop(next), cb)
-    ], done)
-  })
+  after(done => each(listeners, (l, next) => l.close(next), done))
 
   it('listen on the first', (done) => {
     ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
