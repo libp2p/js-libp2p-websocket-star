@@ -100,16 +100,26 @@ describe('dial', () => {
     ws1.dial(ma2, (err, conn) => {
       expect(err).to.not.exist()
 
+      let endFn
+      let ended = false
       pull(
-        (end, cb) => {},
+        // Prevent end until test has completed
+        (end, cb) => {
+          endFn = cb
+        },
         conn,
         pull.drain(() => {
-          expect('Stream should never end').to.not.exist()
+          // Should not be called until test has completed
+          ended = true
         })
       )
 
       listeners[0].close(() => {})
-      listeners[0].listen(ma1, done)
+      listeners[0].listen(ma1, () => {
+        expect(ended).to.be.equal(false)
+        endFn(true)
+        done()
+      })
     })
   })
 
