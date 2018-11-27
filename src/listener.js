@@ -148,12 +148,7 @@ class Listener extends EE {
     }
 
     if (this.signature) {
-      this._join((err, needNewChallenge, peers) => {
-        if (needNewChallenge) {
-          return this.cryptoChallenge(cb)
-        }
-        cb(err, null, peers)
-      })
+      this._join(cb)
     } else {
       this._cryptoChallenge(cb)
     }
