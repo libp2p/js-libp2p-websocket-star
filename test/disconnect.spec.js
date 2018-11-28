@@ -4,6 +4,7 @@
 
 const multiaddr = require('multiaddr')
 const series = require('async/series')
+const each = require('async/each')
 const pull = require('pull-stream')
 
 const WebSocketStar = require('../src')
@@ -17,6 +18,7 @@ describe('disconnect', () => {
 
   let conn
   let otherConn
+  const listeners = []
 
   before((done) => {
     series([first, second], dial)
@@ -26,6 +28,7 @@ describe('disconnect', () => {
 
       const listener = ws1.createListener((conn) => pull(conn, conn))
       listener.listen(ma1, next)
+      listeners.push(listener)
     }
 
     function second (next) {
@@ -33,6 +36,7 @@ describe('disconnect', () => {
 
       const listener = ws2.createListener((conn) => (otherConn = conn))
       listener.listen(ma2, next)
+      listeners.push(listener)
     }
 
     function dial () {
@@ -40,8 +44,14 @@ describe('disconnect', () => {
     }
   })
 
+  after(done => each(listeners, (l, next) => l.close(next), done))
+
   it('all conns die when one peer quits', (done) => {
+    let endFn
     pull(
+      (end, cb) => {
+        endFn = cb
+      },
       conn,
       pull.collect(err => {
         if (err) return done(err)
@@ -49,6 +59,7 @@ describe('disconnect', () => {
           otherConn,
           pull.collect(err => {
             if (err) return done(err)
+            endFn(true)
             done()
           })
         )

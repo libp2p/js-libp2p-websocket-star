@@ -103,7 +103,7 @@ class Listener extends EE {
 
     const maStr = this.ma.toString()
 
-    this.io.emit('ss-join', maStr, pubKeyStr, (err, sig) => {
+    this.io.emit('ss-join', maStr, pubKeyStr, (err, sig, peers) => {
       if (err) { return callback(err) }
 
       if (sig) {
@@ -127,7 +127,7 @@ class Listener extends EE {
           return callback(new Error('Tried to listen on a server with crypto challenge disabled!\n    This is prohibited by default and can lead to security issues!\n    Please set "allowJoinWithDisabledChallenge" to true in the constructor options (but only if you know what you are doing)!'))
         }
         this.signature = '_'
-        callback()
+        callback(null, null, peers)
       }
     })
   }
@@ -215,8 +215,8 @@ class Listener extends EE {
 
     series([
       (cb) => this._up(cb),
-      (cb) => this._crypto(cb)
-    ], (err) => {
+      (cb) => this._crypto((err, ignore, peers) => cb(err, peers))
+    ], (err, [ignore, peers]) => {
       if (err) {
         // Error connecting to WebSocket
         if (err.description && err.description.code === 'ENOTFOUND') {
@@ -241,15 +241,23 @@ class Listener extends EE {
       this.io.on('reconnect', () => {
         // force to get a new signature
         this.signature = null
-        this._crypto((err) => {
+        this._crypto((err, ignore, reconnectPeers) => {
           if (err) {
             this.log('reconnect error', err)
             this.emit('error', err)
-          } else this.log('reconnected')
+          } else {
+            this.log('reconnected')
+            for (const p of (reconnectPeers || [])) {
+              this.emit('peer', p)
+            }
+          }
         })
       })
 
       this.emit('listening')
+      for (const p of (peers || [])) {
+        this.emit('peer', p)
+      }
       callback()
     })
   }
