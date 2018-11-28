@@ -1,3 +1,18 @@
+<a name="0.10.0"></a>
+# [0.10.0](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.9.1...v0.10.0) (2018-11-28)
+
+
+### Bug Fixes
+
+* remove dead code ([f3e1dc4](https://github.com/libp2p/js-libp2p-websocket-star/commit/f3e1dc4))
+
+
+### Features
+
+* retrieve peers on connect ([#64](https://github.com/libp2p/js-libp2p-websocket-star/issues/64)) ([ae9fb1c](https://github.com/libp2p/js-libp2p-websocket-star/commit/ae9fb1c))
+
+
+
 <a name="0.9.1"></a>
 ## [0.9.1](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.9.0...v0.9.1) (2018-11-26)
 
