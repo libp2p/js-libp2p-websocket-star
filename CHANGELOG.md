@@ -1,3 +1,22 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.2.4...v0.3.0) (2018-11-29)
+
+
+### Bug Fixes
+
+* dont use 'this' in root anon function ([c6a833e](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/c6a833e))
+* logo was broken on main page ([#25](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues/25)) ([41eed04](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/41eed04))
+* regex bug for ipv4 test ([#24](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues/24)) ([696ed92](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/696ed92))
+* remove warning for too many listeners on socket.io sockets ([#28](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues/28)) ([3d9b96e](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/3d9b96e))
+
+
+### Features
+
+* include existing peers in response to ss-join ([f12aea3](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/f12aea3))
+* use node 10 in docker image ([#26](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues/26)) ([91db9cf](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/91db9cf))
+
+
+
 <a name="0.2.4"></a>
 ## [0.2.4](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.2.3...v0.2.4) (2018-10-16)
 
