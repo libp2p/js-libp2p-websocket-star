@@ -1,3 +1,13 @@
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.10.1...v0.10.2) (2019-01-10)
+
+
+### Bug Fixes
+
+* reduce bundle size ([#66](https://github.com/libp2p/js-libp2p-websocket-star/issues/66)) ([16b6339](https://github.com/libp2p/js-libp2p-websocket-star/commit/16b6339))
+
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/libp2p/js-libp2p-websocket-star/compare/v0.10.0...v0.10.1) (2019-01-04)
 
