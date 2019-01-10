@@ -28,15 +28,15 @@
   "dependencies": {
     "async": "^2.6.1",
     "class-is": "^1.1.0",
-    "debug": "^4.1.0",
+    "debug": "^4.1.1",
     "interface-connection": "~0.3.2",
-    "libp2p-crypto": "libp2p/js-libp2p-crypto#feat/bundle-size",
-    "mafmt": "multiformats/js-mafmt#fix/bundle-size",
-    "multiaddr": "multiformats/js-multiaddr#feat/bundle-size",
+    "libp2p-crypto": "~0.16.0",
+    "mafmt": "^6.0.4",
+    "multiaddr": "^6.0.3",
     "nanoid": "^2.0.0",
     "once": "^1.4.0",
-    "peer-id": "libp2p/js-peer-id#feat/bundle-size",
-    "peer-info": "libp2p/js-peer-info#feat/bundle-size",
+    "peer-id": "~0.12.2",
+    "peer-info": "~0.15.1",
     "pull-stream": "^3.6.9",
     "socket.io-client": "^2.1.1",
     "socket.io-pull-stream": "~0.1.5"
@@ -46,10 +46,10 @@
     "dist"
   ],
   "devDependencies": {
-    "aegir": "github:ipfs/aegir#feat/make-exp-build-test-default",
+    "aegir": "^18.0.3",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "libp2p-websocket-star-rendezvous": "~0.3.0",
+    "libp2p-websocket-star-rendezvous": "~0.2.4",
     "lodash": "^4.17.11"
   },
   "repository": {
