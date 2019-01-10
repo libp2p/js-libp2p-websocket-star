@@ -49,7 +49,7 @@
     "aegir": "^18.0.3",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "libp2p-websocket-star-rendezvous": "~0.2.4",
+    "libp2p-websocket-star-rendezvous": "~0.3.0",
     "lodash": "^4.17.11"
   },
   "repository": {
