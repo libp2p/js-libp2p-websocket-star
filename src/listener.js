@@ -14,7 +14,8 @@ const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
 const cleanUrlSIO = utils.cleanUrlSIO
 const crypto = require('libp2p-crypto')
-const pull = require('pull-stream')
+const pull = require('pull-stream/pull')
+const through = require('pull-stream/throughs/through')
 const ERRORS = require('./errors')
 
 const noop = once(() => {})
@@ -296,7 +297,7 @@ class Listener extends EE {
 
   stateWatch (sink, source) {
     let cstate = { sink: true, source: true }
-    const watch = (name) => pull.through(v => v, e => {
+    const watch = (name) => through(v => v, e => {
       cstate[name] = false
       if (!cstate.sink && !cstate.source) {
         this.maybeClose()
