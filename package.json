@@ -1,6 +1,6 @@
 {
   "name": "libp2p-websocket-star",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
@@ -65,6 +65,7 @@
     "Diogo Silva <fsdiogo@gmail.com>",
     "Dirk McCormick <dirkmdev@gmail.com>",
     "Gorka <gorka@aquigorka.com>",
+    "Hugo Dias <mail@hugodias.me>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Maciej Krüger <mkg20001@gmail.com>",
     "Pedro Teixeira <i@pgte.me>",
