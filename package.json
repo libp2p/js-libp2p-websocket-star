@@ -26,27 +26,29 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.2",
     "class-is": "^1.1.0",
     "debug": "^4.1.1",
-    "interface-connection": "~0.3.2",
-    "libp2p-crypto": "~0.16.0",
-    "mafmt": "^6.0.4",
-    "multiaddr": "^6.0.3",
-    "nanoid": "^2.0.0",
+    "interface-connection": "~0.3.3",
+    "libp2p-crypto": "~0.16.1",
+    "mafmt": "^6.0.7",
+    "multiaddr": "^6.0.6",
+    "nanoid": "^2.0.1",
     "once": "^1.4.0",
     "peer-id": "~0.12.2",
     "peer-info": "~0.15.1",
     "pull-stream": "^3.6.9",
+    "safe-buffer": "^5.1.2",
     "socket.io-client": "^2.1.1",
-    "socket.io-pull-stream": "~0.1.5"
+    "socket.io-pull-stream": "~0.1.5",
+    "uuid": "^3.3.2"
   },
   "files": [
     "src",
     "dist"
   ],
   "devDependencies": {
-    "aegir": "^18.0.3",
+    "aegir": "^18.2.2",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
     "libp2p-websocket-star-rendezvous": "~0.3.0",
