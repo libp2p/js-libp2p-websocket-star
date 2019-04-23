@@ -1,10 +1,13 @@
 # libp2p-websocket-star-rendezvous
 
 [![](https://img.shields.io/badge/made%20by-mkg20001-blue.svg?style=flat-square)](http://ipn.io)
-[![Travis](https://travis-ci.org/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=flat-square)](https://travis-ci.org/libp2p/js-libp2p-websocket-star-rendezvous)
-[![Circle](https://circleci.com/gh/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=svg)](https://circleci.com/gh/libp2p/js-libp2p-websocket-star-rendezvous)
-[![Coverage](https://coveralls.io/repos/github/libp2p/js-libp2p-websocket-star-rendezvous/badge.svg?branch=master)](https://coveralls.io/github/libp2p/js-libp2p-websocket-star-rendezvous?branch=master)
-[![david-dm](https://david-dm.org/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=flat-square)](https://david-dm.org/libp2p/js-libp2p-websocket-star-rendezvous)
+[![](https://img.shields.io/badge/project-libp2p-yellow.svg?style=flat-square)](http://libp2p.io/)
+[![](https://img.shields.io/badge/freenode-%23libp2p-yellow.svg?style=flat-square)](http://webchat.freenode.net/?channels=%23libp2p)
+[![Discourse posts](https://img.shields.io/discourse/https/discuss.libp2p.io/posts.svg)](https://discuss.libp2p.io)
+[![](https://img.shields.io/codecov/c/github/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=flat-square)](https://codecov.io/gh/libp2p/js-libp2p-websocket-star-rendezvous)
+[![](https://img.shields.io/travis/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=flat-square)](https://travis-ci.com/libp2p/js-libp2p-websocket-star-rendezvous)
+[![Dependency Status](https://david-dm.org/libp2p/js-libp2p-websocket-star-rendezvous.svg?style=flat-square)](https://david-dm.org/libp2p/js-libp2p-websocket-star-rendezvous)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
 
 > The rendezvous service for [libp2p-websocket-star](https://github.com/libp2p/js-libp2p-websocket-star).
 
