@@ -64,6 +64,23 @@ A libp2p-websocket-star address, using the signalling server we provide, looks l
 Note: The address above indicates WebSockets Secure, which can be accessed from both http and https.
 
 
+### Using WSS
+
+To be able to interact with a rendezvous server from an HTTPS site, you will need to use websocket secure. To host a secure websocket server, you must provide a keypair to the server.
+
+#### Using key and certificate
+
+```bash
+> rendezvous --key="path/to/key.key" --cert="path/to/cert.cert"
+```
+
+#### Using PFX with passphrase
+
+```bash
+> rendezvous --pfx="path/to/pair.pfx" --passphrase="passphrase"
+```
+
+
 ### This module uses `pull-streams`
 
 We expose a streaming interface based on `pull-streams`, rather then on the Node.js core streams implementation (aka Node.js streams). `pull-streams` offers us a better mechanism for error handling and flow control guarantees. If you would like to know more about why we did this, see the discussion at this [issue](https://github.com/ipfs/js-ipfs/issues/362).

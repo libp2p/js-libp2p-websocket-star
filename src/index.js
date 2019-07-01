@@ -5,6 +5,7 @@ const path = require('path')
 const epimetheus = require('epimetheus')
 const merge = require('merge-recursive').recursive
 const defaultConfig = require('./config')
+const { readFileSync } = require('fs')
 
 exports = module.exports
 
@@ -22,7 +23,21 @@ exports.start = (options, callback) => {
 
   const http = new Hapi.Server(config.hapi.options)
 
-  http.connection({ port, host })
+  let tls
+  if (options.key && options.cert) {
+    tls = {
+      key: readFileSync(options.key),
+      cert: readFileSync(options.cert),
+      passphrase: options.passphrase
+    }
+  } else if (options.pfx && options.passphrase) {
+    tls = {
+      pfx: readFileSync(options.pfx),
+      passphrase: options.passphrase
+    }
+  }
+
+  http.connection({ port, host, tls })
 
   http.register({ register: require('inert') }, (err) => {
     if (err) {
