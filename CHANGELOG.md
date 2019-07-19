@@ -1,3 +1,18 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.3.0...v0.4.0) (2019-07-19)
+
+
+### Features
+
+* switches to async/await and upgrade hapi to v18 ([946e8a1](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/commit/946e8a1))
+
+
+### BREAKING CHANGES
+
+* All functions that took callbacks now return promises
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/compare/v0.2.4...v0.3.0) (2018-11-29)
 
