@@ -32,11 +32,11 @@
   "dependencies": {
     "data-queue": "0.0.3",
     "debug": "^4.1.1",
-    "epimetheus": "achingbrain/node-epimetheus#hapi-18-support",
     "@hapi/hapi": "^18.3.1",
     "@hapi/inert": "^5.2.1",
     "libp2p-crypto": "~0.17.0",
     "mafmt": "^6.0.7",
+    "menoetius": "~0.0.2",
     "merge-recursive": "0.0.3",
     "minimist": "^1.2.0",
     "multiaddr": "^6.1.0",

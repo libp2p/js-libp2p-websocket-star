@@ -2,7 +2,7 @@
 
 const Hapi = require('@hapi/hapi')
 const path = require('path')
-const epimetheus = require('epimetheus')
+const menoetius = require('menoetius')
 const merge = require('merge-recursive').recursive
 const Inert = require('@hapi/inert')
 const { readFileSync } = require('fs')
@@ -52,7 +52,7 @@ exports.start = async (options = {}) => {
   })
 
   if (config.metrics) {
-    epimetheus.instrument(http)
+    menoetius.instrument(http)
   }
 
   return http
