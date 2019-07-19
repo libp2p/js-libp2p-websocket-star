@@ -1,6 +1,6 @@
 {
   "name": "libp2p-websocket-star-rendezvous",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "The rendezvous service for libp2p-websocket-star",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
@@ -72,8 +72,11 @@
     "Haad <haadcode@users.noreply.github.com>",
     "Jacob Heun <jacobheun@gmail.com>",
     "Jim Pick <jim@backblend.com>",
+    "Justin Maier <Zipp425@gmail.com>",
     "LEE JAE HO <spectrick@gmail.com>",
-    "Maciej Krüger <mkg20001@gmail.com>",
-    "Victor Bjelkholm <victorbjelkholm@gmail.com>"
+    "Vasco Santos <vasco.santos@ua.pt>",
+    "Victor Bjelkholm <victorbjelkholm@gmail.com>",
+    "achingbrain <alex@achingbrain.net>",
+    "mkg20001 <mkg20001@gmail.com>"
   ]
 }
