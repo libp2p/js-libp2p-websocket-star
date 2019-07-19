@@ -1,27 +1,20 @@
 'use strict'
 
-const Hapi = require('hapi')
+const Hapi = require('@hapi/hapi')
 const path = require('path')
-const epimetheus = require('epimetheus')
+const menoetius = require('menoetius')
 const merge = require('merge-recursive').recursive
-const defaultConfig = require('./config')
+const Inert = require('@hapi/inert')
 const { readFileSync } = require('fs')
 
 exports = module.exports
 
-exports.start = (options, callback) => {
-  if (typeof options === 'function') {
-    callback = options
-    options = {}
-  }
-
-  const config = merge(Object.assign({}, defaultConfig), options)
+exports.start = async (options = {}) => {
+  const config = merge(Object.assign({}, require('./config')), Object.assign({}, options))
   const log = config.log
 
   const port = options.port || config.hapi.port
   const host = options.host || config.hapi.host
-
-  const http = new Hapi.Server(config.hapi.options)
 
   let tls
   if (options.key && options.cert) {
@@ -37,35 +30,30 @@ exports.start = (options, callback) => {
     }
   }
 
-  http.connection({ port, host, tls })
+  const http = new Hapi.Server(Object.assign({
+    port,
+    host,
+    tls
+  }, config.hapi.options))
 
-  http.register({ register: require('inert') }, (err) => {
-    if (err) {
-      return callback(err)
-    }
+  await http.register(Inert)
+  await http.start()
 
-    http.start((err) => {
-      if (err) {
-        return callback(err)
-      }
+  log('rendezvous server has started on: ' + http.info.uri)
 
-      log('rendezvous server has started on: ' + http.info.uri)
+  http.peers = require('./routes')(config, http).peers
 
-      http.peers = require('./routes')(config, http).peers
-
-      http.route({
-        method: 'GET',
-        path: '/',
-        handler: (request, reply) => reply.file(path.join(__dirname, 'index.html'), {
-          confine: false
-        })
-      })
-
-      callback(null, http)
+  http.route({
+    method: 'GET',
+    path: '/',
+    handler: (request, reply) => reply.file(path.join(__dirname, 'index.html'), {
+      confine: false
     })
   })
 
-  if (config.metrics) { epimetheus.instrument(http) }
+  if (config.metrics) {
+    menoetius.instrument(http)
+  }
 
   return http
 }

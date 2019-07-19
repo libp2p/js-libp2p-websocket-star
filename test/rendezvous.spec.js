@@ -12,6 +12,32 @@ const uuid = require('uuid')
 const rendezvous = require('../src')
 
 describe('rendezvous', () => {
+  it('start and stop signalling server (default port)', async () => {
+    const server = await rendezvous.start()
+
+    expect(server.info.port).to.equal(13579)
+    expect(server.info.protocol).to.equal('http')
+    expect(server.info.address).to.equal('0.0.0.0')
+
+    await server.stop()
+  })
+
+  it('start and stop signalling server (custom port)', async () => {
+    const options = {
+      port: 12345
+    }
+
+    const server = await rendezvous.start(options)
+
+    expect(server.info.port).to.equal(options.port)
+    expect(server.info.protocol).to.equal('http')
+    expect(server.info.address).to.equal('0.0.0.0')
+
+    await server.stop()
+  })
+})
+
+describe('signalling server client', () => {
   const sioOptions = {
     transports: ['websocket'],
     'force new connection': true
@@ -29,31 +55,7 @@ describe('rendezvous', () => {
   let c3mh = multiaddr('/ip4/127.0.0.1/tcp/9090/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSoooo3')
   let c4mh = multiaddr('/ip4/127.0.0.1/tcp/9090/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSoooo4')
 
-  it('start and stop signalling server (default port)', (done) => {
-    rendezvous.start((err, server) => {
-      expect(err).to.not.exist()
-      expect(server.info.port).to.equal(13579)
-      expect(server.info.protocol).to.equal('http')
-      expect(server.info.address).to.equal('0.0.0.0')
-      server.stop(done)
-    })
-  })
-
-  it('start and stop signalling server (custom port)', (done) => {
-    const options = {
-      port: 12345
-    }
-
-    rendezvous.start(options, (err, server) => {
-      expect(err).to.not.exist()
-      expect(server.info.port).to.equal(12345)
-      expect(server.info.protocol).to.equal('http')
-      expect(server.info.address).to.equal('0.0.0.0')
-      server.stop(done)
-    })
-  })
-
-  it('start signalling server for client tests', (done) => {
+  before(async () => {
     const options = {
       port: 12345,
       refreshPeerListIntervalMS: 1000,
@@ -62,15 +64,27 @@ describe('rendezvous', () => {
       metrics: true
     }
 
-    rendezvous.start(options, (err, server) => {
-      expect(err).to.not.exist()
-      expect(server.info.port).to.equal(12345)
-      expect(server.info.protocol).to.equal('http')
-      expect(server.info.address).to.equal('0.0.0.0')
-      sioUrl = server.info.uri
-      r = server
-      done()
-    })
+    const server = await rendezvous.start(options)
+
+    expect(server.info.port).to.equal(12345)
+    expect(server.info.protocol).to.equal('http')
+    expect(server.info.address).to.equal('0.0.0.0')
+    sioUrl = server.info.uri
+    r = server
+  })
+
+  after(async () => {
+    if (c1) {
+      c1.disconnect()
+    }
+
+    if (c2) {
+      c2.disconnect()
+    }
+
+    if (r) {
+      await r.stop()
+    }
   })
 
   it('zero peers', () => {
@@ -196,10 +210,4 @@ describe('rendezvous', () => {
       }
     }
   }).timeout(4000)
-
-  it('stop signalling server', (done) => {
-    c1.disconnect()
-    c2.disconnect()
-    r.stop(done)
-  })
 })
