@@ -1,0 +1,82 @@
+{
+  "name": "libp2p-websocket-star-rendezvous",
+  "version": "0.4.0",
+  "description": "The rendezvous service for libp2p-websocket-star",
+  "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
+  "main": "src/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "bin": {
+    "rendezvous": "src/bin.js",
+    "websocket-star": "src/bin.js"
+  },
+  "scripts": {
+    "start": "node src/bin.js",
+    "lint": "aegir lint",
+    "build": "aegir build",
+    "test": "aegir test -t node",
+    "test:node": "aegir test -t node",
+    "release": "aegir release -t node",
+    "release-minor": "aegir release --type minor -t node",
+    "release-major": "aegir release --type major -t node",
+    "coverage": "aegir coverage",
+    "coverage-publish": "aegir coverage --provider coveralls"
+  },
+  "keywords": [
+    "libp2p",
+    "websocket"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "data-queue": "0.0.3",
+    "debug": "^4.1.1",
+    "@hapi/hapi": "^18.3.1",
+    "@hapi/inert": "^5.2.1",
+    "libp2p-crypto": "~0.17.0",
+    "mafmt": "^6.0.7",
+    "menoetius": "~0.0.2",
+    "merge-recursive": "0.0.3",
+    "minimist": "^1.2.0",
+    "multiaddr": "^6.1.0",
+    "once": "^1.4.0",
+    "peer-id": "~0.13.1",
+    "peer-info": "~0.16.0",
+    "prom-client": "^11.5.3",
+    "socket.io": "^2.0.4",
+    "socket.io-client": "^2.0.4",
+    "socket.io-pull-stream": "^0.1.1",
+    "uuid": "^3.1.0"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "aegir": "^19.0.5",
+    "chai": "^4.2.0",
+    "dirty-chai": "^2.0.1",
+    "lodash": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/libp2p/js-libp2p-websocket-star-rendezvous.git"
+  },
+  "bugs": {
+    "url": "https://github.com/libp2p/js-libp2p-websocket-star-rendezvous/issues"
+  },
+  "homepage": "https://github.com/libp2p/js-libp2p-websocket-star-rendezvous#readme",
+  "contributors": [
+    "David Dias <daviddias.p@gmail.com>",
+    "Dirk McCormick <dirkmdev@gmail.com>",
+    "Haad <haadcode@users.noreply.github.com>",
+    "Jacob Heun <jacobheun@gmail.com>",
+    "Jim Pick <jim@backblend.com>",
+    "Justin Maier <Zipp425@gmail.com>",
+    "LEE JAE HO <spectrick@gmail.com>",
+    "Vasco Santos <vasco.santos@ua.pt>",
+    "Victor Bjelkholm <victorbjelkholm@gmail.com>",
+    "achingbrain <alex@achingbrain.net>",
+    "mkg20001 <mkg20001@gmail.com>"
+  ]
+}
