@@ -12,7 +12,7 @@ const each = require('async/each')
 const WebSocketStar = require('../src')
 
 describe('peer discovery', () => {
-  let listeners = []
+  const listeners = []
   let ws1
   const ma1 = multiaddr('/ip4/127.0.0.1/tcp/15001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4A')
   let ws2

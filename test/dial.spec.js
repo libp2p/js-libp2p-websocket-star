@@ -17,7 +17,7 @@ const WebSocketsStar = require('../src')
 const PeerId = require('peer-id')
 
 describe('dial', () => {
-  let listeners = []
+  const listeners = []
   let ws1
   let ma1
   // let ma1v6

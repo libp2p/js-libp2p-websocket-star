@@ -32,14 +32,14 @@
     "interface-connection": "~0.3.3",
     "libp2p-crypto": "~0.16.1",
     "mafmt": "^6.0.7",
-    "multiaddr": "^6.0.6",
+    "multiaddr": "^6.1.0",
     "nanoid": "^2.0.1",
     "once": "^1.4.0",
     "peer-id": "~0.12.2",
     "peer-info": "~0.15.1",
-    "pull-stream": "^3.6.9",
-    "safe-buffer": "^5.1.2",
-    "socket.io-client": "^2.1.1",
+    "pull-stream": "^3.6.13",
+    "safe-buffer": "^5.2.0",
+    "socket.io-client": "^2.2.0",
     "socket.io-pull-stream": "~0.1.5",
     "uuid": "^3.3.2"
   },
@@ -48,10 +48,10 @@
     "dist"
   ],
   "devDependencies": {
-    "aegir": "^18.2.2",
+    "aegir": "^20.0.0",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "libp2p-websocket-star-rendezvous": "~0.3.0",
+    "libp2p-websocket-star-rendezvous": "libp2p/js-libp2p-websocket-star-rendezvous#fix/async-await",
     "lodash": "^4.17.11"
   },
   "repository": {
