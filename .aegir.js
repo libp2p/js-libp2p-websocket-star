@@ -14,19 +14,16 @@ function boot (done) {
     refreshPeerListIntervalMS: 1000
   }, v)
 
-  parallel([['r1', {port: 15001, metrics: f}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}], ['r4', {port: 15004, cryptoChallenge: true}]].map((v) => (cb) => {
-    rendezvous.start(base(v.pop()), (err, r) => {
-      if (err) { return cb(err) }
-      _r.push(r)
-      console.log('%s: %s', v.pop(), r.info.uri)
-      cb()
-    })
+  parallel([['r1', {port: 15001, metrics: f}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}], ['r4', {port: 15004, cryptoChallenge: true}]].map((v) => async () => {
+    const r = await rendezvous.start(base(v.pop()))
+    console.log('%s: %s', v.pop(), r.info.uri)
+    _r.push(r)
   }), done)
   if (f) f = false
 }
 
 function stop (done) {
-  parallel(_r.map((r) => (cb) => r.stop(cb)), done)
+  parallel(_r.map((r) => () => r.stop()), done)
   _r = []
 }
 

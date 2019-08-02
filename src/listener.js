@@ -296,7 +296,7 @@ class Listener extends EE {
   }
 
   stateWatch (sink, source) {
-    let cstate = { sink: true, source: true }
+    const cstate = { sink: true, source: true }
     const watch = (name) => through(v => v, e => {
       cstate[name] = false
       if (!cstate.sink && !cstate.source) {
@@ -341,7 +341,7 @@ class Listener extends EE {
 
     callback = callback ? once(callback) : noop
 
-    let io = this.io
+    const io = this.io
 
     if (!io) {
       return callback(new Error('Not listening'))

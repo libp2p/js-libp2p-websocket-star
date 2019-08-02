@@ -22,8 +22,8 @@ function cleanUrlSIO (ma) {
     host = '[' + host + ']'
   }
 
-  let proto = wsProto === 'wss' ? 'https' : 'http'
-  let port =
+  const proto = wsProto === 'wss' ? 'https' : 'http'
+  const port =
     (wsProto === 'ws' && tcpPort === 80) || (wsProto === 'wss' && tcpPort === 443)
       ? '' : tcpPort
 
