@@ -51,7 +51,7 @@
     "aegir": "^20.0.0",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "libp2p-websocket-star-rendezvous": "libp2p/js-libp2p-websocket-star-rendezvous#fix/async-await",
+    "libp2p-websocket-star-rendezvous": "~0.4.1",
     "lodash": "^4.17.11"
   },
   "repository": {
