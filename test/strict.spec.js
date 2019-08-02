@@ -12,11 +12,10 @@ const multiaddr = require('multiaddr')
 const each = require('async/each')
 const map = require('async/map')
 const pull = require('pull-stream')
-const rendezvous = require('libp2p-websocket-star-rendezvous')
 
 const WebSocketStar = require('../src')
 
-const SERVER_PORT = 15020
+const SERVER_PORT = 15004
 
 describe('strict', () => {
   let id1
@@ -28,15 +27,6 @@ describe('strict', () => {
   let ma2
   let l2
   let w2
-  let r
-
-  before(async () => {
-    r = await rendezvous.start({
-      port: SERVER_PORT,
-      cryptoChallenge: true
-    })
-  })
-
 
   before((done) => {
     map(require('./ids.json'), PeerId.createFromJSON, (err, keys) => {
@@ -51,39 +41,33 @@ describe('strict', () => {
     })
   })
 
-  it('listen on the server', function (done) {
+  it('listen on the server', (done) => {
     w1 = new WebSocketStar({ id: id1 })
     w2 = new WebSocketStar({ id: id2 })
 
     l1 = w1.createListener(conn => pull(conn, conn))
-    // l2 = w2.createListener(conn => pull(conn, conn))
+    l2 = w2.createListener(conn => pull(conn, conn))
 
-    console.log(String(ma1))
-    l1.listen(ma1, (...args) => {
-      console.log(args)
-      done()
-    })
-
-    // each([
-    //   [l1, ma1],
-    //   [l2, ma2]
-    // ], (i, n) => i[0].listen(i[1], n), done)
+    each([
+      [l1, ma1],
+      [l2, ma2]
+    ], (i, n) => i[0].listen(i[1], n), done)
   })
 
-  // it('dial peer 1 to peer 2', (done) => {
-  //   w1.dial(ma2, (err, conn) => {
-  //     expect(err).to.not.exist()
-  //     const buf = Buffer.from('hello')
+  it('dial peer 1 to peer 2', (done) => {
+    w1.dial(ma2, (err, conn) => {
+      expect(err).to.not.exist()
+      const buf = Buffer.from('hello')
 
-  //     pull(
-  //       pull.values([buf]),
-  //       conn,
-  //       pull.collect((err, res) => {
-  //         expect(err).to.not.exist()
-  //         expect(res).to.eql([buf])
-  //         done()
-  //       })
-  //     )
-  //   })
-  // })
+      pull(
+        pull.values([buf]),
+        conn,
+        pull.collect((err, res) => {
+          expect(err).to.not.exist()
+          expect(res).to.eql([buf])
+          done()
+        })
+      )
+    })
+  })
 })
