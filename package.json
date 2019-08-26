@@ -4,6 +4,7 @@
   "description": "libp2p-webrtc-star without webrtc. Just plain socket.io.",
   "leadMaintainer": "Jacob Heun <jacobheun@gmail.com>",
   "main": "src/index.js",
+  "typings": "src/types.d.ts",
   "scripts": {
     "lint": "aegir lint",
     "build": "aegir build",
@@ -17,7 +18,8 @@
     "release-minor": "aegir release --type minor --target node --target browser",
     "release-major": "aegir release --type major --target node --target browser",
     "coverage": "aegir coverage",
-    "coverage-publish": "aegir coverage --provider coveralls"
+    "coverage-publish": "aegir coverage --provider coveralls",
+    "generate-typings": "./node_modules/.bin/jsdoc -c ./.jsdoc.json"
   },
   "keywords": [
     "libp2p",
@@ -51,8 +53,11 @@
     "aegir": "^20.0.0",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
+    "jsdoc": "^3.6.3",
     "libp2p-websocket-star-rendezvous": "~0.4.1",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "tsd-jsdoc": "^2.3.1",
+    "typescript-definition-tester": "0.0.6"
   },
   "repository": {
     "type": "git",

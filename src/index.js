@@ -14,6 +14,9 @@ const cleanUrlSIO = utils.cleanUrlSIO
 const mafmt = require('mafmt')
 const withIs = require('class-is')
 
+/**
+ * @class
+ */
 class WebsocketStar {
   /**
     * WebsocketStar Transport
