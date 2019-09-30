@@ -17,7 +17,12 @@ const WebSocketStar = require('../src')
 
 const SERVER_PORT = 15004
 
-describe('strict', () => {
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
+
+describe.skip('strict', () => {
   let id1
   let ma1
   let l1
@@ -34,16 +39,16 @@ describe('strict', () => {
 
       id1 = keys.shift()
       id2 = keys.shift()
-      ma1 = multiaddr('/ip4/127.0.0.1/tcp/' + SERVER_PORT + '/ws/p2p-websocket-star/ipfs/' + id1.toB58String())
-      ma2 = multiaddr('/ip4/127.0.0.1/tcp/' + SERVER_PORT + '/ws/p2p-websocket-star/ipfs/' + id2.toB58String())
+      ma1 = multiaddr('/ip4/127.0.0.1/tcp/' + SERVER_PORT + '/ws/p2p-websocket-star/p2p/' + id1.toB58String())
+      ma2 = multiaddr('/ip4/127.0.0.1/tcp/' + SERVER_PORT + '/ws/p2p-websocket-star/p2p/' + id2.toB58String())
 
       done()
     })
   })
 
   it('listen on the server', (done) => {
-    w1 = new WebSocketStar({ id: id1 })
-    w2 = new WebSocketStar({ id: id2 })
+    w1 = new WebSocketStar({ upgrader: mockUpgrader, id: id1 })
+    w2 = new WebSocketStar({ upgrader: mockUpgrader, id: id2 })
 
     l1 = w1.createListener(conn => pull(conn, conn))
     l2 = w2.createListener(conn => pull(conn, conn))

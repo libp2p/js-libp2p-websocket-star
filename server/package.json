@@ -32,31 +32,31 @@
   "dependencies": {
     "data-queue": "0.0.3",
     "debug": "^4.1.1",
-    "@hapi/hapi": "^18.3.1",
-    "@hapi/inert": "^5.2.1",
+    "@hapi/hapi": "^18.4.0",
+    "@hapi/inert": "^5.2.2",
     "libp2p-crypto": "~0.17.0",
-    "mafmt": "^6.0.7",
+    "mafmt": "^7.0.0",
     "menoetius": "~0.0.2",
     "merge-recursive": "0.0.3",
     "minimist": "^1.2.0",
-    "multiaddr": "^6.1.0",
+    "multiaddr": "^7.1.0",
     "once": "^1.4.0",
-    "peer-id": "~0.13.1",
-    "peer-info": "~0.16.0",
+    "peer-id": "~0.13.3",
+    "peer-info": "~0.17.0",
     "prom-client": "^11.5.3",
-    "socket.io": "^2.0.4",
-    "socket.io-client": "^2.0.4",
-    "socket.io-pull-stream": "^0.1.1",
-    "uuid": "^3.1.0"
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
+    "socket.io-pull-stream": "^0.1.5",
+    "uuid": "^3.3.3"
   },
   "directories": {
     "test": "test"
   },
   "devDependencies": {
-    "aegir": "^19.0.5",
+    "aegir": "^20.3.1",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.15"
   },
   "repository": {
     "type": "git",

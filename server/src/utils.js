@@ -81,7 +81,7 @@ function Protocol (log) {
   }
   this.handleSocket = (socket) => {
     socket.r = {}
-    for (let request in this.requests) {
+    for (const request in this.requests) {
       if (Object.prototype.hasOwnProperty.call(this.requests, request)) {
         const r = this.requests[request]
         socket.on(request, function () {

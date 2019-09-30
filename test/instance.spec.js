@@ -8,9 +8,14 @@ chai.use(dirtyChai)
 
 const WebSocketStar = require('../src')
 
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
+
 describe('instantiate the transport', () => {
   it('create', () => {
-    const wstar = new WebSocketStar()
+    const wstar = new WebSocketStar({ upgrader: mockUpgrader })
     expect(wstar).to.exist()
   })
 

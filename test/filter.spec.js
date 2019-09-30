@@ -10,9 +10,14 @@ const multiaddr = require('multiaddr')
 
 const WebSocketStar = require('../src')
 
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
+
 describe('filter', () => {
   it('filters non valid websocket-star multiaddrs', () => {
-    const ws = new WebSocketStar()
+    const ws = new WebSocketStar({ upgrader: mockUpgrader })
 
     const maArr = [
       multiaddr('/ip4/127.0.0.1/tcp/9090/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSoooo1'),
@@ -34,7 +39,7 @@ describe('filter', () => {
   })
 
   it('filter a single addr for this transport', () => {
-    const ws = new WebSocketStar()
+    const ws = new WebSocketStar({ upgrader: mockUpgrader })
     const ma = multiaddr('/ip4/127.0.0.1/tcp/9090/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSoooo1')
 
     const filtered = ws.filter(ma)

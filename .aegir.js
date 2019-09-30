@@ -1,12 +1,11 @@
 'use strict'
 
-const parallel = require('async/parallel')
 const rendezvous = require('libp2p-websocket-star-rendezvous')
 
 let _r = []
 let f = true // first run. used so metric gets only enabled once otherwise it crashes
 
-function boot (done) {
+async function boot () {
   const base = (v) => Object.assign({
     host: '0.0.0.0',
     cryptoChallenge: false,
@@ -14,16 +13,20 @@ function boot (done) {
     refreshPeerListIntervalMS: 1000
   }, v)
 
-  parallel([['r1', {port: 15001, metrics: f}], ['r2', {port: 15002}], ['r3', {port: 15003, host: '::'}], ['r4', {port: 15004, cryptoChallenge: true}]].map((v) => async () => {
-    const r = await rendezvous.start(base(v.pop()))
-    console.log('%s: %s', v.pop(), r.info.uri)
-    _r.push(r)
-  }), done)
+  const rendezousList = [
+    ['r1', { port: 15001, metrics: f }],
+    ['r2', { port: 15002 }],
+    ['r3', { port: 15003, host: '::' }],
+    ['r4', { port: 15004, cryptoChallenge: true }]
+  ]
+
+  _r = await Promise.all(rendezousList.map((v) => rendezvous.start(base(v.pop()))))
+
   if (f) f = false
 }
 
-function stop (done) {
-  parallel(_r.map((r) => () => r.stop()), done)
+async function stop () {
+  await Promise.all(_r.map((r) => r.stop()))
   _r = []
 }
 

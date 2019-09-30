@@ -13,6 +13,11 @@ const pull = require('pull-stream')
 
 const WebSocketStar = require('../src')
 
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
+
 describe('valid Connection', () => {
   let ws1
   const ma1 = multiaddr('/ip4/127.0.0.1/tcp/15001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo5a')
@@ -26,14 +31,14 @@ describe('valid Connection', () => {
     series([first, second], dial)
 
     function first (next) {
-      ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+      ws1 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
       const listener = ws1.createListener((conn) => pull(conn, conn))
       listener.listen(ma1, next)
     }
 
     function second (next) {
-      ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+      ws2 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
       const listener = ws2.createListener((conn) => pull(conn, conn))
       listener.listen(ma2, next)

@@ -11,7 +11,10 @@ const multiaddr = require('multiaddr')
 
 const WebSocketStar = require('../src')
 
-// const skiptravis = process.env.TRAVIS ? it.skip : it
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
 
 describe('listen', () => {
   let ws
@@ -20,7 +23,7 @@ describe('listen', () => {
   const mav6 = multiaddr('/ip6/::1/tcp/15003/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooooB')
 
   before(() => {
-    ws = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
   })
 
   it('listen, check for callback', (done) => {

@@ -14,6 +14,11 @@ const WebSocketStar = require('../src')
 
 const SERVER_PORT = 13580
 
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
+
 describe('reconnect to signaling server', () => {
   let r
   let ws1
@@ -35,7 +40,7 @@ describe('reconnect to signaling server', () => {
   after(() => r.stop())
 
   it('listen on the first', (done) => {
-    ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws1 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const listener = ws1.createListener((conn) => {})
     listener.listen(ma1, (err) => {
@@ -45,7 +50,7 @@ describe('reconnect to signaling server', () => {
   })
 
   it('listen on the second, discover the first', (done) => {
-    ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws2 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     ws1.discovery.once('peer', (peerInfo) => {
       expect(peerInfo.multiaddrs.has(ma2)).to.equal(true)
@@ -71,7 +76,7 @@ describe('reconnect to signaling server', () => {
   })
 
   it('listen on the third, first discovers it', (done) => {
-    ws3 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws3 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const listener = ws3.createListener((conn) => {})
     listener.listen(ma3, (err) => expect(err).to.not.exist())

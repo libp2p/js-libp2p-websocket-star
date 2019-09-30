@@ -26,34 +26,40 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "abortable-iterator": "^2.1.0",
     "async": "^2.6.2",
     "class-is": "^1.1.0",
     "debug": "^4.1.1",
+    "err-code": "^2.0.0",
     "interface-connection": "~0.3.3",
-    "libp2p-crypto": "~0.16.1",
-    "mafmt": "^6.0.7",
-    "multiaddr": "^6.1.0",
-    "nanoid": "^2.0.1",
+    "libp2p-crypto": "~0.16.2",
+    "libp2p-utils": "^0.1.0",
+    "mafmt": "^7.0.0",
+    "multiaddr": "^7.1.0",
+    "nanoid": "^2.1.1",
     "once": "^1.4.0",
-    "peer-id": "~0.12.2",
-    "peer-info": "~0.15.1",
-    "pull-stream": "^3.6.13",
+    "peer-id": "~0.13.3",
+    "peer-info": "~0.17.0",
+    "pull-stream": "^3.6.14",
     "safe-buffer": "^5.2.0",
-    "socket.io-client": "^2.2.0",
+    "socket.io-client": "^2.3.0",
     "socket.io-pull-stream": "~0.1.5",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.3"
   },
   "files": [
     "src",
     "dist"
   ],
   "devDependencies": {
-    "aegir": "^20.0.0",
+    "aegir": "^20.3.1",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
     "libp2p-websocket-star-rendezvous": "~0.4.1",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.15"
   },
+  "pre-push": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/libp2p/js-libp2p-websocket-star.git"

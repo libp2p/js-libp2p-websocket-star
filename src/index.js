@@ -1,49 +1,60 @@
 'use strict'
 
+const assert = require('assert')
 const debug = require('debug')
 const log = debug('libp2p:websocket-star')
+
+const withIs = require('class-is')
+const { EventEmitter } = require('events')
+const errCode = require('err-code')
+
 const multiaddr = require('multiaddr')
-const EE = require('events').EventEmitter
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const Connection = require('interface-connection').Connection
-const setImmediate = require('async/setImmediate')
-const utils = require('./utils')
-const Listener = require('./listener')
-const cleanUrlSIO = utils.cleanUrlSIO
 const mafmt = require('mafmt')
-const withIs = require('class-is')
 
+const { cleanUrlSIO } = require('./utils')
+const Listener = require('./listener')
+const toConnection = require('./socket-to-conn')
+const { CODE_CIRCUIT, CODE_P2P } = require('./constants')
+
+/**
+ * @class WebsocketStar
+ */
 class WebsocketStar {
   /**
-    * WebsocketStar Transport
-    * @class
-    * @param {Object} options - Options for the listener
-    * @param {PeerId} options.id - Id for the crypto challenge
+    * @constructor
+    * @param {Object} options options
+    * @param {Upgrader} options.upgrader connection upgrader
+    * @param {PeerId} options.id id for the crypto challenge
+    * @param {boolean} options.allowJoinWithDisabledChallenge
     */
-  constructor (options) {
-    options = options || {}
+  constructor ({ upgrader, id, allowJoinWithDisabledChallenge }) {
+    assert(upgrader, 'An upgrader must be provided. See https://github.com/libp2p/interface-transport#upgrader.')
+    this._upgrader = upgrader
+    this.id = id
+    this.flag = allowJoinWithDisabledChallenge // let's just refer to it as "flag"
 
-    this.id = options.id
-    this.flag = options.allowJoinWithDisabledChallenge // let's just refer to it as "flag"
+    this.listenersRefs = {}
 
-    this.discovery = new EE()
+    // Discovery
+    this.discovery = new EventEmitter()
     this.discovery.tag = 'websocketStar'
-    this.discovery.start = (callback) => {
-      setImmediate(callback)
+    this.discovery._isStarted = false
+    this.discovery.start = () => {
+      this.discovery._isStarted = true
     }
-    this.discovery.stop = (callback) => {
-      setImmediate(callback)
+    this.discovery.stop = () => {
+      this.discovery._isStarted = false
     }
 
-    this.listeners_list = {}
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
   /**
     * Sets the id after transport creation (aka the lazy way)
     * @param {PeerId} id
-    * @returns {undefined}
+    * @returns {void}
     */
   lazySetId (id) {
     if (!id) return
@@ -52,30 +63,29 @@ class WebsocketStar {
   }
 
   /**
-    * Dials a peer
+    * @async
     * @param {Multiaddr} ma - Multiaddr to dial to
-    * @param {Object} options
-    * @param {function} callback
-    * @returns {Connection}
+    * @param {Object} [options]
+    * @param {AbortSignal} [options.signal] Used to abort dial requests
+    * @returns {Connection} An upgraded connection
     */
-  dial (ma, options, callback) {
-    if (typeof options === 'function') {
-      callback = options
-      options = {}
+  async dial (ma, options = {}) {
+    log('dialing %s', ma)
+
+    const url = cleanUrlSIO(ma)
+    const listener = this.listenersRefs[url]
+
+    if (!listener) {
+      throw errCode(new Error('No listener for this server'), 'ERR_NO_LISTENER_AVAILABLE')
     }
 
-    let url
-    try {
-      url = cleanUrlSIO(ma)
-    } catch (err) {
-      return callback(err) // early
-    }
-    const listener = this.listeners_list[url]
-    if (!listener) {
-      callback(new Error('No listener for this server'))
-      return new Connection()
-    }
-    return listener.dial(ma, options, callback)
+    const socket = await listener.dial(ma, options)
+    const maConn = toConnection(socket, { remoteAddr: ma, signal: options.signal })
+    log('new outbound connection %s', maConn.remoteAddr)
+
+    const conn = await this._upgrader.upgradeOutbound(maConn)
+    log('outbound connection %s upgraded', maConn.remoteAddr)
+    return conn
   }
 
   /**
@@ -84,7 +94,7 @@ class WebsocketStar {
     * @param {function} handler
     * @returns {Listener}
     */
-  createListener (options, handler) {
+  createListener (options = {}, handler) {
     if (typeof options === 'function') {
       handler = options
       options = {}
@@ -93,7 +103,7 @@ class WebsocketStar {
     const listener = new Listener({
       id: this.id,
       handler,
-      listeners: this.listeners_list,
+      listeners: this.listenersRefs,
       flag: this.flag
     })
 
@@ -103,28 +113,31 @@ class WebsocketStar {
   }
 
   /**
-    * Filters multiaddrs
-    * @param {Multiaddr[]} multiaddrs
-    * @returns {boolean}
-    */
+   * Takes a list of `Multiaddr`s and returns only valid Websockets addresses
+   * @param {Multiaddr[]} multiaddrs
+   * @returns {Multiaddr[]} Valid Websockets multiaddrs
+   */
   filter (multiaddrs) {
-    if (!Array.isArray(multiaddrs)) {
-      multiaddrs = [multiaddrs]
-    }
+    multiaddrs = Array.isArray(multiaddrs) ? multiaddrs : [multiaddrs]
 
-    return multiaddrs.filter((ma) => mafmt.WebSocketStar.matches(ma))
+    return multiaddrs.filter((ma) => {
+      if (ma.protoCodes().includes(CODE_CIRCUIT)) {
+        return false
+      }
+
+      return mafmt.WebSocketStar.matches(ma.decapsulateCode(CODE_P2P))
+    })
   }
 
   /**
+    * @private
     * Used to fire peer events on the discovery part
     * @param {Multiaddr} maStr
     * @fires Discovery#peer
-    * @returns {undefined}
-    * @private
     */
   _peerDiscovered (maStr) {
     log('Peer Discovered:', maStr)
-    const peerIdStr = maStr.split('/ipfs/').pop()
+    const peerIdStr = maStr.split('/p2p/').pop()
     const peerId = PeerId.createFromB58String(peerIdStr)
     const peerInfo = new PeerInfo(peerId)
 

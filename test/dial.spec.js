@@ -11,10 +11,15 @@ const multiaddr = require('multiaddr')
 const each = require('async/each')
 const map = require('async/map')
 const pull = require('pull-stream')
-const Buffer = require('safe-buffer').Buffer
+const { Buffer } = require('safe-buffer')
 
 const WebSocketsStar = require('../src')
 const PeerId = require('peer-id')
+
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
 
 describe('dial', () => {
   const listeners = []
@@ -36,7 +41,7 @@ describe('dial', () => {
 
   const maLocalIP4 = '/ip4/127.0.0.1/tcp/15001'
   // const maLocalIP6 = '/ip6/::1/tcp/15003'
-  const maGen = (base, id, sec) => multiaddr(`/${base}/${sec ? 'wss' : 'ws'}/p2p-websocket-star/ipfs/${id}`)
+  const maGen = (base, id, sec) => multiaddr(`/${base}/${sec ? 'wss' : 'ws'}/p2p-websocket-star/p2p/${id}`)
 
   if (process.env.REMOTE_DNS) {
     // test with deployed signalling server using DNS
@@ -65,8 +70,8 @@ describe('dial', () => {
   before((done) => {
     map(require('./ids.json'), PeerId.createFromJSON, (err, ids) => {
       if (err) return done(err)
-      ws1 = new WebSocketsStar({ id: ids[0], allowJoinWithDisabledChallenge: true })
-      ws2 = new WebSocketsStar({ id: ids[1], allowJoinWithDisabledChallenge: true })
+      ws1 = new WebSocketsStar({ upgrader: mockUpgrader, id: ids[0], allowJoinWithDisabledChallenge: true })
+      ws2 = new WebSocketsStar({ upgrader: mockUpgrader, id: ids[1], allowJoinWithDisabledChallenge: true })
 
       each([
         [ws1, ma1],
@@ -124,7 +129,7 @@ describe('dial', () => {
   })
 
   it('dial offline / non-exist()ent node on IPv4, check callback', (done) => {
-    const maOffline = multiaddr('/ip4/127.0.0.1/tcp/40404/ws/p2p-websocket-star/ipfs/ABCD')
+    const maOffline = multiaddr('/ip4/127.0.0.1/tcp/40404/ws/p2p-websocket-star/p2p/ABCD')
 
     ws1.dial(maOffline, (err) => {
       expect(err).to.exist()
