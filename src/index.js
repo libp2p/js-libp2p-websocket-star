@@ -1,49 +1,56 @@
 'use strict'
 
+const assert = require('assert')
 const debug = require('debug')
 const log = debug('libp2p:websocket-star')
 const multiaddr = require('multiaddr')
-const EE = require('events').EventEmitter
+const { EventEmitter } = require('events')
 const PeerId = require('peer-id')
 const PeerInfo = require('peer-info')
-const Connection = require('interface-connection').Connection
-const setImmediate = require('async/setImmediate')
-const utils = require('./utils')
-const Listener = require('./listener')
-const cleanUrlSIO = utils.cleanUrlSIO
 const mafmt = require('mafmt')
+const { Connection } = require('interface-connection')
+// const setImmediate = require('async/setImmediate')
+
+const { cleanUrlSIO } = require('./utils')
+const Listener = require('./listener')
 const withIs = require('class-is')
 
+/**
+ * @class WebsocketStar
+ */
 class WebsocketStar {
   /**
-    * WebsocketStar Transport
-    * @class
-    * @param {Object} options - Options for the listener
-    * @param {PeerId} options.id - Id for the crypto challenge
+    * @constructor
+    * @param {Object} options options
+    * @param {Upgrader} options.upgrader connection upgrader
+    * @param {PeerId} options.id id for the crypto challenge
     */
-  constructor (options) {
-    options = options || {}
-
+  constructor (options = {}) {
+    assert(options.upgrader, 'An upgrader must be provided. See https://github.com/libp2p/interface-transport#upgrader.')
+    this._upgrader = options.upgrader
     this.id = options.id
     this.flag = options.allowJoinWithDisabledChallenge // let's just refer to it as "flag"
 
-    this.discovery = new EE()
+    this.listenersRefs = {}
+
+    // Discovery
+    this.discovery = new EventEmitter()
     this.discovery.tag = 'websocketStar'
-    this.discovery.start = (callback) => {
-      setImmediate(callback)
+    this.discovery._isStarted = false
+    this.discovery.start = () => {
+      this.discovery._isStarted = true
     }
-    this.discovery.stop = (callback) => {
-      setImmediate(callback)
+    this.discovery.stop = () => {
+      this.discovery._isStarted = false
     }
 
-    this.listeners_list = {}
     this._peerDiscovered = this._peerDiscovered.bind(this)
   }
 
   /**
     * Sets the id after transport creation (aka the lazy way)
     * @param {PeerId} id
-    * @returns {undefined}
+    * @returns {void}
     */
   lazySetId (id) {
     if (!id) return
@@ -70,7 +77,7 @@ class WebsocketStar {
     } catch (err) {
       return callback(err) // early
     }
-    const listener = this.listeners_list[url]
+    const listener = this.listenersRefs[url]
     if (!listener) {
       callback(new Error('No listener for this server'))
       return new Connection()
@@ -93,7 +100,7 @@ class WebsocketStar {
     const listener = new Listener({
       id: this.id,
       handler,
-      listeners: this.listeners_list,
+      listeners: this.listenersRefs,
       flag: this.flag
     })
 
@@ -124,7 +131,7 @@ class WebsocketStar {
     */
   _peerDiscovered (maStr) {
     log('Peer Discovered:', maStr)
-    const peerIdStr = maStr.split('/ipfs/').pop()
+    const peerIdStr = maStr.split('/p2p/').pop()
     const peerId = PeerId.createFromB58String(peerIdStr)
     const peerInfo = new PeerInfo(peerId)
 

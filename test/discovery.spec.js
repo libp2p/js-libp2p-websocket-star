@@ -11,6 +11,11 @@ const each = require('async/each')
 
 const WebSocketStar = require('../src')
 
+const mockUpgrader = {
+  upgradeInbound: maConn => maConn,
+  upgradeOutbound: maConn => maConn
+}
+
 describe('peer discovery', () => {
   const listeners = []
   let ws1
@@ -23,7 +28,7 @@ describe('peer discovery', () => {
   after(done => each(listeners, (l, next) => l.close(next), done))
 
   it('listen on the first', (done) => {
-    ws1 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws1 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const listener = ws1.createListener((/* conn */) => {})
 
@@ -35,7 +40,7 @@ describe('peer discovery', () => {
   })
 
   it('listen on the second, discover the first', (done) => {
-    ws2 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws2 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     ws1.discovery.once('peer', (peerInfo) => {
       expect(peerInfo.multiaddrs.has(ma2)).to.equal(true)
@@ -51,7 +56,7 @@ describe('peer discovery', () => {
   })
 
   it('new peer receives peer events for all other peers on connect', (done) => {
-    ws3 = new WebSocketStar({ allowJoinWithDisabledChallenge: true })
+    ws3 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const discovered = []
     ws3.discovery.on('peer', (peerInfo) => {

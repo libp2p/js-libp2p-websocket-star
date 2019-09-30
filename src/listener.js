@@ -7,12 +7,12 @@ const io = require('socket.io-client')
 const sp = require('socket.io-pull-stream')
 const uuid = require('uuid')
 const series = require('async/series')
-const EE = require('events').EventEmitter
-const Connection = require('interface-connection').Connection
+const { EventEmitter } = require('events')
+const { Connection } = require('interface-connection')
 const once = require('once')
 const setImmediate = require('async/setImmediate')
 const utils = require('./utils')
-const cleanUrlSIO = utils.cleanUrlSIO
+const { cleanUrlSIO } = utils
 const crypto = require('libp2p-crypto')
 const pull = require('pull-stream/pull')
 const through = require('pull-stream/throughs/through')
@@ -32,14 +32,14 @@ const sioOptions = {
   * @param {PeerId} options.id - Id for the crypto challenge
   * @param {function} options.handler - Incomming connection handler
   */
-class Listener extends EE {
+class Listener extends EventEmitter {
   constructor (options) {
     super()
     this.id = options.id
     this.log = log.bind(log, 'listener#offline')
     this.canCrypto = Boolean(options.id)
     this._handler = options.handler || noop
-    this.listeners_list = options.listeners || {}
+    this.listenersRefs = options.listeners || {}
     this.flag = options.flag
     this.conns = []
     this.connected = false
@@ -206,7 +206,7 @@ class Listener extends EE {
   listen (ma, callback) {
     this.ma = ma
     this.server = cleanUrlSIO(ma)
-    this.listeners_list[this.server] = this
+    this.listenersRefs[this.server] = this
     callback = callback ? once(callback) : noop
 
     if (this.connected) { // listener was .close()'d yet not all conns disconnected. we're still connected, so don't do anything
