@@ -39,14 +39,12 @@ describe('reconnect to signaling server', () => {
 
   after(() => r.stop())
 
-  it('listen on the first', (done) => {
+  it('listen on the first', async () => {
     ws1 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const listener = ws1.createListener((conn) => {})
-    listener.listen(ma1, (err) => {
-      expect(err).to.not.exist()
-      done()
-    })
+
+    await listener.listen(ma1)
   })
 
   it('listen on the second, discover the first', (done) => {
@@ -58,9 +56,7 @@ describe('reconnect to signaling server', () => {
     })
 
     const listener = ws2.createListener((conn) => {})
-    listener.listen(ma2, (err) => {
-      expect(err).to.not.exist()
-    })
+    listener.listen(ma2)
   })
 
   it('stops the server', async () => {
@@ -79,7 +75,7 @@ describe('reconnect to signaling server', () => {
     ws3 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const listener = ws3.createListener((conn) => {})
-    listener.listen(ma3, (err) => expect(err).to.not.exist())
+    listener.listen(ma3)
 
     ws1.discovery.once('peer', (peerInfo) => {
       expect(peerInfo.multiaddrs.has(ma3)).to.equal(true)

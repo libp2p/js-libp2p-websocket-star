@@ -4,7 +4,6 @@
 
 const multiaddr = require('multiaddr')
 const series = require('async/series')
-const each = require('async/each')
 const pull = require('pull-stream')
 
 const WebSocketStar = require('../src')
@@ -49,7 +48,8 @@ describe('disconnect', () => {
     }
   })
 
-  after(done => each(listeners, (l, next) => l.close(next), done))
+  // after(done => each(listeners, (l, next) => l.close(next), done))
+  after(() => Promise.all(listeners.map((l) => l.close())))
 
   it('all conns die when one peer quits', (done) => {
     let endFn

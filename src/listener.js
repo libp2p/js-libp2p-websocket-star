@@ -163,6 +163,7 @@ class Listener extends EventEmitter {
 
       // "multiaddr", "multiaddr", "string", "function" - dialFrom, dialTo, dialId, cb
       io.emit('ss-dial', this.ma.toString(), ma.toString(), dialId, (err) => {
+        console.log('2')
         if (err) {
           return reject(err instanceof Error ? err : new Error(err))
         }
@@ -170,10 +171,12 @@ class Listener extends EventEmitter {
         dlog(err ? 'error: ' + err.toString() : 'success')
         const source = io.createSource(dialId + '.listener')
 
-        resolve({
-          source,
-          sink
-        })
+        const rawSocket = {
+          sink: sink,
+          source: source
+        }
+
+        resolve(rawSocket)
       })
     })
   }
@@ -203,7 +206,7 @@ class Listener extends EventEmitter {
       const proto = new Protocol(this.log)
 
       proto.addRequest('ws-peer', ['multiaddr'], (socket, peer) => this.emit('peer', peer))
-      proto.addRequest('ss-incomming', ['string', 'multiaddr', 'function'], this._incommingDial.bind(this))
+      proto.addRequest('ss-incomming', ['string', 'multiaddr', 'function'], this._incomingDial.bind(this))
       proto.handleSocket(_io)
     })
   }
@@ -313,7 +316,7 @@ class Listener extends EventEmitter {
     * @returns {void}
     * @private
     */
-  _incommingDial (socket, dialId, dialFrom) {
+  _incomingDial (socket, dialId, dialFrom) {
     this.log('dial#' + dialId + ' incomming from', dialFrom)
     // const ma = multiaddr(dialFrom)
     const source = this.io.createSource(dialId + '.dialer')
@@ -323,6 +326,7 @@ class Listener extends EventEmitter {
       sink: sink,
       source: source
     }
+    // const rawSocket = ss(socket)
 
     this._handler(rawSocket)
     this.emit('connection', rawSocket)

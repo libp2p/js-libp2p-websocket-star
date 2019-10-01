@@ -30,10 +30,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "data-queue": "0.0.3",
-    "debug": "^4.1.1",
     "@hapi/hapi": "^18.4.0",
     "@hapi/inert": "^5.2.2",
+    "data-queue": "0.0.3",
+    "debug": "^4.1.1",
     "libp2p-crypto": "~0.17.0",
     "mafmt": "^7.0.0",
     "menoetius": "~0.0.2",

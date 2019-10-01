@@ -7,7 +7,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 const multiaddr = require('multiaddr')
-const each = require('async/each')
 
 const WebSocketStar = require('../src')
 
@@ -25,18 +24,20 @@ describe('peer discovery', () => {
   let ws3
   const ma3 = multiaddr('/ip4/127.0.0.1/tcp/15001/ws/p2p-websocket-star/ipfs/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo4C')
 
-  after(done => each(listeners, (l, next) => l.close(next), done))
+  after(() => {
+    return Promise.all(listeners.map((l) => l.close()))
+  })
 
-  it('listen on the first', (done) => {
+  after(() => Promise.all(listeners.map((l) => l.close())))
+
+  it('listen on the first', () => {
     ws1 = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
 
     const listener = ws1.createListener((/* conn */) => {})
 
     listeners.push(listener)
-    listener.listen(ma1, (err) => {
-      expect(err).to.not.exist()
-      done()
-    })
+
+    return listener.listen(ma1)
   })
 
   it('listen on the second, discover the first', (done) => {
@@ -50,9 +51,7 @@ describe('peer discovery', () => {
     const listener = ws2.createListener((/* conn */) => {})
 
     listeners.push(listener)
-    listener.listen(ma2, (err) => {
-      expect(err).to.not.exist()
-    })
+    listener.listen(ma2)
   })
 
   it('new peer receives peer events for all other peers on connect', (done) => {
@@ -79,8 +78,6 @@ describe('peer discovery', () => {
     const listener = ws3.createListener((/* conn */) => {})
 
     listeners.push(listener)
-    listener.listen(ma3, (err) => {
-      expect(err).to.not.exist()
-    })
+    listener.listen(ma3)
   })
 })

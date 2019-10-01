@@ -54,8 +54,10 @@
     "aegir": "^20.3.1",
     "chai": "^4.2.0",
     "dirty-chai": "^2.0.1",
+    "it-pipe": "^1.0.1",
     "libp2p-websocket-star-rendezvous": "~0.4.1",
-    "lodash": "^4.17.15"
+    "p-map": "^3.0.0",
+    "streaming-iterables": "^4.1.0"
   },
   "pre-push": [
     "lint"

@@ -26,34 +26,33 @@ describe('listen', () => {
     ws = new WebSocketStar({ upgrader: mockUpgrader, allowJoinWithDisabledChallenge: true })
   })
 
-  it('listen, check for callback', (done) => {
+  it('listen, check for promise', async () => {
     const listener = ws.createListener((conn) => {})
 
-    listener.listen(ma, (err) => {
-      expect(err).to.not.exist()
-      listener.close(done)
-    })
+    await listener.listen(ma)
+    await listener.close()
   })
 
   it('listen, check for listening event', (done) => {
     const listener = ws.createListener((conn) => {})
 
-    listener.once('listening', () => listener.close(done))
+    listener.once('listening', async () => {
+      await listener.close()
+      done()
+    })
+
     listener.listen(ma)
   })
 
   it('listen, check for the close event', (done) => {
     const listener = ws.createListener((conn) => {})
 
-    listener.listen(ma, (err) => {
-      expect(err).to.not.exist()
+    listener.once('listening', () => {
       listener.once('close', done)
       listener.close()
     })
-  })
 
-  it.skip('close listener with connections, through timeout', (done) => {
-    // TODO ? Should this apply ?
+    listener.listen(ma)
   })
 
   // travis ci has some ipv6 issues. circle ci is fine.
@@ -71,15 +70,14 @@ describe('listen', () => {
     })
   })
 
-  it('getAddrs', (done) => {
+  it('getAddrs', async () => {
     const listener = ws.createListener((conn) => {})
-    listener.listen(ma, (err) => {
-      expect(err).to.not.exist()
-      listener.getAddrs((err, addrs) => {
-        expect(err).to.not.exist()
-        expect(addrs[0]).to.deep.equal(ma)
-        listener.close(done)
-      })
-    })
+
+    await listener.listen(ma)
+
+    const addrs = listener.getAddrs()
+    expect(addrs[0]).to.deep.equal(ma)
+
+    await listener.close()
   })
 })

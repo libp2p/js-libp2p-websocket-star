@@ -8,10 +8,12 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const multiaddr = require('multiaddr')
-const each = require('async/each')
-const map = require('async/map')
 const pull = require('pull-stream')
 const { Buffer } = require('safe-buffer')
+
+const pMap = require('p-map')
+const pipe = require('it-pipe')
+const { collect } = require('streaming-iterables')
 
 const WebSocketsStar = require('../src')
 const PeerId = require('peer-id')
@@ -67,38 +69,32 @@ describe('dial', () => {
     ma2v6 = maGen(maLocalIP4, peerId2)
   }
 
-  before((done) => {
-    map(require('./ids.json'), PeerId.createFromJSON, (err, ids) => {
-      if (err) return done(err)
-      ws1 = new WebSocketsStar({ upgrader: mockUpgrader, id: ids[0], allowJoinWithDisabledChallenge: true })
-      ws2 = new WebSocketsStar({ upgrader: mockUpgrader, id: ids[1], allowJoinWithDisabledChallenge: true })
+  before(async () => {
+    const ids = await pMap(require('./ids.json'), PeerId.createFromJSON)
 
-      each([
-        [ws1, ma1],
-        [ws2, ma2]
-        // [ws1, ma1v6],
-        // [ws2, ma2v6]
-      ], (i, n) => listeners[listeners.push(i[0].createListener((conn) => pull(conn, conn))) - 1].listen(i[1], n), done)
-    })
+    ws1 = new WebSocketsStar({ upgrader: mockUpgrader, id: ids[0], allowJoinWithDisabledChallenge: true })
+    ws2 = new WebSocketsStar({ upgrader: mockUpgrader, id: ids[1], allowJoinWithDisabledChallenge: true })
+
+    return Promise.all([
+      listeners[listeners.push(ws1.createListener((conn) => pipe(conn, conn))) - 1].listen(ma1),
+      listeners[listeners.push(ws2.createListener((conn) => pipe(conn, conn))) - 1].listen(ma2)
+    ])
   })
 
-  it('dial on IPv4, check callback', (done) => {
-    ws1.dial(ma2, (err, conn) => {
-      expect(err).to.not.exist()
+  after(() => Promise.all(listeners.map((l) => l.close())))
 
-      const data = Buffer.from('some data')
+  it.only('dial on IPv4, check callback', async () => {
+    const data = Buffer.from('some data')
+    const conn = await ws1.dial(ma2)
 
-      pull(
-        pull.values([data]),
-        conn,
-        pull.collect((err, values) => {
-          expect(err).to.not.exist()
-          values[0] = Buffer.from(values[0])
-          expect(values).to.eql([data])
-          done()
-        })
-      )
-    })
+    const values = await pipe(
+      [data],
+      conn,
+      collect
+    )
+
+    values[0] = Buffer.from(values[0])
+    expect(values).to.eql([data])
   })
 
   it('dial on IPv4, close listener, prevent end, re-start listener', (done) => {
@@ -155,6 +151,4 @@ describe('dial', () => {
       )
     })
   })
-
-  after(done => each(listeners, (l, next) => l.close(next), done))
 })
