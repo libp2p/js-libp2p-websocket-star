@@ -1,4 +1,11 @@
-⛔️ DEPRECATED: libp2p-websocket-star is not supported anymore from [libp2p@0.27.0](https://github.com/libp2p/js-libp2p/releases/tag/v0.27.0). Check [js-libp2p/doc/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md) for what modules are currently supported.
+# ⛔️ DEPRECATED
+
+libp2p-websocket-star is not supported anymore from [libp2p@0.27.0](https://github.com/libp2p/js-libp2p/releases/tag/v0.27.0).  
+Check [js-libp2p/doc/CONFIGURATION.md](https://github.com/libp2p/js-libp2p/blob/master/doc/CONFIGURATION.md) for what modules are currently supported.
+
+_This library will not be maintained._
+
+---
 
 # libp2p-websocket-star
 
